@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DevVault // Hackathon War-Room, Flowchart & Code Orchestrator</title>
+  <title>DevVault // Hackathon War-Room & Architecture Flowchart</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -52,6 +52,8 @@
     mermaid.initialize({
       startOnLoad: false,
       theme: 'dark',
+      securityLevel: 'loose',
+      logLevel: 'fatal',
       themeVariables: {
         darkMode: true,
         background: '#0a0f1d',
@@ -64,9 +66,9 @@
       },
       flowchart: {
         curve: 'basis',
-        htmlLabels: true
-      },
-      securityLevel: 'loose'
+        htmlLabels: false,
+        useMaxWidth: true
+      }
     });
   </script>
 
@@ -107,20 +109,19 @@
       -moz-tab-size: 2;
     }
 
-    /* Interactive Mermaid Flowchart Node Enhancements */
-    .flowchart-node-card {
-      transition: all 0.25s ease;
-      cursor: pointer;
+    /* Fallback and node interaction styles */
+    .flowchart-step-card {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .flowchart-node-card:hover {
+    .flowchart-step-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px -4px rgba(6, 182, 212, 0.35);
     }
   </style>
 </head>
 
 <body class="bg-cyber-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-cyan-500/25 selection:text-cyan-300 antialiased overflow-x-hidden">
 
+  <!-- Fullscreen Login Gatekeeper (Strictly Username & Password) -->
   <div id="loginPortal" class="fixed inset-0 z-50 bg-cyber-950 flex flex-col items-center justify-center p-4 cyber-grid">
     <div class="absolute w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -top-10 -left-10"></div>
     <div class="absolute w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none -bottom-10 -right-10"></div>
@@ -196,10 +197,10 @@
     </div>
   </div>
 
+  <!-- Header Navigation & Live Sync Status -->
   <header class="sticky top-0 z-40 bg-cyber-900/90 backdrop-blur-md border-b border-cyber-700/60 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
       
-      <!-- Brand & Status -->
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-md shadow-cyan-500/20">
           <i class="fa-solid fa-diagram-project text-lg text-white"></i>
@@ -215,7 +216,7 @@
         </div>
       </div>
 
-      <!-- Navigation Tabs (Tasks & Flowchart, Sandbox Runner, Code Combiner, Code Vault) -->
+      <!-- Navigation Tabs -->
       <div class="hidden md:flex items-center p-1 bg-cyber-950 border border-cyber-700/80 rounded-xl">
         <button id="navTabTasks" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-cyan-500 text-slate-900 shadow-md">
           <i class="fa-solid fa-diagram-project"></i>
@@ -251,7 +252,7 @@
         </button>
       </div>
 
-      <!-- User Actions & Admin Hub Button -->
+      <!-- User Profile & Admin Access -->
       <div class="flex items-center gap-2">
         <button 
           id="btnOpenAiSettings"
@@ -269,7 +270,6 @@
           <span class="hidden sm:inline">Manage Team</span>
         </button>
 
-        <!-- Profile & Logout -->
         <div class="flex items-center gap-2 pl-2 border-l border-cyber-700">
           <div class="text-right hidden sm:block">
             <div id="headerUserName" class="text-xs font-bold text-slate-200">admin</div>
@@ -295,8 +295,10 @@
     <button id="mTabVault" class="px-3 py-1.5 rounded-lg text-slate-400 whitespace-nowrap">Code Vault</button>
   </div>
 
+  <!-- Main Viewports Container -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
 
+    <!-- TAB 1: Tasks, Flowchart, Metrics & Broadcast Feed -->
     <div id="viewOrchestrator" class="space-y-6">
       
       <!-- Top Overview Bar: Idea Synopsis, Progress, Decompose & Delete Idea -->
@@ -381,6 +383,7 @@
 
       </div>
 
+      <!-- Flowchart Canvas Section -->
       <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-5 shadow-xl space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-cyber-700/60">
           <div class="flex items-center gap-2.5">
@@ -394,7 +397,7 @@
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> AUTO-UPDATING
                 </span>
               </div>
-              <p class="text-[11px] text-slate-400">Flowchart updates its nodes, colors, and badges live when tasks transition</p>
+              <p class="text-[11px] text-slate-400">Flowchart nodes and states update live as tasks are worked on and completed</p>
             </div>
           </div>
 
@@ -422,11 +425,9 @@
           </div>
         </div>
 
-        <!-- Flowchart Canvas Viewport -->
-        <div id="flowchartViewport" class="w-full min-h-[280px] bg-cyber-950 rounded-xl border border-cyber-700/80 p-4 flex flex-col items-center justify-center overflow-x-auto relative shadow-inner">
-          <div id="mermaidFlowchartContainer" class="w-full flex justify-center py-2">
-            <!-- Mermaid SVG renders here -->
-          </div>
+        <!-- Flowchart Viewport -->
+        <div id="flowchartViewport" class="w-full min-h-[220px] bg-cyber-950 rounded-xl border border-cyber-700/80 p-4 flex flex-col items-center justify-center overflow-x-auto relative shadow-inner">
+          <div id="mermaidFlowchartContainer" class="w-full flex justify-center py-2"></div>
           <div id="flowchartEmptyNotice" class="hidden flex-col items-center justify-center p-8 text-center text-slate-500">
             <i class="fa-solid fa-diagram-project text-3xl mb-2 text-slate-600"></i>
             <p class="text-xs">No active flowchart pipeline. Click "Decompose Idea & Assign Roles" to generate the architecture graph!</p>
@@ -434,10 +435,10 @@
         </div>
       </div>
 
+      <!-- Kanban Columns and Broadcast Feed -->
       <div class="grid grid-cols-1 xl:grid-cols-4 gap-6 items-start">
         
         <div class="xl:col-span-3 space-y-4">
-          
           <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-cyber-900 border border-cyber-700/80 p-3 rounded-2xl">
             <div class="flex items-center gap-2 w-full sm:w-auto">
               <span class="text-xs font-bold text-slate-400">Filter By Hacker:</span>
@@ -504,10 +505,9 @@
               <div id="laneDone" class="space-y-3 flex-1 overflow-y-auto max-h-[620px] pr-1"></div>
             </div>
           </div>
-
         </div>
 
-        <!-- Right Side: Live Team Broadcast & Handoff Activity Stream -->
+        <!-- Right Side: Live Team Broadcast Feed & Scratchpad -->
         <div class="space-y-4">
           <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-4 shadow-sm flex flex-col h-[700px]">
             <div class="flex items-center justify-between pb-3 border-b border-cyber-700/60 mb-3">
@@ -542,9 +542,9 @@
         </div>
 
       </div>
-
     </div>
 
+    <!-- TAB 2: In-Browser Code Runner & Sandbox Testing -->
     <div id="viewRunner" class="hidden flex-col gap-6">
       <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-5 shadow-xl">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-cyber-700/60">
@@ -554,7 +554,7 @@
                 Interactive Sandbox Runner
               </span>
               <span id="pyodideStatusBadge" class="text-[10px] font-mono bg-cyber-950 px-2 py-0.5 rounded border border-cyber-700 text-slate-400">
-                Pyodide WASM: Ready
+                Pyodide WASM: Initializing...
               </span>
             </div>
             <h2 class="text-base sm:text-lg font-bold text-white mt-1">
@@ -600,10 +600,8 @@
         </div>
       </div>
 
-      <!-- Editor & Console Grid -->
+      <!-- Editor & Output Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        
-        <!-- Left: Code Input & Test Cases -->
         <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-4 flex flex-col space-y-3">
           <div class="flex items-center justify-between pb-2 border-b border-cyber-700/60 text-xs">
             <span class="font-bold text-slate-200 flex items-center gap-1.5">
@@ -633,7 +631,6 @@
           </div>
         </div>
 
-        <!-- Right: Execution Output & Console -->
         <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-4 flex flex-col space-y-3">
           <div class="flex items-center justify-between pb-2 border-b border-cyber-700/60 text-xs">
             <div class="flex items-center gap-2">
@@ -643,7 +640,6 @@
             <button id="btnClearRunnerOutput" class="text-[11px] text-slate-400 hover:text-white">Clear</button>
           </div>
 
-          <!-- HTML/JS Live Frame (Hidden when running pure python/node) -->
           <div id="runnerHtmlPreviewContainer" class="hidden h-48 rounded-xl overflow-hidden border border-cyber-700 bg-white">
             <iframe id="runnerSandboxedIframe" class="w-full h-full border-0" sandbox="allow-scripts"></iframe>
           </div>
@@ -653,7 +649,6 @@
             <div id="runnerTerminalOutput" class="whitespace-pre-wrap leading-relaxed text-emerald-400">Click "Run Code" to execute.</div>
           </div>
 
-          <!-- AI Review Box inside Runner -->
           <div id="runnerAiReviewCard" class="hidden bg-purple-950/40 border border-purple-800/80 rounded-xl p-3 text-xs space-y-2">
             <div class="flex items-center justify-between">
               <span class="font-bold text-purple-300 flex items-center gap-1.5">
@@ -663,14 +658,12 @@
             </div>
             <div id="runnerAiReviewText" class="text-slate-300 text-[11px] leading-relaxed max-h-36 overflow-y-auto whitespace-pre-wrap"></div>
           </div>
-
         </div>
-
       </div>
     </div>
 
+    <!-- TAB 3: Code Combiner & Final Project Merger -->
     <div id="viewCombiner" class="hidden flex-col gap-6">
-      
       <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-5 shadow-xl">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-cyber-700/60">
           <div>
@@ -717,10 +710,7 @@
         </div>
       </div>
 
-      <!-- Combiner Workspace Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        
-        <!-- Left Column: Completed Tasks / Submissions Available -->
         <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-4 space-y-3">
           <div class="flex items-center justify-between pb-2 border-b border-cyber-700/60 text-xs">
             <span class="font-bold text-slate-200 flex items-center gap-1.5">
@@ -728,13 +718,10 @@
             </span>
             <span class="text-[10px] text-slate-500 font-mono">Ready to merge</span>
           </div>
-
           <div id="combinerModulesList" class="space-y-2 max-h-[560px] overflow-y-auto pr-1"></div>
         </div>
 
-        <!-- Right 2 Columns: Merged Output & Live Render -->
         <div class="lg:col-span-2 space-y-4">
-          
           <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-4 flex flex-col space-y-3">
             <div class="flex items-center justify-between pb-2 border-b border-cyber-700/60 text-xs">
               <div class="flex items-center gap-2">
@@ -747,7 +734,6 @@
               </button>
             </div>
 
-            <!-- Merged Output Textarea -->
             <textarea 
               id="mergedProjectOutput" 
               rows="15" 
@@ -756,7 +742,6 @@
               spellcheck="false"
             ></textarea>
 
-            <!-- Embedded Live Preview Sandbox -->
             <div id="mergedLivePreviewCard" class="hidden pt-3 border-t border-cyber-700/70 space-y-2">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-bold text-slate-300 flex items-center gap-1.5">
@@ -768,18 +753,14 @@
                 <iframe id="mergedPreviewIframe" class="w-full h-full border-0" sandbox="allow-scripts"></iframe>
               </div>
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
 
+    <!-- TAB 4: Code Vault Repository -->
     <div id="viewVault" class="hidden flex-col lg:flex-row gap-6">
       <aside class="w-full lg:w-72 flex-shrink-0 space-y-4">
-        
         <button 
           id="btnOpenPostSnippet"
           class="w-full py-3 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-lg shadow-cyan-500/20 transition flex items-center justify-center gap-2 transform active:scale-95"
@@ -820,11 +801,9 @@
           </div>
           <div id="languageFilterList" class="space-y-0.5 max-h-48 overflow-y-auto pr-1"></div>
         </div>
-
       </aside>
 
       <section class="flex-1 flex flex-col space-y-4 min-w-0">
-        
         <div class="bg-cyber-900 border border-cyber-700/80 p-3 rounded-2xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
           <div class="relative w-full sm:flex-1">
             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
@@ -863,17 +842,14 @@
             <i class="fa-solid fa-plus mr-1"></i> Post New Snippet
           </button>
         </div>
-
       </section>
     </div>
 
   </main>
 
-
   <!-- MODAL: AI Idea Decomposer & Role Assignment -->
   <div id="ideaDecomposeModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-      
       <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-indigo-600 text-white flex items-center justify-center text-sm font-bold">
@@ -953,7 +929,6 @@
             <span>Generate Tasks, Flowchart & Roles</span>
           </button>
         </div>
-
       </form>
     </div>
   </div>
@@ -988,7 +963,6 @@
   <!-- MODAL: Task Details & Code Submission Completion -->
   <div id="taskDetailModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-      
       <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
         <div class="flex items-center gap-2.5">
           <span id="taskModalStatusBadge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-cyan-950 text-cyan-400 border border-cyan-800">
@@ -1030,7 +1004,6 @@
           <textarea id="taskDetailDescInput" rows="4" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-cyan-400 font-mono"></textarea>
         </div>
 
-        <!-- Task Code Submission (for completion and combination) -->
         <div class="bg-cyber-950 border border-cyber-700/80 rounded-xl p-3 space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
@@ -1048,7 +1021,6 @@
           ></textarea>
         </div>
 
-        <!-- Subtasks Checkbox List -->
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <span class="text-xs font-bold text-slate-300">Milestone Checkpoints</span>
@@ -1065,16 +1037,13 @@
             Save & Update Flowchart
           </button>
         </div>
-
       </div>
-
     </div>
   </div>
 
   <!-- MODAL: Admin User Management (Admin Only) -->
   <div id="adminUserModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-      
       <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm font-bold">
@@ -1091,7 +1060,6 @@
       </div>
 
       <div class="p-6 overflow-y-auto space-y-6">
-        
         <div class="bg-cyber-950/70 border border-cyber-700/80 p-4 rounded-xl">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 mb-3 flex items-center gap-2">
             <i class="fa-solid fa-user-plus text-cyan-400"></i> Provision New Hacker Account
@@ -1171,7 +1139,6 @@
             </table>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -1179,7 +1146,6 @@
   <!-- MODAL: AI Settings Configuration -->
   <div id="aiSettingsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-      
       <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm font-bold">
@@ -1224,7 +1190,6 @@
   <!-- MODAL: Post Code Snippet -->
   <div id="snippetModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-      
       <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/60">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-sm">
@@ -1348,7 +1313,6 @@
   <!-- MODAL: Inspect Snippet & Discussion -->
   <div id="inspectModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-      
       <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
         <div class="flex items-center gap-3">
           <span id="inspectLangBadge" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase bg-cyan-950 text-cyan-400 border border-cyan-800">
@@ -1415,14 +1379,12 @@
           </form>
         </div>
       </div>
-
     </div>
   </div>
 
   <!-- MODAL: Sprint Timer Controls -->
   <div id="timerSettingsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-      
       <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-sm font-bold">
@@ -1518,12 +1480,11 @@
             <span>Set Custom Duration & Reset</span>
           </button>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- Toast Container -->
+  <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script type="module">
@@ -1533,14 +1494,13 @@
       getDatabase, 
       ref, 
       set, 
-      get, 
       onValue, 
       push, 
       remove, 
       update 
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-    // Firebase Credentials
+    // User's provided Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyA4Hxj1BVv1bScRyUa-Vs9Wuv4N8b5RmpE",
       authDomain: "devvault-114f3.firebaseapp.com",
@@ -1584,7 +1544,7 @@
       createdAt: Date.now()
     };
 
-    // Global State
+    // State Variables
     let users = [DEFAULT_ADMIN];
     let currentUser = null;
     let snippets = [];
@@ -1610,7 +1570,7 @@
       deliverables: "Working interactive demo with live auth and role dashboard"
     };
 
-    // DOM Elements
+    // DOM References
     const loginPortal = document.getElementById('loginPortal');
     const authPortalForm = document.getElementById('authPortalForm');
     const loginUsername = document.getElementById('loginUsername');
@@ -1624,7 +1584,6 @@
     const adminManageBtn = document.getElementById('adminManageBtn');
     const btnLogout = document.getElementById('btnLogout');
 
-    // Navigation Tabs
     const navTabTasks = document.getElementById('navTabTasks');
     const navTabRunner = document.getElementById('navTabRunner');
     const navTabCombiner = document.getElementById('navTabCombiner');
@@ -1640,20 +1599,17 @@
     const viewCombiner = document.getElementById('viewCombiner');
     const viewVault = document.getElementById('viewVault');
 
-    // Modals
     const btnOpenIdeaModal = document.getElementById('btnOpenIdeaModal');
     const ideaDecomposeModal = document.getElementById('ideaDecomposeModal');
     const btnCloseIdeaModal = document.getElementById('btnCloseIdeaModal');
     const btnCancelIdea = document.getElementById('btnCancelIdea');
     const ideaDecomposeForm = document.getElementById('ideaDecomposeForm');
 
-    // Delete Idea Modal
     const btnDeleteIdeaBlueprint = document.getElementById('btnDeleteIdeaBlueprint');
     const deleteIdeaModal = document.getElementById('deleteIdeaModal');
     const btnCancelDeleteIdea = document.getElementById('btnCancelDeleteIdea');
     const btnConfirmDeleteIdea = document.getElementById('btnConfirmDeleteIdea');
 
-    // Flowchart Elements
     const mermaidFlowchartContainer = document.getElementById('mermaidFlowchartContainer');
     const flowchartEmptyNotice = document.getElementById('flowchartEmptyNotice');
     const btnRefreshFlowchart = document.getElementById('btnRefreshFlowchart');
@@ -1667,13 +1623,11 @@
     const taskHackerFilter = document.getElementById('taskHackerFilter');
     const btnSendTaskCodeToRunner = document.getElementById('btnSendTaskCodeToRunner');
 
-    // Broadcasts & Scratchpad
     const quickBroadcastInput = document.getElementById('quickBroadcastInput');
     const btnSendBroadcast = document.getElementById('btnSendBroadcast');
     const miniScratchpad = document.getElementById('miniScratchpad');
     const btnCopyMiniScratchpad = document.getElementById('btnCopyMiniScratchpad');
 
-    // Runner Elements
     const runnerRuntimeSelect = document.getElementById('runnerRuntimeSelect');
     const btnExecuteSandboxCode = document.getElementById('btnExecuteSandboxCode');
     const btnAiReviewRunnerCode = document.getElementById('btnAiReviewRunnerCode');
@@ -1689,7 +1643,6 @@
     const runnerAiReviewText = document.getElementById('runnerAiReviewText');
     const btnCloseRunnerAiReview = document.getElementById('btnCloseRunnerAiReview');
 
-    // Combiner Elements
     const btnAutoMergeProject = document.getElementById('btnAutoMergeProject');
     const btnCopyMergedProject = document.getElementById('btnCopyMergedProject');
     const btnDownloadMergedProject = document.getElementById('btnDownloadMergedProject');
@@ -1701,14 +1654,12 @@
     const btnCloseMergedPreview = document.getElementById('btnCloseMergedPreview');
     const mergedPreviewIframe = document.getElementById('mergedPreviewIframe');
 
-    // AI Settings Elements
     const btnOpenAiSettings = document.getElementById('btnOpenAiSettings');
     const aiSettingsModal = document.getElementById('aiSettingsModal');
     const btnCloseAiSettings = document.getElementById('btnCloseAiSettings');
     const geminiApiKeyInput = document.getElementById('geminiApiKeyInput');
     const btnSaveAiKey = document.getElementById('btnSaveAiKey');
 
-    // Vault Elements
     const btnOpenPostSnippet = document.getElementById('btnOpenPostSnippet');
     const btnEmptyPostSnippet = document.getElementById('btnEmptyPostSnippet');
     const snippetModal = document.getElementById('snippetModal');
@@ -1724,7 +1675,6 @@
     const inspectTestBtn = document.getElementById('inspectTestBtn');
     const inspectCommentForm = document.getElementById('inspectCommentForm');
 
-    // Admin & Timer Elements
     const adminUserModal = document.getElementById('adminUserModal');
     const btnCloseAdminModal = document.getElementById('btnCloseAdminModal');
     const createUserForm = document.getElementById('createUserForm');
@@ -1739,7 +1689,7 @@
     const categoryFilter = document.getElementById('categoryFilter');
     const btnClearLanguageFilter = document.getElementById('btnClearLanguageFilter');
 
-    // Event Bindings
+    // Attach Event Listeners
     btnTogglePw.addEventListener('click', togglePasswordVisibility);
     authPortalForm.addEventListener('submit', handleLoginSubmit);
     btnLogout.addEventListener('click', logoutPortal);
@@ -1770,7 +1720,7 @@
     btnConfirmDeleteIdea.addEventListener('click', executeDeleteIdeaBlueprint);
 
     btnRefreshFlowchart.addEventListener('click', () => {
-      renderInteractiveFlowchart();
+      renderArchitectureFlowchart();
       showToast('Flowchart refreshed!', 'info');
     });
 
@@ -1790,7 +1740,6 @@
     btnCopyMiniScratchpad.addEventListener('click', copyScratchpad);
     miniScratchpad.addEventListener('input', (e) => syncScratchpad(e.target.value));
 
-    // Runner Listeners
     btnExecuteSandboxCode.addEventListener('click', executeRunnerCode);
     btnClearRunnerOutput.addEventListener('click', () => {
       runnerTerminalOutput.textContent = '// Output cleared.\n';
@@ -1800,14 +1749,12 @@
     btnAiReviewRunnerCode.addEventListener('click', () => runAiReview(runnerSourceCode.value, 'runner'));
     btnCloseRunnerAiReview.addEventListener('click', () => runnerAiReviewCard.classList.add('hidden'));
 
-    // Combiner Listeners
     btnAutoMergeProject.addEventListener('click', mergeCompletedProjectModules);
     btnCopyMergedProject.addEventListener('click', copyMergedCode);
     btnDownloadMergedProject.addEventListener('click', downloadMergedCode);
     btnRunMergedPreview.addEventListener('click', renderMergedPreviewInIframe);
     btnCloseMergedPreview.addEventListener('click', () => mergedLivePreviewCard.classList.add('hidden'));
 
-    // AI Settings Listeners
     btnOpenAiSettings.addEventListener('click', () => {
       geminiApiKeyInput.value = geminiApiKey;
       aiSettingsModal.classList.remove('hidden');
@@ -1834,7 +1781,6 @@
       runAiReview(code, 'modal');
     });
 
-    // Vault Listeners
     btnOpenPostSnippet.addEventListener('click', openSnippetModal);
     btnEmptyPostSnippet.addEventListener('click', openSnippetModal);
     btnCloseSnippetModal.addEventListener('click', closeSnippetModal);
@@ -1856,7 +1802,6 @@
     });
     inspectCommentForm.addEventListener('submit', addCommentToCurrentInspect);
 
-    // Admin & Timer Listeners
     adminManageBtn.addEventListener('click', openAdminUsersModal);
     btnCloseAdminModal.addEventListener('click', closeAdminUsersModal);
     createUserForm.addEventListener('submit', handleCreateUser);
@@ -1892,20 +1837,20 @@
       document.getElementById(`scopeBtn-${scope}`).addEventListener('click', () => setScope(scope));
     });
 
-    // Start App & Sync
+    // Initialize App & Services
     setupTabIndentation();
     initSession();
     initSprintTimer();
     startFirebaseSync();
     preloadPyodide();
 
+    // Firebase Data Synchronization
     function startFirebaseSync() {
       if (!db) {
         initLocalFallback();
         return;
       }
 
-      // Sync Users
       onValue(ref(db, 'team_users'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1924,7 +1869,6 @@
         renderKanbanBoard();
       });
 
-      // Sync Project Info
       onValue(ref(db, 'project_info'), (snapshot) => {
         const data = snapshot.val();
         if (data && data.title) {
@@ -1943,7 +1887,6 @@
         }
       });
 
-      // Sync Tasks (Updates Kanban, Flowchart, Runner task list, and Combiner)
       onValue(ref(db, 'tasks'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1959,10 +1902,9 @@
         renderKanbanBoard();
         populateRunnerTaskSelect();
         renderCombinerModulesList();
-        renderInteractiveFlowchart();
+        renderArchitectureFlowchart();
       });
 
-      // Sync Broadcasts
       onValue(ref(db, 'broadcasts'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1977,7 +1919,6 @@
         renderBroadcastsFeed();
       });
 
-      // Sync Snippets
       onValue(ref(db, 'snippets'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1998,7 +1939,6 @@
         }
       });
 
-      // Sync Scratchpad
       onValue(ref(db, 'scratchpad'), (snapshot) => {
         const data = snapshot.val();
         if (data && typeof data.content === 'string') {
@@ -2008,7 +1948,6 @@
         }
       });
 
-      // Sync Sprint Timer
       onValue(ref(db, 'sprint_timer'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -2025,7 +1964,7 @@
       renderAdminUsersTable();
       renderKanbanBoard();
       renderVaultUI();
-      renderInteractiveFlowchart();
+      renderArchitectureFlowchart();
     }
 
     function initSession() {
@@ -2078,7 +2017,7 @@
       updateHeaderUser();
       renderKanbanBoard();
       renderVaultUI();
-      renderInteractiveFlowchart();
+      renderArchitectureFlowchart();
       showToast(`Welcome currentUser.fullName({currentUser.role})`, 'success');
     }
 
@@ -2107,7 +2046,6 @@
 
     function switchTab(tab) {
       activeTab = tab;
-      
       const tabs = [
         { id: 'tasks', nav: navTabTasks, m: mTabTasks, view: viewOrchestrator },
         { id: 'runner', nav: navTabRunner, m: mTabRunner, view: viewRunner },
@@ -2122,7 +2060,7 @@
           t.view.classList.remove('hidden');
           if (t.id === 'vault') t.view.classList.add('flex');
           if (t.id === 'combiner') renderCombinerModulesList();
-          if (t.id === 'tasks') renderInteractiveFlowchart();
+          if (t.id === 'tasks') renderArchitectureFlowchart();
         } else {
           t.nav.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5';
           t.m.className = 'px-3 py-1.5 rounded-lg text-slate-400 whitespace-nowrap';
@@ -2132,17 +2070,21 @@
       });
     }
 
-    /**
-     * DYNAMIC FLOWCHART ENGINE
-     * Dynamically builds a Mermaid graph definition based on registered tasks.
-     * Nodes automatically style themselves with colors, icons, and status labels:
-     * - 'todo': Slate gray border & background
-     * - 'in_progress': Amber border with glowing pulse indicator
-     * - 'review': Sky blue border
-     * - 'done': Emerald green border with checkmark icon
-     * Nodes are clickable, opening their respective task modal.
-     */
-    async function renderInteractiveFlowchart() {
+    // Sanitizes strings to prevent syntax conflicts and the Mermaid bomb error
+    function safeMermaidText(str) {
+      if (!str) return 'Untitled';
+      return String(str)
+        .replace(/["'\[\]\(\)\{\}\<\>\:\;\#\/\\]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 30);
+    }
+
+    function safeNodeId(id) {
+      return 'node_' + String(id).replace(/[^a-zA-Z0-9_]/g, '_');
+    }
+
+    async function renderArchitectureFlowchart() {
       const container = mermaidFlowchartContainer;
       const emptyNotice = flowchartEmptyNotice;
 
@@ -2156,118 +2098,89 @@
       emptyNotice.classList.add('hidden');
       emptyNotice.classList.remove('flex');
 
-      // Group tasks into logical architectural pipeline tiers
-      const tiers = {
-        ingestion: [],
-        data: [],
-        core: [],
-        ui: [],
-        devops: []
-      };
+      let chartDef = 'flowchart LR\n';
+      chartDef += '  classDef todo fill:#10172a,stroke:#475569,stroke-width:1.5px,color:#94a3b8;\n';
+      chartDef += '  classDef inprogress fill:#1c1917,stroke:#f59e0b,stroke-width:2.5px,color:#fbbf24;\n';
+      chartDef += '  classDef review fill:#0c4a6e,stroke:#38bdf8,stroke-width:2px,color:#bae6fd;\n';
+      chartDef += '  classDef done fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#6ee7b7;\n';
 
-      tasks.forEach((t, i) => {
-        const sec = (t.section || '').toLowerCase();
-        if (sec.includes('data') || sec.includes('schema')) tiers.data.push({ ...t, index: i });
-        else if (sec.includes('ai') || sec.includes('back') || sec.includes('api')) tiers.core.push({ ...t, index: i });
-        else if (sec.includes('front') || sec.includes('ui') || sec.includes('client')) tiers.ui.push({ ...t, index: i });
-        else if (sec.includes('devops') || sec.includes('qa') || sec.includes('test')) tiers.devops.push({ ...t, index: i });
-        else tiers.core.push({ ...t, index: i });
+      tasks.forEach((task, idx) => {
+        const nId = safeNodeId(task.id || idx);
+        const label = safeMermaidText(task.title || `Task ${idx + 1}`);
+        const st = (task.status || 'todo').toLowerCase().replace(/\s+/g, '');
+        
+        let badge = '[TODO]';
+        let cls = 'todo';
+        if (st === 'in_progress' || st === 'inprogress') { badge = '[PROGRESS]'; cls = 'inprogress'; }
+        else if (st === 'review' || st === 'testing') { badge = '[REVIEW]'; cls = 'review'; }
+        else if (st === 'done') { badge = '[DONE]'; cls = 'done'; }
+
+        chartDef += `  nId["{badge} ${label}"]\n`;
+        chartDef += `  class ${nId} ${cls};\n`;
       });
 
-      // Construct Mermaid flowchart syntax
-      let graph = `graph LR\n`;
-      graph += `  classDef todoClass fill:#10172a,stroke:#475569,stroke-width:2px,color:#94a3b8,rx:10,ry:10;\n`;
-      graph += `  classDef progressClass fill:#1c1917,stroke:#f59e0b,stroke-width:3px,color:#fbbf24,rx:10,ry:10;\n`;
-      graph += `  classDef reviewClass fill:#0c4a6e,stroke:#38bdf8,stroke-width:2px,color:#e0f2fe,rx:10,ry:10;\n`;
-      graph += `  classDef doneClass fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#a7f3d0,rx:10,ry:10;\n`;
-
-      // Helper to format node labels with status badge and hacker role
-      const nodeLabels = {};
-      tasks.forEach((t, idx) => {
-        const nodeId = `N_${idx}`;
-        let statusBadge = '[TO DO]';
-        let statusClass = 'todoClass';
-        if (t.status === 'in_progress') {
-          statusBadge = '⚡ [IN PROGRESS]';
-          statusClass = 'progressClass';
-        } else if (t.status === 'review') {
-          statusBadge = '🔍 [IN REVIEW]';
-          statusClass = 'reviewClass';
-        } else if (t.status === 'done') {
-          statusBadge = '✓ [DONE]';
-          statusClass = 'doneClass';
-        }
-
-        const safeTitle = (t.title || 'Task').replace(/["\n\(\)\[\]]/g, ' ').substring(0, 24);
-        const safeHacker = (t.assigneeName || t.assigneeUsername || 'Hacker').replace(/["\n]/g, ' ');
-        const safeRole = (t.assigneeRole || 'Hacker').replace(/["\n]/g, ' ');
-
-        graph += `  nodeId["<divstyle='text-align:center;'><b>{safeTitle}</b><br/><span style='font-size:10px;'>👤 safeHacker({safeRole})</span><br/><span style='font-size:9px;font-weight:bold;'>statusBadge</span></div>"]:::{statusClass}\n`;
-        graph += `  click ${nodeId} window._flowchartClickTask_${idx} "Inspect Task"\n`;
-
-        // Register window callback for interactive node click
-        window[`_flowchartClickTask_${idx}`] = () => {
-          window._openTaskDetail(t.id);
-        };
-      });
-
-      // Connect pipeline dependencies across tiers
-      // Step A: Ingestion/Data -> Core APIs & AI
-      if (tiers.data.length > 0 && tiers.core.length > 0) {
-        tiers.data.forEach(d => {
-          tiers.core.forEach(c => {
-            graph += `  N_${d.index} -.->|Provides Schema| N_${c.index}\n`;
-          });
-        });
-      }
-
-      // Step B: Core APIs & AI -> Frontend / UI
-      if (tiers.core.length > 0 && tiers.ui.length > 0) {
-        tiers.core.forEach(c => {
-          tiers.ui.forEach(u => {
-            graph += `  N_${c.index} -->|REST / Stream| N_${u.index}\n`;
-          });
-        });
-      }
-
-      // Step C: Frontend / UI -> DevOps & QA
-      if (tiers.ui.length > 0 && tiers.devops.length > 0) {
-        tiers.ui.forEach(u => {
-          tiers.devops.forEach(dev => {
-            graph += `  N_${u.index} -->|E2E Test| N_${dev.index}\n`;
-          });
-        });
-      }
-
-      // Fallback: If no tiers connected (e.g. all tasks in core), connect sequentially
-      if (tiers.data.length === 0 && tiers.ui.length === 0 && tasks.length > 1) {
-        for (let i = 0; i < tasks.length - 1; i++) {
-          graph += `  N_${i} --> N_${i+1}\n`;
-        }
+      // Chain nodes sequentially across the architecture pipeline
+      for (let i = 0; i < tasks.length - 1; i++) {
+        const fromId = safeNodeId(tasks[i].id || i);
+        const toId = safeNodeId(tasks[i + 1].id || (i + 1));
+        chartDef += `  ${fromId} --> ${toId}\n`;
       }
 
       try {
-        const renderId = 'mermaidSvg_' + Date.now();
-        const { svg } = await mermaid.render(renderId, graph);
+        const renderId = 'mermaid-svg-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+        const { svg } = await mermaid.render(renderId, chartDef);
         container.innerHTML = svg;
 
-        // Enhance rendered SVG nodes with cursor pointer and hover effects
-        const svgEl = container.querySelector('svg');
-        if (svgEl) {
-          svgEl.classList.add('w-full', 'max-w-4xl');
-          svgEl.querySelectorAll('.node').forEach(node => {
-            node.style.cursor = 'pointer';
-            node.setAttribute('title', 'Click to inspect task & submit code');
-          });
-        }
+        tasks.forEach((task, idx) => {
+          const nId = safeNodeId(task.id || idx);
+          const elem = container.querySelector(`[id*="${nId}"]`);
+          if (elem) {
+            elem.style.cursor = 'pointer';
+            elem.setAttribute('title', 'Click to inspect task & submit code');
+            elem.onclick = () => window._openTaskDetail(task.id);
+          }
+        });
       } catch (err) {
-        console.warn('Mermaid render error:', err);
-        container.innerHTML = `
-          <div class="text-xs text-amber-400 p-4 font-mono bg-cyber-900 border border-amber-800 rounded-xl">
-            <i class="fa-solid fa-triangle-exclamation mr-1"></i> Flowchart auto-updating. Rendering pipeline...
-          </div>
-        `;
+        console.warn("Mermaid error bypassed. Rendering fallback architecture pipeline:", err);
+        renderNativeFlowchartFallback(tasks, container);
       }
+    }
+
+    // Interactive fallback architecture pipeline if Mermaid encounters formatting conflicts
+    function renderNativeFlowchartFallback(taskList, container) {
+      const statusColors = {
+        todo: 'border-slate-700 bg-slate-900/80 text-slate-400',
+        in_progress: 'border-amber-500/80 bg-amber-950/30 text-amber-300 ring-1 ring-amber-500/30',
+        inprogress: 'border-amber-500/80 bg-amber-950/30 text-amber-300 ring-1 ring-amber-500/30',
+        review: 'border-sky-500/80 bg-sky-950/30 text-sky-300 ring-1 ring-sky-500/30',
+        testing: 'border-sky-500/80 bg-sky-950/30 text-sky-300 ring-1 ring-sky-500/30',
+        done: 'border-emerald-500/80 bg-emerald-950/30 text-emerald-300 ring-1 ring-emerald-500/30'
+      };
+
+      container.innerHTML = `
+        <div class="flex items-center gap-3 overflow-x-auto p-4 w-full justify-start py-4">
+          ${taskList.map((t, idx) => {
+            const st = (t.status || 'todo').toLowerCase().replace(/\s+/g, '');
+            const style = statusColors[st] || statusColors.todo;
+            const arrow = idx < taskList.length - 1 ? '<i class="fa-solid fa-arrow-right text-slate-600 px-1 shrink-0"></i>' : '';
+            return `
+              <div onclick="window._openTaskDetail('${t.id}')" 
+                   class="flowchart-step-card shrink-0 p-3.5 rounded-xl border ${style} cursor-pointer shadow-md min-w-[180px] max-w-[230px]">
+                <div class="flex items-center justify-between text-[10px] font-semibold uppercase tracking-wider mb-1 opacity-80">
+                  <span>${escapeHtml(t.assigneeRole || t.section || 'Hacker')}</span>
+                  <span>${st === 'done' ? '✓ DONE' : st.includes('progress') ? '⚡ ACTIVE' : '• TODO'}</span>
+                </div>
+                <p class="font-bold text-xs text-slate-200 line-clamp-1">${escapeHtml(t.title || 'Untitled')}</p>
+                <div class="text-[10px] text-cyan-400 mt-1 flex items-center gap-1">
+                  <i class="fa-solid fa-user text-[9px]"></i>
+                  <span>${escapeHtml(t.assigneeName || t.assigneeUsername || 'Squad')}</span>
+                </div>
+              </div>
+              ${arrow}
+            `;
+          }).join('')}
+        </div>
+      `;
     }
 
     function openIdeaModal() {
@@ -2322,7 +2235,6 @@
       projectDetails = { title, description: desc, techStack, deliverables };
       if (db) set(ref(db, 'project_info'), projectDetails);
 
-      // GUARANTEED WORK DIVISION: Guarantees 100% of hackers receive tasks
       const generatedCards = generateMilestoneTasks(projectDetails, eligibleHackers);
 
       if (db) {
@@ -2453,7 +2365,6 @@
             ]
           };
         } else {
-          // Full-Stack Lead or Generalist
           if (subIndex === 1) {
             return {
               title: `Full-Stack Integration: Client-Server Wire & Middleware`,
@@ -2562,7 +2473,7 @@
       } else {
         tasks = [];
         renderKanbanBoard();
-        renderInteractiveFlowchart();
+        renderArchitectureFlowchart();
       }
 
       deleteIdeaModal.classList.add('hidden');
@@ -2708,7 +2619,7 @@
         });
       } else {
         renderKanbanBoard();
-        renderInteractiveFlowchart();
+        renderArchitectureFlowchart();
       }
 
       showToast(`Task & flowchart updated: ${newStatus.toUpperCase()}`, 'info');
@@ -2925,7 +2836,7 @@
       } else {
         tasks = tasks.filter(t => t.id !== taskId);
         renderKanbanBoard();
-        renderInteractiveFlowchart();
+        renderArchitectureFlowchart();
       }
       closeTaskModal();
       showToast('Task deleted from board & flowchart', 'info');
@@ -3122,7 +3033,7 @@
       }
 
       renderKanbanBoard();
-      renderInteractiveFlowchart();
+      renderArchitectureFlowchart();
       showToast(`Task "${task.title}" marked as COMPLETED! Flowchart updated.`, 'success');
       switchTab('tasks');
     }
@@ -4175,3 +4086,4 @@ ${code}
   </script>
 </body>
 </html>
+
