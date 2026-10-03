@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DevVault </title>
+  <title>DevVault // Hackathon Team Code Hub</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -71,6 +71,7 @@
       padding: 1.15rem !important;
       font-size: 0.83rem !important;
       line-height: 1.6 !important;
+      border-radius: 0.5rem;
     }
     
     code[class*="language-"] {
@@ -86,13 +87,41 @@
 
 <body class="bg-cyber-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-cyan-500/25 selection:text-cyan-300 antialiased overflow-x-hidden">
 
+  <!-- Realtime Task Assignment Alert (Dark Mode with Light Green Highlights) -->
+  <div id="activeTaskBanner" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-2xl hidden flex-col gap-2 pointer-events-auto">
+    <div class="bg-[#060913] border-2 border-emerald-400/80 rounded-xl p-5 shadow-[0_0_25px_rgba(52,211,153,0.2)] transform transition-all">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-widest font-mono">New Sprint Task Assigned</h3>
+        </div>
+        <button id="btnDismissTask" class="text-emerald-400/50 hover:text-emerald-400 transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div class="space-y-3">
+        <p id="taskDescription" class="text-sm text-slate-200 leading-relaxed font-mono">
+          // Task details will stream here...
+        </p>
+        <div class="bg-[#0c1222] border border-emerald-900/50 p-3 rounded-lg">
+          <h4 class="text-[10px] uppercase text-emerald-500 font-bold mb-1">Required Output Format</h4>
+          <code id="taskOutputFormat" class="text-xs text-emerald-300 font-mono">JSON / Component layout expected</code>
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end">
+        <button id="btnAcceptTask" class="px-5 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400 text-emerald-400 font-bold rounded-lg text-xs transition active:scale-95 flex items-center gap-2">
+          <i class="fa-solid fa-check"></i> Acknowledge & Start
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Portal -->
   <div id="loginPortal" class="fixed inset-0 z-50 bg-cyber-950 flex flex-col items-center justify-center p-4 cyber-grid">
     <div class="absolute w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -top-10 -left-10"></div>
     <div class="absolute w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none -bottom-10 -right-10"></div>
 
     <div class="relative w-full max-w-md bg-cyber-900/95 border border-cyber-700/80 rounded-2xl p-6 sm:p-8 backdrop-blur-xl glow-cyan shadow-2xl">
-      
-      <!-- Terminal Header -->
       <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-cyber-700/60 text-xs font-mono text-slate-400">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
@@ -106,7 +135,6 @@
         </div>
       </div>
 
-      <!-- App Title -->
       <div class="text-center mb-6">
         <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 shadow-md shadow-cyan-500/20 mb-3 text-white text-xl">
           <i class="fa-solid fa-code-commit"></i>
@@ -115,64 +143,35 @@
         <p class="text-xs text-slate-400 mt-1">Sign in with your team credentials to access snippets</p>
       </div>
 
-      <!-- Login Form (Only Username & Password) -->
       <form id="authPortalForm" class="space-y-4">
-        
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1.5">
             <i class="fa-solid fa-user text-cyan-400 mr-1.5"></i> Username
           </label>
-          <input 
-            type="text" 
-            id="loginUsername" 
-            required 
-            autocomplete="username"
-            placeholder="Enter username" 
-            class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition"
-          >
+          <input type="text" id="loginUsername" required autocomplete="username" placeholder="Enter username" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
         </div>
-
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1.5">
             <i class="fa-solid fa-key text-amber-400 mr-1.5"></i> Password
           </label>
           <div class="relative">
-            <input 
-              type="password" 
-              id="loginPassword" 
-              required 
-              autocomplete="current-password"
-              placeholder="Enter password" 
-              class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2.5 pr-10 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition"
-            >
-            <button 
-              type="button" 
-              id="btnTogglePw"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs focus:outline-none"
-            >
+            <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="Enter password" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2.5 pr-10 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
+            <button type="button" id="btnTogglePw" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs focus:outline-none">
               <i id="pwEyeIcon" class="fa-solid fa-eye"></i>
             </button>
           </div>
         </div>
-
-        <!-- Submit Button -->
-        <button 
-          type="submit" 
-          class="w-full py-2.5 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-lg shadow-cyan-500/25 transition transform active:scale-98 flex items-center justify-center gap-2 pt-3 pb-3"
-        >
+        <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-lg shadow-cyan-500/25 transition transform active:scale-98 flex items-center justify-center gap-2 pt-3 pb-3">
           <i class="fa-solid fa-arrow-right-to-bracket"></i>
           <span>Sign In to Vault</span>
         </button>
-
       </form>
-
     </div>
   </div>
 
+  <!-- Header -->
   <header class="sticky top-0 z-40 bg-cyber-900/90 backdrop-blur-md border-b border-cyber-700/60 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-      
-      <!-- Brand & Team Info -->
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-md shadow-cyan-500/20">
           <i class="fa-solid fa-laptop-code text-xl text-white"></i>
@@ -188,76 +187,57 @@
         </div>
       </div>
 
-      <!-- Live Sprint Countdown Clock with Settings trigger -->
       <div class="hidden md:flex items-center gap-2 bg-cyber-950/80 border border-cyber-700/80 pl-3.5 pr-1.5 py-1 rounded-full shadow-inner text-xs">
         <span id="timerStatusDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
         <span class="font-mono text-cyan-400 font-bold">HACK SPRINT:</span>
         <span id="hackCountdown" class="font-mono font-bold text-slate-200">23h 59m 59s</span>
-        <button 
-          id="btnOpenTimerSettings"
-          title="Configure / Reset Sprint Timer" 
-          class="ml-1 p-1 px-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyber-800 rounded-full transition flex items-center justify-center text-xs"
-        >
+        <button id="btnOpenTimerSettings" title="Configure / Reset Sprint Timer" class="ml-1 p-1 px-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyber-800 rounded-full transition flex items-center justify-center text-xs">
           <i class="fa-solid fa-gear"></i>
         </button>
       </div>
 
-      <!-- Active User Actions & Admin Hub Button -->
       <div class="flex items-center gap-2 sm:gap-3">
-        
-        <!-- Super Admin Only: User Management Button -->
-        <button 
-          id="adminManageBtn" 
-          class="hidden items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-lg transition"
-        >
+        <!-- Architect Button for Admins -->
+        <button id="btnOpenArchitect" class="hidden items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 rounded-lg transition">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span class="hidden sm:inline">AI Architect</span>
+        </button>
+
+        <button id="adminManageBtn" class="hidden items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-lg transition">
           <i class="fa-solid fa-users-gear"></i>
           <span class="hidden sm:inline">Manage Users</span>
         </button>
 
-        <button 
-          id="btnOpenPostSnippet"
-          class="flex items-center gap-2 px-3.5 py-1.5 text-xs sm:text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-lg shadow-md shadow-cyan-500/20 transition transform active:scale-95"
-        >
+        <button id="btnOpenPostSnippet" class="flex items-center gap-2 px-3.5 py-1.5 text-xs sm:text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-lg shadow-md shadow-cyan-500/20 transition transform active:scale-95">
           <i class="fa-solid fa-plus"></i>
           <span class="hidden sm:inline">Post Snippet</span>
         </button>
 
-        <!-- Profile & Logout -->
         <div class="flex items-center gap-2.5 pl-2 border-l border-cyber-700">
           <div class="text-right hidden sm:block">
             <div id="headerUserName" class="text-xs font-bold text-slate-200">admin</div>
             <div id="headerUserRole" class="text-[10px] text-cyan-400 font-mono">Super Admin</div>
           </div>
-          <div id="headerUserAvatar" class="w-9 h-9 rounded-xl bg-cyber-800 border border-cyan-500/40 flex items-center justify-center font-bold text-cyan-400 font-mono text-xs">
-            AD
-          </div>
+          <div id="headerUserAvatar" class="w-9 h-9 rounded-xl bg-cyber-800 border border-cyan-500/40 flex items-center justify-center font-bold text-cyan-400 font-mono text-xs">AD</div>
           <button id="btnLogout" title="Sign Out" class="p-2 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-cyber-800 transition">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </button>
         </div>
-
       </div>
-
     </div>
   </header>
 
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6">
-
-    <!-- Left Controls, Scope & Scratchpad -->
+    <!-- Left Sidebar -->
     <aside class="w-full lg:w-72 flex-shrink-0 space-y-4">
-      
-      <!-- Team Status Card -->
       <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-4 shadow-sm">
         <div class="flex items-center justify-between pb-3 border-b border-cyber-700/60 mb-3">
           <div>
             <h2 class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Realtime Vault</h2>
             <div class="text-sm font-extrabold text-white mt-0.5">Firebase Synced</div>
           </div>
-          <span class="px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded text-[10px] font-mono">
-            RTDB ONLINE
-          </span>
+          <span class="px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded text-[10px] font-mono">RTDB ONLINE</span>
         </div>
-
         <div class="grid grid-cols-2 gap-2 text-center">
           <div class="bg-cyber-950 rounded-xl p-2 border border-cyber-700/50">
             <div id="statSnippetCount" class="text-lg font-bold font-mono text-cyan-400">0</div>
@@ -270,87 +250,50 @@
         </div>
       </div>
 
-      <!-- Scope Filters -->
       <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-3 space-y-1">
         <h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 py-1">View Scope</h3>
-        
         <button id="scopeBtn-all" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
-          <span class="flex items-center gap-2">
-            <i class="fa-solid fa-layer-group text-cyan-400"></i> All Snippets
-          </span>
+          <span class="flex items-center gap-2"><i class="fa-solid fa-layer-group text-cyan-400"></i> All Snippets</span>
           <span id="badgeCountAll" class="text-[10px] font-mono bg-cyber-950 px-2 py-0.5 rounded-full text-slate-400">0</span>
         </button>
-
         <button id="scopeBtn-mine" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition text-slate-400 hover:text-slate-200 hover:bg-cyber-800">
-          <span class="flex items-center gap-2">
-            <i class="fa-solid fa-code text-emerald-400"></i> My Snippets
-          </span>
+          <span class="flex items-center gap-2"><i class="fa-solid fa-code text-emerald-400"></i> My Snippets</span>
           <span id="badgeCountMine" class="text-[10px] font-mono bg-cyber-950 px-2 py-0.5 rounded-full text-slate-400">0</span>
         </button>
-
         <button id="scopeBtn-starred" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition text-slate-400 hover:text-slate-200 hover:bg-cyber-800">
-          <span class="flex items-center gap-2">
-            <i class="fa-solid fa-star text-amber-400"></i> Starred / Critical
-          </span>
+          <span class="flex items-center gap-2"><i class="fa-solid fa-star text-amber-400"></i> Starred / Critical</span>
           <span id="badgeCountStarred" class="text-[10px] font-mono bg-cyber-950 px-2 py-0.5 rounded-full text-slate-400">0</span>
         </button>
       </div>
 
-      <!-- Language List Filter -->
       <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-3.5">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Languages</h3>
           <button id="btnClearLanguageFilter" class="text-[10px] text-cyan-400 hover:underline">Clear</button>
         </div>
-        <div id="languageFilterList" class="space-y-0.5 max-h-40 overflow-y-auto pr-1">
-          <!-- Rendered in JS -->
-        </div>
+        <div id="languageFilterList" class="space-y-0.5 max-h-40 overflow-y-auto pr-1"></div>
       </div>
 
-      <!-- Team Scratchpad -->
       <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-4 flex flex-col">
         <div class="flex items-center justify-between mb-1.5">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-            <i class="fa-solid fa-clipboard-check text-cyan-400"></i> Shared Scratchpad
-          </h3>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5"><i class="fa-solid fa-clipboard-check text-cyan-400"></i> Shared Scratchpad</h3>
           <span class="text-[10px] text-slate-500 font-mono">Firebase Synced</span>
         </div>
-        <p class="text-[10px] text-slate-400 mb-2 leading-tight">
-          Drop temporary env tokens, curls, and webhook endpoints:
-        </p>
-        <textarea 
-          id="teamScratchpad" 
-          rows="4"
-          placeholder="# Shared team tokens:&#10;PORT=8080&#10;BASE_URL=http://localhost:3000"
-          class="w-full bg-cyber-950 border border-cyber-700 rounded-xl p-2.5 font-mono text-[11px] text-cyan-300 focus:outline-none focus:border-cyan-400 resize-y"
-        ></textarea>
+        <textarea id="teamScratchpad" rows="4" placeholder="# Shared team tokens:&#10;PORT=8080" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl p-2.5 font-mono text-[11px] text-cyan-300 focus:outline-none focus:border-cyan-400 resize-y"></textarea>
         <div class="mt-2 flex justify-between items-center text-[11px]">
-          <button id="btnCopyScratchpad" class="font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
-            <i class="fa-solid fa-copy"></i> Copy
-          </button>
-          <button id="btnClearScratchpad" class="text-slate-500 hover:text-rose-400">
-            Clear
-          </button>
+          <button id="btnCopyScratchpad" class="font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1"><i class="fa-solid fa-copy"></i> Copy</button>
+          <button id="btnClearScratchpad" class="text-slate-500 hover:text-rose-400">Clear</button>
         </div>
       </div>
-
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- Main Feed -->
     <section class="flex-1 flex flex-col space-y-4 min-w-0">
-      
-      <!-- Search & Category Bar -->
       <div class="bg-cyber-900 border border-cyber-700/80 p-3 rounded-2xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
         <div class="relative w-full sm:flex-1">
           <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-          <input 
-            type="text" 
-            id="searchInput" 
-            placeholder="Search code by title, content, author, tag..." 
-            class="w-full bg-cyber-950 border border-cyber-700 rounded-xl pl-9 pr-4 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition"
-          >
+          <input type="text" id="searchInput" placeholder="Search code by title, content, author, tag..." class="w-full bg-cyber-950 border border-cyber-700 rounded-xl pl-9 pr-4 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
         </div>
-
         <select id="categoryFilter" class="w-full sm:w-auto bg-cyber-950 border border-cyber-700 text-xs text-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-400">
           <option value="all">All Domains / Categories</option>
           <option value="API / Endpoints">API & Endpoints</option>
@@ -364,90 +307,81 @@
         </select>
       </div>
 
-      <!-- Snippets Feed List -->
       <div id="snippetsContainer" class="space-y-4"></div>
 
-      <!-- Empty State -->
       <div id="emptyVaultState" class="hidden flex-col items-center justify-center p-12 text-center bg-cyber-900/60 rounded-2xl border border-cyber-700/50 border-dashed">
-        <div class="w-12 h-12 rounded-xl bg-cyber-800 flex items-center justify-center text-slate-500 mb-3">
-          <i class="fa-solid fa-code text-xl"></i>
-        </div>
+        <div class="w-12 h-12 rounded-xl bg-cyber-800 flex items-center justify-center text-slate-500 mb-3"><i class="fa-solid fa-code text-xl"></i></div>
         <h4 class="text-sm font-bold text-slate-300">No code snippets found</h4>
-        <p class="text-xs text-slate-400 max-w-sm mt-1 mb-4">
-          Share your first function, API hook, or model handler so teammates don't re-write it!
-        </p>
-        <button id="btnEmptyPostSnippet" class="px-4 py-2 text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-900 rounded-xl">
-          <i class="fa-solid fa-plus mr-1"></i> Post New Snippet
-        </button>
+        <p class="text-xs text-slate-400 max-w-sm mt-1 mb-4">Share your first function, API hook, or model handler so teammates don't re-write it!</p>
+        <button id="btnEmptyPostSnippet" class="px-4 py-2 text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-900 rounded-xl"><i class="fa-solid fa-plus mr-1"></i> Post New Snippet</button>
       </div>
-
     </section>
-
   </main>
 
-  <div id="adminUserModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-cyber-900 border border-cyber-700 w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-      
-      <!-- Modal Header -->
+  <!-- Modals -->
+  <!-- AI Architect Modal -->
+  <div id="architectModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-cyber-900 border border-cyber-700 w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden">
       <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm font-bold">
-            <i class="fa-solid fa-users-gear"></i>
+          <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm font-bold">
+            <i class="fa-solid fa-robot"></i>
           </div>
+          <div>
+            <h2 class="text-sm font-bold text-white">AI Sprint Architect</h2>
+            <p class="text-[11px] text-purple-300 font-mono">Powered by Gemini - Task Delegation & Assembly</p>
+          </div>
+        </div>
+        <button id="btnCloseArchitect" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-300 mb-1">Gemini API Key (Session Only)</label>
+          <input type="password" id="geminiApiKeyInput" placeholder="AIza..." class="w-full bg-cyber-950 border border-cyber-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-400">
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-300 mb-1">Hackathon Project Idea</label>
+          <textarea id="projectIdeaInput" rows="3" placeholder="Describe the app you want to build. The AI will break it down for your available developers..." class="w-full bg-cyber-950 border border-cyber-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-400"></textarea>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button id="btnBreakdownTask" class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg text-xs transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-sitemap"></i> Delegate Tasks
+          </button>
+          <button id="btnAssembleProject" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-boxes-packing"></i> Auto-Assemble Project
+          </button>
+        </div>
+        <div id="architectStatus" class="text-xs font-mono text-slate-400 hidden mt-2 text-center">Working...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin User Management Modal -->
+  <div id="adminUserModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-cyber-900 border border-cyber-700 w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+      <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-users-gear"></i></div>
           <div>
             <h2 class="text-sm font-bold text-white">Team Member Management</h2>
             <p class="text-[11px] text-amber-300 font-mono">Role: Super Admin Privilege</p>
           </div>
         </div>
-        <button id="btnCloseAdminModal" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+        <button id="btnCloseAdminModal" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-
-      <!-- Modal Body -->
       <div class="p-6 overflow-y-auto space-y-6">
-        
-        <!-- Create User Form (Admin Exclusive) -->
         <div class="bg-cyber-950/70 border border-cyber-700/80 p-4 rounded-xl">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 mb-3 flex items-center gap-2">
-            <i class="fa-solid fa-user-plus text-cyan-400"></i> Provision New Hacker Account
-          </h3>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-user-plus text-cyan-400"></i> Provision New Hacker Account</h3>
           <form id="createUserForm" class="space-y-3">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Username <span class="text-rose-400">*</span></label>
-                <input 
-                  type="text" 
-                  id="newUsername" 
-                  required 
-                  placeholder="e.g. alex_dev" 
-                  class="w-full bg-cyber-900 border border-cyber-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-                >
-              </div>
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Initial Password <span class="text-rose-400">*</span></label>
-                <input 
-                  type="text" 
-                  id="newPassword" 
-                  required 
-                  placeholder="Passcode for teammate" 
-                  class="w-full bg-cyber-900 border border-cyber-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-                >
-              </div>
+              <div><label class="block text-[11px] font-semibold text-slate-300 mb-1">Username *</label><input type="text" id="newUsername" required placeholder="e.g. alex_dev" class="w-full bg-cyber-900 border border-cyber-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"></div>
+              <div><label class="block text-[11px] font-semibold text-slate-300 mb-1">Initial Password *</label><input type="text" id="newPassword" required placeholder="Passcode for teammate" class="w-full bg-cyber-900 border border-cyber-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"></div>
             </div>
-
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Full Name / Tag</label>
-                <input 
-                  type="text" 
-                  id="newFullName" 
-                  placeholder="Alex Rivera" 
-                  class="w-full bg-cyber-900 border border-cyber-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-                >
-              </div>
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-300 mb-1">Hacker Role</label>
+              <div><label class="block text-[11px] font-semibold text-slate-300 mb-1">Full Name / Tag</label><input type="text" id="newFullName" placeholder="Alex Rivera" class="w-full bg-cyber-900 border border-cyber-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"></div>
+              <div><label class="block text-[11px] font-semibold text-slate-300 mb-1">Hacker Role</label>
                 <select id="newRole" class="w-full bg-cyber-900 border border-cyber-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-cyan-400">
                   <option value="Full-Stack">Full-Stack Lead</option>
                   <option value="Frontend">Frontend / UI</option>
@@ -457,360 +391,173 @@
                 </select>
               </div>
             </div>
-
-            <button type="submit" class="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold rounded-lg text-xs transition">
-              <i class="fa-solid fa-plus mr-1"></i> Register Team Member (Saves to Firebase)
-            </button>
+            <button type="submit" class="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold rounded-lg text-xs transition"><i class="fa-solid fa-plus mr-1"></i> Register Team Member</button>
           </form>
         </div>
-
-        <!-- Registered Team Users Table -->
         <div>
           <div class="flex items-center justify-between mb-2.5">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">
-              Active Team Members (<span id="adminUserCountLabel">1</span>)
-            </h3>
-            <span class="text-[11px] text-slate-500">Only Admin can manage credentials</span>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Active Team Members (<span id="adminUserCountLabel">1</span>)</h3>
           </div>
-
           <div class="border border-cyber-700/80 rounded-xl overflow-hidden">
             <table class="w-full text-left text-xs">
-              <thead class="bg-cyber-950 text-slate-400 uppercase font-mono text-[10px]">
-                <tr>
-                  <th class="p-3">User</th>
-                  <th class="p-3">Role</th>
-                  <th class="p-3">Password</th>
-                  <th class="p-3 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody id="adminUserTableBody" class="divide-y divide-cyber-700/50">
-                <!-- Injected via JavaScript -->
-              </tbody>
+              <thead class="bg-cyber-950 text-slate-400 uppercase font-mono text-[10px]"><tr><th class="p-3">User</th><th class="p-3">Role</th><th class="p-3 text-right">Action</th></tr></thead>
+              <tbody id="adminUserTableBody" class="divide-y divide-cyber-700/50"></tbody>
             </table>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
+  <!-- Post Snippet Modal -->
   <div id="snippetModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-      
-      <!-- Modal Header -->
       <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/60">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-sm">
-            <i class="fa-solid fa-code"></i>
-          </div>
+          <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-sm"><i class="fa-solid fa-code"></i></div>
           <div>
-            <h2 id="modalHeaderTitle" class="text-sm font-bold text-white">Save Snippet to Team Vault</h2>
-            <p class="text-[11px] text-slate-400">Share reusable code with teammates in realtime</p>
+            <h2 class="text-sm font-bold text-white">Save Snippet to Team Vault</h2>
+            <p class="text-[11px] text-slate-400">Share reusable code with teammates</p>
           </div>
         </div>
-        <button id="btnCloseSnippetModal" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+        <button id="btnCloseSnippetModal" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-
-      <!-- Modal Body -->
       <form id="snippetForm" class="flex-1 overflow-y-auto p-6 space-y-4">
         <input type="hidden" id="editSnippetId" value="">
-
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="md:col-span-2">
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Snippet Title <span class="text-rose-400">*</span></label>
-            <input 
-              type="text" 
-              id="snippetTitleInput" 
-              required 
-              placeholder="e.g. Gemini Stream Handler or JWT Auth Middleware"
-              class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-            >
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Snippet Title *</label>
+            <input type="text" id="snippetTitleInput" required class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400">
           </div>
-
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Language <span class="text-rose-400">*</span></label>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Language *</label>
             <select id="snippetLangSelect" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
-              <option value="python">Python (.py)</option>
-              <option value="javascript">JavaScript (.js)</option>
-              <option value="typescript">TypeScript (.ts)</option>
-              <option value="cpp">C++ (.cpp)</option>
-              <option value="rust">Rust (.rs)</option>
-              <option value="go">Go (.go)</option>
-              <option value="html">HTML / CSS</option>
-              <option value="sql">SQL / Postgres</option>
-              <option value="shell">Shell / Bash (.sh)</option>
-              <option value="json">JSON / YAML</option>
+              <option value="python">Python</option><option value="javascript">JavaScript</option><option value="typescript">TypeScript</option>
+              <option value="cpp">C++</option><option value="rust">Rust</option><option value="go">Go</option><option value="html">HTML / CSS</option>
+              <option value="sql">SQL / Postgres</option><option value="shell">Bash</option><option value="json">JSON</option>
             </select>
           </div>
         </div>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1">Domain Category</label>
             <select id="snippetCategorySelect" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
-              <option value="API / Endpoints">API & Endpoints</option>
-              <option value="Authentication">Auth & Security</option>
-              <option value="AI / Prompts">AI & LLM Prompting</option>
-              <option value="UI Components">UI Components</option>
-              <option value="Database / ORM">Database & Queries</option>
-              <option value="Algorithms">Algorithms & Logic</option>
-              <option value="Utils / Helpers">Utils & Helpers</option>
-              <option value="DevOps / Config">DevOps & Config</option>
+              <option value="API / Endpoints">API & Endpoints</option><option value="Authentication">Auth & Security</option><option value="AI / Prompts">AI & Prompts</option><option value="UI Components">UI Components</option>
+              <option value="Database / ORM">Database & Queries</option><option value="Algorithms">Algorithms</option><option value="Utils / Helpers">Utils</option><option value="DevOps / Config">DevOps</option>
             </select>
           </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Tags (comma-separated)</label>
-            <input 
-              type="text" 
-              id="snippetTagsInput" 
-              placeholder="e.g. fast, auth, edge, streaming"
-              class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-            >
-          </div>
+          <div><label class="block text-xs font-semibold text-slate-300 mb-1">Tags (comma-separated)</label><input type="text" id="snippetTagsInput" placeholder="e.g. fast, auth" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-100"></div>
         </div>
-
+        <div><label class="block text-xs font-semibold text-slate-300 mb-1">Description / Notes</label><input type="text" id="snippetDescInput" placeholder="Where should teammates integrate this?" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-100"></div>
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Description / Teammate Notes</label>
-          <input 
-            type="text" 
-            id="snippetDescInput" 
-            placeholder="Where should teammates integrate this or what parameters are needed?"
-            class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-          >
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Code Snippet *</label>
+          <textarea id="snippetCodeInput" required rows="10" placeholder="// Paste code here..." class="w-full bg-cyber-950 border border-cyber-700 rounded-xl p-3.5 font-mono text-xs sm:text-sm text-cyan-300 focus:outline-none focus:border-cyan-400 editor-textarea leading-relaxed" spellcheck="false"></textarea>
         </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="block text-xs font-semibold text-slate-300">Code Snippet <span class="text-rose-400">*</span></label>
-            <span class="text-[11px] text-slate-400 font-mono">Press [Tab] for 2 spaces</span>
-          </div>
-          <textarea 
-            id="snippetCodeInput" 
-            required 
-            rows="10" 
-            placeholder="// Paste your production code here..."
-            class="w-full bg-cyber-950 border border-cyber-700 rounded-xl p-3.5 font-mono text-xs sm:text-sm text-cyan-300 focus:outline-none focus:border-cyan-400 editor-textarea leading-relaxed"
-            spellcheck="false"
-          ></textarea>
-        </div>
-
         <div class="flex items-center justify-between pt-3 border-t border-cyber-700/70">
           <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
-            <input type="checkbox" id="snippetStarredCheck" class="rounded bg-cyber-950 border-cyber-700 text-cyan-500 focus:ring-0">
-            <span>Mark as Critical / Starred</span>
+            <input type="checkbox" id="snippetStarredCheck" class="rounded bg-cyber-950 border-cyber-700 text-cyan-500 focus:ring-0"> <span>Mark as Critical</span>
           </label>
-
           <div class="flex items-center gap-2.5">
-            <button type="button" id="btnCancelSnippet" class="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-xl hover:bg-cyber-800 transition">
-              Cancel
-            </button>
-            <button type="submit" class="px-5 py-2 text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-900 rounded-xl shadow-lg shadow-cyan-500/20 transition transform active:scale-95">
-              Save to Squad
-            </button>
+            <button type="button" id="btnCancelSnippet" class="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-xl hover:bg-cyber-800">Cancel</button>
+            <button type="submit" class="px-5 py-2 text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-900 rounded-xl shadow-lg shadow-cyan-500/20">Save to Vault</button>
           </div>
         </div>
-
       </form>
     </div>
   </div>
 
+  <!-- Inspect / Comments Modal -->
   <div id="inspectModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-      
       <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
         <div class="flex items-center gap-3">
-          <span id="inspectLangBadge" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase bg-cyan-950 text-cyan-400 border border-cyan-800">
-            PY
-          </span>
+          <span id="inspectLangBadge" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase bg-cyan-950 text-cyan-400 border border-cyan-800">PY</span>
           <div>
             <h3 id="inspectTitle" class="text-sm sm:text-base font-bold text-white tracking-tight">Snippet Title</h3>
-            <p id="inspectMeta" class="text-xs text-slate-400">By user • Role • 10m ago</p>
+            <p id="inspectMeta" class="text-xs text-slate-400">By user • Role</p>
           </div>
         </div>
-
         <div class="flex items-center gap-2">
-          <button id="inspectCopyBtn" class="px-3 py-1.5 bg-cyber-800 hover:bg-cyber-700 text-slate-200 text-xs rounded-xl flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-copy"></i>
-            <span>Copy</span>
-          </button>
-          <button id="inspectDownloadBtn" class="px-3 py-1.5 bg-cyber-800 hover:bg-cyber-700 text-slate-200 text-xs rounded-xl flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-download"></i>
-            <span>Download</span>
-          </button>
-          <button id="btnCloseInspectModal" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition">
-            <i class="fa-solid fa-xmark text-lg"></i>
-          </button>
+          <button id="inspectCopyBtn" class="px-3 py-1.5 bg-cyber-800 hover:bg-cyber-700 text-slate-200 text-xs rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-copy"></i> Copy</button>
+          <button id="inspectDownloadBtn" class="px-3 py-1.5 bg-cyber-800 hover:bg-cyber-700 text-slate-200 text-xs rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-download"></i> DL</button>
+          <button id="btnCloseInspectModal" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
       </div>
-
       <div class="flex-1 overflow-y-auto p-6 space-y-5">
         <div>
-          <p id="inspectDesc" class="text-xs sm:text-sm text-slate-300 leading-relaxed bg-cyber-950/60 p-3 rounded-xl border border-cyber-700/60 font-sans">
-            Instructions...
-          </p>
+          <p id="inspectDesc" class="text-xs sm:text-sm text-slate-300 bg-cyber-950/60 p-3 rounded-xl border border-cyber-700/60 font-sans"></p>
           <div id="inspectTags" class="flex flex-wrap gap-1.5 mt-2.5"></div>
         </div>
-
         <div class="rounded-xl overflow-hidden border border-cyber-700 shadow-xl">
           <div class="bg-cyber-950 px-4 py-2 border-b border-cyber-700/80 flex items-center justify-between text-xs text-slate-400 font-mono">
-            <span id="inspectFilename" class="text-cyan-400">snippet.py</span>
-            <span id="inspectLineCount" class="text-slate-500">24 lines</span>
+            <span id="inspectFilename" class="text-cyan-400">snippet</span>
+            <span id="inspectLineCount" class="text-slate-500">lines</span>
           </div>
-          <pre class="overflow-x-auto"><code id="inspectCodeBlock" class="language-python"></code></pre>
+          <pre class="overflow-x-auto"><code id="inspectCodeBlock"></code></pre>
         </div>
-
         <div class="border-t border-cyber-700/70 pt-4">
-          <h4 class="text-xs font-bold text-slate-200 mb-2 flex items-center gap-2">
-            <i class="fa-solid fa-comments text-cyan-400"></i> Teammate Notes & Feedback (<span id="inspectCommentCount">0</span>)
-          </h4>
+          <h4 class="text-xs font-bold text-slate-200 mb-2 flex items-center gap-2"><i class="fa-solid fa-comments text-cyan-400"></i> Notes (<span id="inspectCommentCount">0</span>)</h4>
           <div id="inspectCommentsList" class="space-y-2 mb-3"></div>
-
           <form id="inspectCommentForm" class="flex gap-2">
-            <input 
-              type="text" 
-              id="inspectCommentInput" 
-              required 
-              placeholder="Leave a note or endpoint detail for your teammates..." 
-              class="flex-1 bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-            >
-            <button type="submit" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold text-xs rounded-xl transition">
-              Add Note
-            </button>
+            <input type="text" id="inspectCommentInput" required placeholder="Leave a note or endpoint detail..." class="flex-1 bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs text-slate-100">
+            <button type="submit" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold text-xs rounded-xl">Add</button>
           </form>
         </div>
       </div>
-
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
+  <!-- Sprint Timer Modal -->
   <div id="timerSettingsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-      
       <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-sm font-bold">
-            <i class="fa-solid fa-stopwatch"></i>
-          </div>
-          <div>
-            <h2 class="text-sm font-bold text-white">Sprint Timer Controls</h2>
-            <p class="text-[11px] text-slate-400">Configure or reset hackathon countdown</p>
-          </div>
+          <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-stopwatch"></i></div>
+          <div><h2 class="text-sm font-bold text-white">Sprint Timer Controls</h2></div>
         </div>
-        <button id="btnCloseTimerSettings" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+        <button id="btnCloseTimerSettings" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-
       <div class="p-6 space-y-5">
-        
-        <!-- Live Preview & Play/Pause -->
         <div class="bg-cyber-950 border border-cyber-700/80 rounded-xl p-4 flex items-center justify-between">
           <div>
-            <div class="text-[10px] uppercase font-mono tracking-wider text-slate-400">Remaining Time</div>
+            <div class="text-[10px] uppercase font-mono text-slate-400">Remaining Time</div>
             <div id="modalTimerDisplay" class="text-xl font-bold font-mono text-cyan-400 mt-0.5">24h 00m 00s</div>
-            <div id="modalTimerStateText" class="text-[11px] text-emerald-400 font-mono flex items-center gap-1 mt-0.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Running
-            </div>
+            <div id="modalTimerStateText" class="text-[11px] text-emerald-400 font-mono flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Running</div>
           </div>
-          <button 
-            id="toggleTimerPauseBtn" 
-            class="px-3.5 py-2 bg-cyber-800 hover:bg-cyber-700 text-slate-200 border border-cyber-600 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition"
-          >
-            <i id="pausePlayIcon" class="fa-solid fa-pause"></i>
-            <span id="pausePlayText">Pause</span>
+          <button id="toggleTimerPauseBtn" class="px-3.5 py-2 bg-cyber-800 hover:bg-cyber-700 text-slate-200 border border-cyber-600 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+            <i id="pausePlayIcon" class="fa-solid fa-pause"></i> <span id="pausePlayText">Pause</span>
           </button>
         </div>
-
-        <!-- Quick Reset Presets -->
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-2">
-            <i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Quick Preset Resets
-          </label>
+          <label class="block text-xs font-semibold text-slate-300 mb-2"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Quick Resets</label>
           <div class="grid grid-cols-3 gap-2">
-            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition text-center font-mono" data-hours="1">
-              1 Hour
-            </button>
-            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition text-center font-mono" data-hours="12">
-              12 Hours
-            </button>
-            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition text-center font-mono font-bold text-cyan-400" data-hours="24">
-              24 Hours
-            </button>
-            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition text-center font-mono" data-hours="36">
-              36 Hours
-            </button>
-            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition text-center font-mono" data-hours="48">
-              48 Hours
-            </button>
-            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition text-center font-mono text-slate-400" data-hours="0.5">
-              30 Mins
-            </button>
+            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-xl text-xs text-slate-300 font-mono" data-hours="1">1 Hour</button>
+            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-xl text-xs text-slate-300 font-mono" data-hours="12">12 Hours</button>
+            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-xl text-xs font-bold text-cyan-400 font-mono" data-hours="24">24 Hours</button>
+            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-xl text-xs text-slate-300 font-mono" data-hours="36">36 Hours</button>
+            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-xl text-xs text-slate-300 font-mono" data-hours="48">48 Hours</button>
+            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-xl text-xs text-slate-300 font-mono" data-hours="0.5">30 Mins</button>
           </div>
         </div>
-
-        <!-- Custom Duration Form -->
         <div class="border-t border-cyber-700/60 pt-4">
-          <label class="block text-xs font-semibold text-slate-300 mb-2">
-            <i class="fa-solid fa-sliders text-cyan-400 mr-1"></i> Custom Sprint Duration
-          </label>
+          <label class="block text-xs font-semibold text-slate-300 mb-2">Custom Duration</label>
           <div class="grid grid-cols-2 gap-3 mb-3">
-            <div>
-              <span class="text-[11px] text-slate-400">Hours</span>
-              <input 
-                type="number" 
-                id="customTimerHours" 
-                min="0" 
-                max="168" 
-                value="24" 
-                class="w-full mt-1 bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-cyan-400"
-              >
-            </div>
-            <div>
-              <span class="text-[11px] text-slate-400">Minutes</span>
-              <input 
-                type="number" 
-                id="customTimerMinutes" 
-                min="0" 
-                max="59" 
-                value="0" 
-                class="w-full mt-1 bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-cyan-400"
-              >
-            </div>
+            <div><span class="text-[11px] text-slate-400">Hours</span><input type="number" id="customTimerHours" min="0" value="24" class="w-full mt-1 bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-cyan-400"></div>
+            <div><span class="text-[11px] text-slate-400">Minutes</span><input type="number" id="customTimerMinutes" min="0" max="59" value="0" class="w-full mt-1 bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-cyan-400"></div>
           </div>
-          <button 
-            id="btnApplyCustomDuration"
-            class="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5"
-          >
-            <i class="fa-solid fa-rotate-right"></i>
-            <span>Set Custom Duration & Reset</span>
-          </button>
+          <button id="btnApplyCustomDuration" class="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5"><i class="fa-solid fa-rotate-right"></i> Set & Reset</button>
         </div>
-
       </div>
     </div>
   </div>
+
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
-    import { 
-      getDatabase, 
-      ref, 
-      set, 
-      get, 
-      onValue, 
-      push, 
-      remove, 
-      update 
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getDatabase, ref, set, get, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-    // Your provided Firebase configuration
+    // IMPORTANT: Setup your Firebase Database Rules to strictly allow authenticated writes in production.
     const firebaseConfig = {
       apiKey: "AIzaSyA4Hxj1BVv1bScRyUa-Vs9Wuv4N8b5RmpE",
       authDomain: "devvault-114f3.firebaseapp.com",
@@ -818,45 +565,28 @@
       projectId: "devvault-114f3",
       storageBucket: "devvault-114f3.firebasestorage.app",
       messagingSenderId: "250493999462",
-      appId: "1:250493999462:web:54ae3e3bf343e1bdb890a7",
-      measurementId: "G-1XEBVM1JKY"
+      appId: "1:250493999462:web:54ae3e3bf343e1bdb890a7"
     };
 
-    // Initialize Firebase Services
-    let app, analytics, db;
+    let app, db;
     try {
       app = initializeApp(firebaseConfig);
-      analytics = getAnalytics(app);
       db = getDatabase(app);
-      console.log("Firebase initialized successfully with Realtime Database.");
     } catch (err) {
-      console.warn("Firebase initialization warning (falling back if needed):", err);
+      console.warn("Firebase initialization fallback active.");
     }
 
     const EXTENSION_MAP = {
-      python: 'py',
-      javascript: 'js',
-      typescript: 'ts',
-      cpp: 'cpp',
-      rust: 'rs',
-      go: 'go',
-      html: 'html',
-      sql: 'sql',
-      shell: 'sh',
-      json: 'json'
+      python: 'py', javascript: 'js', typescript: 'ts',
+      cpp: 'cpp', rust: 'rs', go: 'go', html: 'html',
+      sql: 'sql', shell: 'sh', json: 'json'
     };
 
-    // Seed admin credentials
     const DEFAULT_ADMIN = {
-      username: 'admin',
-      password: 'admin@123',
-      fullName: 'Super Admin',
-      role: 'Super Admin',
-      isAdmin: true,
-      createdAt: Date.now()
+      username: 'admin', password: 'admin@123', fullName: 'Super Admin',
+      role: 'Super Admin', isAdmin: true, createdAt: Date.now()
     };
 
-    // State Variables
     let users = [DEFAULT_ADMIN];
     let currentUser = null;
     let snippets = [];
@@ -870,249 +600,42 @@
     let pausedRemainingMs = 0;
     let timerInterval = null;
 
-    // References to DOM Elements
+    // UI Bindings
     const loginPortal = document.getElementById('loginPortal');
     const authPortalForm = document.getElementById('authPortalForm');
-    const loginUsername = document.getElementById('loginUsername');
-    const loginPassword = document.getElementById('loginPassword');
-    const btnTogglePw = document.getElementById('btnTogglePw');
-    const pwEyeIcon = document.getElementById('pwEyeIcon');
-
-    const headerUserName = document.getElementById('headerUserName');
-    const headerUserRole = document.getElementById('headerUserRole');
-    const headerUserAvatar = document.getElementById('headerUserAvatar');
     const adminManageBtn = document.getElementById('adminManageBtn');
-    const btnLogout = document.getElementById('btnLogout');
-
-    const btnOpenPostSnippet = document.getElementById('btnOpenPostSnippet');
-    const btnEmptyPostSnippet = document.getElementById('btnEmptyPostSnippet');
-    const btnCloseSnippetModal = document.getElementById('btnCloseSnippetModal');
-    const btnCancelSnippet = document.getElementById('btnCancelSnippet');
-    const snippetModal = document.getElementById('snippetModal');
-    const snippetForm = document.getElementById('snippetForm');
-
-    const adminUserModal = document.getElementById('adminUserModal');
-    const btnCloseAdminModal = document.getElementById('btnCloseAdminModal');
-    const createUserForm = document.getElementById('createUserForm');
-
-    const timerSettingsModal = document.getElementById('timerSettingsModal');
-    const btnOpenTimerSettings = document.getElementById('btnOpenTimerSettings');
-    const btnCloseTimerSettings = document.getElementById('btnCloseTimerSettings');
-    const toggleTimerPauseBtn = document.getElementById('toggleTimerPauseBtn');
-    const btnApplyCustomDuration = document.getElementById('btnApplyCustomDuration');
-
-    const inspectModal = document.getElementById('inspectModal');
-    const btnCloseInspectModal = document.getElementById('btnCloseInspectModal');
-    const inspectCopyBtn = document.getElementById('inspectCopyBtn');
-    const inspectDownloadBtn = document.getElementById('inspectDownloadBtn');
-    const inspectCommentForm = document.getElementById('inspectCommentForm');
-
-    const teamScratchpad = document.getElementById('teamScratchpad');
-    const btnCopyScratchpad = document.getElementById('btnCopyScratchpad');
-    const btnClearScratchpad = document.getElementById('btnClearScratchpad');
-    const btnClearLanguageFilter = document.getElementById('btnClearLanguageFilter');
-
-    const searchInput = document.getElementById('searchInput');
-    const categoryFilter = document.getElementById('categoryFilter');
-
-    // Attach Event Listeners
-    btnTogglePw.addEventListener('click', togglePasswordVisibility);
-    authPortalForm.addEventListener('submit', handleLoginSubmit);
-    btnLogout.addEventListener('click', logoutPortal);
-
-    adminManageBtn.addEventListener('click', openAdminUsersModal);
-    btnCloseAdminModal.addEventListener('click', closeAdminUsersModal);
-    createUserForm.addEventListener('submit', handleCreateUser);
-
-    btnOpenPostSnippet.addEventListener('click', openSnippetModal);
-    btnEmptyPostSnippet.addEventListener('click', openSnippetModal);
-    btnCloseSnippetModal.addEventListener('click', closeSnippetModal);
-    btnCancelSnippet.addEventListener('click', closeSnippetModal);
-    snippetForm.addEventListener('submit', saveSnippet);
-
-    btnOpenTimerSettings.addEventListener('click', openTimerSettingsModal);
-    btnCloseTimerSettings.addEventListener('click', closeTimerSettingsModal);
-    toggleTimerPauseBtn.addEventListener('click', toggleTimerPause);
-    btnApplyCustomDuration.addEventListener('click', applyCustomDurationReset);
-
-    document.querySelectorAll('.preset-timer-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const hours = parseFloat(btn.getAttribute('data-hours'));
-        resetTimerHours(hours);
-      });
-    });
-
-    btnCloseInspectModal.addEventListener('click', closeInspectModal);
-    inspectCopyBtn.addEventListener('click', copyCurrentInspectCode);
-    inspectDownloadBtn.addEventListener('click', downloadCurrentInspectCode);
-    inspectCommentForm.addEventListener('submit', addCommentToCurrentInspect);
-
-    btnCopyScratchpad.addEventListener('click', copyScratchpad);
-    btnClearScratchpad.addEventListener('click', clearScratchpad);
-    teamScratchpad.addEventListener('input', (e) => syncScratchpad(e.target.value));
-
-    btnClearLanguageFilter.addEventListener('click', () => {
-      selectedLanguage = null;
-      renderUI();
-    });
-
-    ['all', 'mine', 'starred'].forEach(scope => {
-      document.getElementById(`scopeBtn-${scope}`).addEventListener('click', () => setScope(scope));
-    });
-
-    searchInput.addEventListener('input', (e) => {
-      searchQuery = e.target.value.trim();
-      renderUI();
-    });
-
-    categoryFilter.addEventListener('change', (e) => {
-      selectedCategory = e.target.value;
-      renderUI();
-    });
-
-    setupTabIndentation();
-
-    // Start App & Realtime Sync
+    const btnOpenArchitect = document.getElementById('btnOpenArchitect');
+    
+    // Architect AI
+    const architectModal = document.getElementById('architectModal');
+    const btnBreakdownTask = document.getElementById('btnBreakdownTask');
+    const btnAssembleProject = document.getElementById('btnAssembleProject');
+    const architectStatus = document.getElementById('architectStatus');
+    
+    // Init
     initSession();
     initSprintTimer();
     startFirebaseSync();
+    setupTabIndentation();
 
-    function startFirebaseSync() {
-      if (!db) {
-        initLocalFallback();
-        return;
-      }
+    // -- Login Logic --
+    document.getElementById('btnTogglePw').onclick = () => {
+      const pwInput = document.getElementById('loginPassword');
+      const icon = document.getElementById('pwEyeIcon');
+      if (pwInput.type === 'password') { pwInput.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+      else { pwInput.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+    };
 
-      // 1. Sync Users
-      const usersRef = ref(db, 'team_users');
-      onValue(usersRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          const list = Object.keys(data).map(key => ({ ...data[key], _key: key }));
-          if (!list.some(u => u.username === 'admin')) {
-            list.unshift(DEFAULT_ADMIN);
-          }
-          users = list;
-        } else {
-          // Seed default admin in Firebase if empty
-          users = [DEFAULT_ADMIN];
-          set(ref(db, 'team_users/admin'), DEFAULT_ADMIN);
-        }
-        updateHeaderUser();
-        renderAdminUsersTable();
-        renderUI();
-      }, (err) => {
-        console.warn('Realtime Database Users read error, using local fallback:', err);
-        initLocalFallback();
-      });
-
-      // 2. Sync Snippets
-      const snippetsRef = ref(db, 'snippets');
-      onValue(snippetsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          const list = Object.keys(data).map(key => ({
-            id: key,
-            ...data[key],
-            comments: data[key].comments ? Object.values(data[key].comments) : []
-          }));
-          // Sort newest first
-          list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-          snippets = list;
-        } else {
-          snippets = [];
-        }
-        renderUI();
-        if (inspectingSnippetId) {
-          const updated = snippets.find(s => s.id === inspectingSnippetId);
-          if (updated) renderInspectComments(updated);
-        }
-      });
-
-      // 3. Sync Team Scratchpad
-      const scratchpadRef = ref(db, 'scratchpad');
-      onValue(scratchpadRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data && typeof data.content === 'string') {
-          if (document.activeElement !== teamScratchpad) {
-            teamScratchpad.value = data.content;
-          }
-        }
-      });
-
-      // 4. Sync Sprint Timer
-      const timerRef = ref(db, 'sprint_timer');
-      onValue(timerRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          sprintEndTime = data.endTime || (Date.now() + 24 * 60 * 60 * 1000);
-          isTimerPaused = !!data.isPaused;
-          pausedRemainingMs = data.pausedRemainingMs || 0;
-          updateTimerDisplay();
-        }
-      });
-    }
-
-    function initLocalFallback() {
-      try {
-        const storedUsers = localStorage.getItem('devvault_users_store');
-        users = storedUsers ? JSON.parse(storedUsers) : [DEFAULT_ADMIN];
-        if (!users.some(u => u.username === 'admin')) users.unshift(DEFAULT_ADMIN);
-
-        const storedSnippets = localStorage.getItem('devvault_snippets_store');
-        snippets = storedSnippets ? JSON.parse(storedSnippets) : [];
-      } catch (e) {
-        users = [DEFAULT_ADMIN];
-        snippets = [];
-      }
-      renderUI();
-    }
-
-    // Session Management
-    function initSession() {
-      try {
-        const storedSession = localStorage.getItem('devvault_current_user');
-        if (storedSession) {
-          currentUser = JSON.parse(storedSession);
-        }
-      } catch (e) {
-        currentUser = null;
-      }
-
-      if (currentUser && currentUser.username) {
-        loginPortal.classList.add('hidden');
-        updateHeaderUser();
-      } else {
-        loginPortal.classList.remove('hidden');
-      }
-    }
-
-    function togglePasswordVisibility() {
-      if (loginPassword.type === 'password') {
-        loginPassword.type = 'text';
-        pwEyeIcon.className = 'fa-solid fa-eye-slash';
-      } else {
-        loginPassword.type = 'password';
-        pwEyeIcon.className = 'fa-solid fa-eye';
-      }
-    }
-
-    // Login Handler
-    function handleLoginSubmit(e) {
+    authPortalForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const userVal = loginUsername.value.trim();
-      const passVal = loginPassword.value.trim();
+      const userVal = document.getElementById('loginUsername').value.trim().toLowerCase();
+      const passVal = document.getElementById('loginPassword').value.trim();
+      const matched = users.find(u => u.username.toLowerCase() === userVal && u.password === passVal);
 
-      const matched = users.find(u => u.username.toLowerCase() === userVal.toLowerCase() && u.password === passVal);
-
-      if (!matched) {
-        showToast('Invalid username or password!', 'error');
-        return;
-      }
+      if (!matched) return showToast('Invalid credentials!', 'error');
 
       currentUser = {
-        username: matched.username,
-        fullName: matched.fullName || matched.username,
+        username: matched.username, fullName: matched.fullName || matched.username,
         role: matched.role || (matched.isAdmin ? 'Super Admin' : 'Hacker'),
         isAdmin: matched.username.toLowerCase() === 'admin' || matched.isAdmin === true
       };
@@ -1121,45 +644,284 @@
       loginPortal.classList.add('hidden');
       updateHeaderUser();
       renderUI();
-      showToast(`Logged in as currentUser.username({currentUser.role})`, 'success');
-    }
+      showToast(`Logged in as ${currentUser.username} (${currentUser.role})`, 'success');
+    });
 
-    function logoutPortal() {
+    document.getElementById('btnLogout').addEventListener('click', () => {
       currentUser = null;
       localStorage.removeItem('devvault_current_user');
       loginPortal.classList.remove('hidden');
-      loginPassword.value = '';
-      showToast('Logged out of DevVault', 'info');
+      showToast('Signed out', 'info');
+    });
+
+    // -- Modals --
+    document.getElementById('btnOpenPostSnippet').onclick = () => { document.getElementById('snippetForm').reset(); document.getElementById('snippetModal').classList.remove('hidden'); };
+    document.getElementById('btnEmptyPostSnippet').onclick = () => document.getElementById('btnOpenPostSnippet').click();
+    document.getElementById('btnCloseSnippetModal').onclick = () => document.getElementById('snippetModal').classList.add('hidden');
+    document.getElementById('btnCancelSnippet').onclick = () => document.getElementById('snippetModal').classList.add('hidden');
+    
+    adminManageBtn.onclick = () => { renderAdminUsersTable(); document.getElementById('adminUserModal').classList.remove('hidden'); };
+    document.getElementById('btnCloseAdminModal').onclick = () => document.getElementById('adminUserModal').classList.add('hidden');
+
+    btnOpenArchitect.onclick = () => architectModal.classList.remove('hidden');
+    document.getElementById('btnCloseArchitect').onclick = () => architectModal.classList.add('hidden');
+
+    document.getElementById('btnOpenTimerSettings').onclick = () => { updateTimerDisplay(); document.getElementById('timerSettingsModal').classList.remove('hidden'); };
+    document.getElementById('btnCloseTimerSettings').onclick = () => document.getElementById('timerSettingsModal').classList.add('hidden');
+
+    // -- Create User --
+    document.getElementById('createUserForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const uName = document.getElementById('newUsername').value.trim();
+      const pWord = document.getElementById('newPassword').value.trim();
+      const fName = document.getElementById('newFullName').value.trim();
+      const role = document.getElementById('newRole').value;
+
+      if (users.some(u => u.username.toLowerCase() === uName.toLowerCase())) return showToast(`Username "${uName}" exists`, 'error');
+
+      const newUser = { username: uName, password: pWord, fullName: fName || uName, role, isAdmin: false, createdAt: Date.now() };
+
+      if (db) {
+        set(ref(db, `team_users/${uName}`), newUser).then(() => { showToast(`Registered ${uName}!`, 'success'); document.getElementById('createUserForm').reset(); }).catch(err => showToast(err.message, 'error'));
+      } else {
+        users.push(newUser);
+        localStorage.setItem('devvault_users_store', JSON.stringify(users));
+        document.getElementById('createUserForm').reset();
+        renderAdminUsersTable();
+        showToast(`Created ${uName} locally`, 'success');
+      }
+    });
+
+    // -- Snippet Submission --
+    document.getElementById('snippetForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const rawTags = document.getElementById('snippetTagsInput').value.trim();
+      const lang = document.getElementById('snippetLangSelect').value;
+      const cat = document.getElementById('snippetCategorySelect').value;
+
+      const snippetData = {
+        title: document.getElementById('snippetTitleInput').value.trim(),
+        language: lang,
+        category: cat,
+        tags: rawTags ? rawTags.split(',').map(t => t.trim()).filter(Boolean) : [lang, cat.toLowerCase()],
+        description: document.getElementById('snippetDescInput').value.trim(),
+        code: document.getElementById('snippetCodeInput').value,
+        starred: document.getElementById('snippetStarredCheck').checked,
+        author: { username: currentUser.username, fullName: currentUser.fullName, role: currentUser.role },
+        createdAt: Date.now()
+      };
+
+      if (db) {
+        push(ref(db, 'snippets'), snippetData)
+          .then(() => { document.getElementById('snippetModal').classList.add('hidden'); showToast('Snippet saved!', 'success'); })
+          .catch(err => showToast(err.message, 'error'));
+      } else {
+        snippets.unshift({ id: 'snip-' + Date.now(), ...snippetData, comments: [] });
+        localStorage.setItem('devvault_snippets_store', JSON.stringify(snippets));
+        document.getElementById('snippetModal').classList.add('hidden');
+        renderUI();
+        showToast('Saved locally', 'success');
+      }
+    });
+
+    // -- AI Architect Integration (Gemini 1.5 Flash) --
+    async function callGemini(prompt, apiKey, isJson = false) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const config = isJson ? { responseMimeType: "application/json" } : {};
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: config })
+      });
+      if (!response.ok) throw new Error('API Request Failed. Check API Key.');
+      const data = await response.json();
+      return data.candidates[0].content.parts[0].text;
+    }
+
+    btnBreakdownTask.addEventListener('click', async () => {
+      const apiKey = document.getElementById('geminiApiKeyInput').value;
+      const idea = document.getElementById('projectIdeaInput').value;
+      if (!apiKey || !idea) return showToast('API Key and Idea required', 'error');
+
+      const devNames = users.filter(u => !u.isAdmin).map(u => u.username).join(', ');
+      if (!devNames) return showToast('No hackers available to assign!', 'error');
+
+      architectStatus.classList.remove('hidden');
+      architectStatus.textContent = 'Brainstorming architecture & assigning tasks...';
+
+      const prompt = `We are building a hackathon project: ${idea}. I have these developers: ${devNames}. 
+      Break this project down into distinct technical modules. Assign ONE task to each developer explicitly by their username exactly as provided.
+      Return ONLY a JSON array of objects with format: 
+      [{"assignee": "username", "description": "Build the API endpoint...", "expectedOutput": "REST API in Python"}]`;
+
+      try {
+        const result = await callGemini(prompt, apiKey, true);
+        const tasks = JSON.parse(result);
+        
+        if (db) {
+          tasks.forEach(t => push(ref(db, 'sprint_tasks'), { ...t, status: 'pending', time: Date.now() }));
+          showToast('Tasks generated & delegated globally!', 'success');
+        } else {
+          showToast('Database offline, check console for JSON', 'error');
+          console.log('Local AI Tasks:', tasks);
+        }
+        architectModal.classList.add('hidden');
+      } catch (err) {
+        showToast('AI Breakdown failed: ' + err.message, 'error');
+      }
+      architectStatus.classList.add('hidden');
+    });
+
+    btnAssembleProject.addEventListener('click', async () => {
+      const apiKey = document.getElementById('geminiApiKeyInput').value;
+      const idea = document.getElementById('projectIdeaInput').value;
+      if (!apiKey) return showToast('API Key required', 'error');
+      if (snippets.length === 0) return showToast('No snippets to assemble!', 'error');
+
+      architectStatus.classList.remove('hidden');
+      architectStatus.textContent = 'Reading snippets and assembling project...';
+
+      let combinedContext = snippets.slice(0, 5).map(s => `// Module by ${s.author.username}\n${s.code}`).join('\n\n');
+      const prompt = `Act as the lead software architect. Assemble this codebase for our project: ${idea}.
+      Here are the component snippets written by the team:\n${combinedContext}\n
+      Merge them into a single cohesive structure, fixing any mismatched variables. Output ONLY the raw final code block without markdown backticks if possible.`;
+
+      try {
+        let finalCode = await callGemini(prompt, apiKey, false);
+        finalCode = finalCode.replace(/^```[a-z]*\n/gi, '').replace(/```$/g, '');
+        
+        if (db) {
+          push(ref(db, 'snippets'), {
+            title: 'AI Master Assembly',
+            language: 'javascript',
+            category: 'Algorithms',
+            code: finalCode,
+            author: { username: 'AI Architect', role: 'System' },
+            createdAt: Date.now()
+          });
+        }
+        showToast('Project Assembly Complete!', 'success');
+        architectModal.classList.add('hidden');
+      } catch (err) {
+        showToast('AI Assembly failed: ' + err.message, 'error');
+      }
+      architectStatus.classList.add('hidden');
+    });
+
+    // -- Firebase Realtime Syncs --
+    function startFirebaseSync() {
+      if (!db) { initLocalFallback(); return; }
+
+      // Users
+      onValue(ref(db, 'team_users'), (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          users = Object.keys(data).map(key => ({ ...data[key], _key: key }));
+          if (!users.some(u => u.username === 'admin')) users.unshift(DEFAULT_ADMIN);
+        } else {
+          users = [DEFAULT_ADMIN];
+          set(ref(db, 'team_users/admin'), DEFAULT_ADMIN);
+        }
+        updateHeaderUser();
+        renderAdminUsersTable();
+      });
+
+      // Snippets
+      onValue(ref(db, 'snippets'), (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          snippets = Object.keys(data).map(k => ({ id: k, ...data[k], comments: Object.values(data[k].comments || {}) }));
+          snippets.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        } else snippets = [];
+        renderUI();
+        if (inspectingSnippetId) {
+          const updated = snippets.find(s => s.id === inspectingSnippetId);
+          if (updated) renderInspectComments(updated);
+        }
+      });
+
+      // Scratchpad
+      onValue(ref(db, 'scratchpad'), (snapshot) => {
+        const data = snapshot.val();
+        const pad = document.getElementById('teamScratchpad');
+        if (data && typeof data.content === 'string' && document.activeElement !== pad) {
+          pad.value = data.content;
+        }
+      });
+
+      // Timer
+      onValue(ref(db, 'sprint_timer'), (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          sprintEndTime = data.endTime || (Date.now() + 86400000);
+          isTimerPaused = !!data.isPaused;
+          pausedRemainingMs = data.pausedRemainingMs || 0;
+          updateTimerDisplay();
+        }
+      });
+
+      // Task Alerts (Architect Phase 1 Output)
+      onValue(ref(db, 'sprint_tasks'), (snapshot) => {
+        if (!currentUser || currentUser.isAdmin) return;
+        const tasks = snapshot.val();
+        if (!tasks) return;
+
+        const banner = document.getElementById('activeTaskBanner');
+        const myTaskKey = Object.keys(tasks).find(key => 
+          tasks[key].assignee?.toLowerCase() === currentUser.username.toLowerCase() && tasks[key].status === 'pending'
+        );
+
+        if (myTaskKey) {
+          document.getElementById('taskDescription').textContent = tasks[myTaskKey].description;
+          document.getElementById('taskOutputFormat').textContent = tasks[myTaskKey].expectedOutput;
+          
+          document.getElementById('btnAcceptTask').onclick = () => {
+            update(ref(db, `sprint_tasks/${myTaskKey}`), { status: 'in_progress' })
+              .then(() => { banner.classList.add('hidden'); showToast('Task marked In Progress!', 'success'); });
+          };
+          banner.classList.remove('hidden');
+          banner.classList.add('flex');
+        } else {
+          banner.classList.add('hidden');
+        }
+      });
+      
+      document.getElementById('btnDismissTask').onclick = () => document.getElementById('activeTaskBanner').classList.add('hidden');
+    }
+
+    // -- Utilities & Sync Fallbacks --
+    function initLocalFallback() {
+      try {
+        const sUsers = localStorage.getItem('devvault_users_store');
+        users = sUsers ? JSON.parse(sUsers) : [DEFAULT_ADMIN];
+        if (!users.some(u => u.username === 'admin')) users.unshift(DEFAULT_ADMIN);
+        const sSnip = localStorage.getItem('devvault_snippets_store');
+        snippets = sSnip ? JSON.parse(sSnip) : [];
+      } catch {
+        users = [DEFAULT_ADMIN]; snippets = [];
+      }
+      renderUI();
+    }
+
+    function initSession() {
+      try { currentUser = JSON.parse(localStorage.getItem('devvault_current_user')); } catch { currentUser = null; }
+      if (currentUser) { loginPortal.classList.add('hidden'); updateHeaderUser(); }
     }
 
     function updateHeaderUser() {
       if (!currentUser) return;
-      headerUserName.textContent = currentUser.fullName || currentUser.username;
-      headerUserRole.textContent = currentUser.role;
-      headerUserAvatar.textContent = currentUser.username.substring(0, 2).toUpperCase();
+      document.getElementById('headerUserName').textContent = currentUser.fullName || currentUser.username;
+      document.getElementById('headerUserRole').textContent = currentUser.role;
+      document.getElementById('headerUserAvatar').textContent = currentUser.username.substring(0, 2).toUpperCase();
 
-      if (currentUser.username.toLowerCase() === 'admin' || currentUser.isAdmin) {
-        adminManageBtn.classList.remove('hidden');
-        adminManageBtn.classList.add('flex');
+      if (currentUser.isAdmin) {
+        document.getElementById('adminManageBtn').classList.remove('hidden'); document.getElementById('adminManageBtn').classList.add('flex');
+        document.getElementById('btnOpenArchitect').classList.remove('hidden'); document.getElementById('btnOpenArchitect').classList.add('flex');
       } else {
-        adminManageBtn.classList.remove('flex');
-        adminManageBtn.classList.add('hidden');
+        document.getElementById('adminManageBtn').classList.remove('flex'); document.getElementById('adminManageBtn').classList.add('hidden');
+        document.getElementById('btnOpenArchitect').classList.remove('flex'); document.getElementById('btnOpenArchitect').classList.add('hidden');
       }
-    }
-
-    function openAdminUsersModal() {
-      if (!currentUser || (!currentUser.isAdmin && currentUser.username.toLowerCase() !== 'admin')) {
-        showToast('Access denied: Admin only', 'error');
-        return;
-      }
-      renderAdminUsersTable();
-      adminUserModal.classList.remove('hidden');
-      adminUserModal.classList.add('flex');
-    }
-
-    function closeAdminUsersModal() {
-      adminUserModal.classList.add('hidden');
-      adminUserModal.classList.remove('flex');
     }
 
     function renderAdminUsersTable() {
@@ -1167,251 +929,70 @@
       document.getElementById('adminUserCountLabel').textContent = users.length;
       document.getElementById('statUserCount').textContent = users.length;
 
-      tbody.innerHTML = users.map(u => {
-        const isSuper = u.username.toLowerCase() === 'admin';
-        return `
-          <tr class="hover:bg-cyber-850/60 transition">
-            <td class="p-3">
-              <div class="font-bold text-slate-200">${escapeHtml(u.username)}</div>
-              <div class="text-[11px] text-slate-400">${escapeHtml(u.fullName || '-')}</div>
-            </td>
-            <td class="p-3">
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold ${isSuper ? 'bg-amber-950 text-amber-300 border border-amber-800' : 'bg-cyan-950 text-cyan-300 border border-cyan-800'}">
-                ${escapeHtml(u.role)}
-              </span>
-            </td>
-            <td class="p-3 font-mono text-[11px] text-slate-400">
-              ${escapeHtml(u.password)}
-            </td>
-            <td class="p-3 text-right">
-              ${isSuper ? '<span class="text-[10px] text-slate-500 font-mono">Protected</span>' : `
-                <button onclick="window._deleteUser('${u.username}')" class="px-2 py-1 text-slate-400 hover:text-rose-400 hover:bg-cyber-800 rounded transition text-xs" title="Revoke User Access">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              `}
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    window._deleteUser = function(username) {
-      if (username.toLowerCase() === 'admin') {
-        showToast('Cannot delete super admin account!', 'error');
-        return;
-      }
-      if (db) {
-        remove(ref(db, `team_users/${username}`))
-          .then(() => showToast(`User "${username}" revoked from Firebase!`, 'info'))
-          .catch(() => showToast('Failed to revoke user', 'error'));
-      } else {
-        users = users.filter(u => u.username.toLowerCase() !== username.toLowerCase());
-        localStorage.setItem('devvault_users_store', JSON.stringify(users));
-        renderAdminUsersTable();
-        showToast(`User "${username}" deleted locally`, 'info');
-      }
-    };
-
-    function handleCreateUser(e) {
-      e.preventDefault();
-      if (!currentUser || currentUser.username.toLowerCase() !== 'admin') {
-        showToast('Only admin can create users!', 'error');
-        return;
-      }
-
-      const uName = document.getElementById('newUsername').value.trim();
-      const pWord = document.getElementById('newPassword').value.trim();
-      const fName = document.getElementById('newFullName').value.trim();
-      const role = document.getElementById('newRole').value;
-
-      if (!uName || !pWord) {
-        showToast('Username and password are required', 'error');
-        return;
-      }
-
-      const exists = users.some(u => u.username.toLowerCase() === uName.toLowerCase());
-      if (exists) {
-        showToast(`Username "${uName}" is already taken!`, 'error');
-        return;
-      }
-
-      const newUser = {
-        username: uName,
-        password: pWord,
-        fullName: fName || uName,
-        role: role,
-        isAdmin: false,
-        createdAt: Date.now()
-      };
-
-      if (db) {
-        set(ref(db, `team_users/${uName}`), newUser)
-          .then(() => {
-            showToast(`Registered ${uName}! Synced with Firebase.`, 'success');
-            createUserForm.reset();
-          })
-          .catch((err) => {
-            showToast('Firebase write failed: ' + err.message, 'error');
-          });
-      } else {
-        users.push(newUser);
-        localStorage.setItem('devvault_users_store', JSON.stringify(users));
-        createUserForm.reset();
-        renderAdminUsersTable();
-        showToast(`Registered ${uName} locally!`, 'success');
-      }
-    }
-
-    function openSnippetModal() {
-      if (!currentUser) return;
-      snippetForm.reset();
-      document.getElementById('editSnippetId').value = '';
-      snippetModal.classList.remove('hidden');
-      snippetModal.classList.add('flex');
-    }
-
-    function closeSnippetModal() {
-      snippetModal.classList.add('hidden');
-      snippetModal.classList.remove('flex');
-    }
-
-    function saveSnippet(e) {
-      e.preventDefault();
-      if (!currentUser) return;
-
-      const title = document.getElementById('snippetTitleInput').value.trim();
-      const language = document.getElementById('snippetLangSelect').value;
-      const category = document.getElementById('snippetCategorySelect').value;
-      const rawTags = document.getElementById('snippetTagsInput').value.trim();
-      const description = document.getElementById('snippetDescInput').value.trim();
-      const code = document.getElementById('snippetCodeInput').value;
-      const starred = document.getElementById('snippetStarredCheck').checked;
-
-      const tags = rawTags
-        ? rawTags.split(',').map(t => t.trim()).filter(Boolean)
-        : [language, category.toLowerCase()];
-
-      const snippetData = {
-        title,
-        language,
-        category,
-        tags,
-        description,
-        code,
-        starred,
-        author: {
-          username: currentUser.username,
-          fullName: currentUser.fullName,
-          role: currentUser.role
-        },
-        createdAt: Date.now()
-      };
-
-      if (db) {
-        const newRef = push(ref(db, 'snippets'));
-        set(newRef, snippetData)
-          .then(() => {
-            closeSnippetModal();
-            showToast('Code snippet published live to Firebase!', 'success');
-          })
-          .catch((err) => showToast('Failed to save: ' + err.message, 'error'));
-      } else {
-        const localId = 'snip-' + Date.now();
-        snippets.unshift({ id: localId, ...snippetData, comments: [] });
-        localStorage.setItem('devvault_snippets_store', JSON.stringify(snippets));
-        closeSnippetModal();
-        renderUI();
-        showToast('Snippet saved locally!', 'success');
-      }
-    }
-
-    window._toggleStar = function(id) {
-      const snip = snippets.find(s => s.id === id);
-      if (!snip) return;
-      const nextStarred = !snip.starred;
-
-      if (db) {
-        update(ref(db, `snippets/${id}`), { starred: nextStarred })
-          .then(() => showToast(nextStarred ? 'Starred code' : 'Unstarred code', 'info'))
-          .catch(() => showToast('Update failed', 'error'));
-      } else {
-        snip.starred = nextStarred;
-        localStorage.setItem('devvault_snippets_store', JSON.stringify(snippets));
-        renderUI();
-      }
-    };
-
-    window._deleteSnippet = function(id) {
-      if (db) {
-        remove(ref(db, `snippets/${id}`))
-          .then(() => showToast('Snippet removed from Firebase', 'info'))
-          .catch(() => showToast('Delete failed', 'error'));
-      } else {
-        snippets = snippets.filter(s => s.id !== id);
-        localStorage.setItem('devvault_snippets_store', JSON.stringify(snippets));
-        renderUI();
-        showToast('Snippet deleted', 'info');
-      }
-    };
-
-    window._inspectSnippet = function(id) {
-      const snip = snippets.find(s => s.id === id);
-      if (!snip) return;
-      inspectingSnippetId = id;
-
-      document.getElementById('inspectTitle').textContent = snip.title;
-      document.getElementById('inspectLangBadge').textContent = snip.language;
-      document.getElementById('inspectMeta').textContent = `By ${snip.author.fullName || snip.author.username} • ${snip.author.role} • ${formatTimeAgo(snip.createdAt)}`;
-      document.getElementById('inspectDesc').textContent = snip.description || 'No specific integration notes provided.';
-
-      const ext = EXTENSION_MAP[snip.language] || 'txt';
-      const cleanName = snip.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
-      document.getElementById('inspectFilename').textContent = `cleanName.{ext}`;
-
-      const lines = snip.code.split('\n').length;
-      document.getElementById('inspectLineCount').textContent = `${lines} lines`;
-
-      document.getElementById('inspectTags').innerHTML = (snip.tags || []).map(t => `
-        <span class="text-xs bg-cyber-950 text-cyan-300 px-2.5 py-1 rounded-md border border-cyan-500/20 font-mono">
-          #${escapeHtml(t)}
-        </span>
+      tbody.innerHTML = users.map(u => `
+        <tr class="hover:bg-cyber-850/60 transition">
+          <td class="p-3">
+            <div class="font-bold text-slate-200">${escapeHtml(u.username)}</div>
+            <div class="text-[11px] text-slate-400">${escapeHtml(u.fullName || '-')}</div>
+          </td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold ${u.isAdmin ? 'bg-amber-950 text-amber-300 border border-amber-800' : 'bg-cyan-950 text-cyan-300 border border-cyan-800'}">${escapeHtml(u.role)}</span></td>
+          <td class="p-3 text-right">
+            ${u.isAdmin ? '<span class="text-[10px] text-slate-500 font-mono">Protected</span>' : `<button onclick="window._deleteUser('${u.username}')" class="px-2 py-1 text-slate-400 hover:text-rose-400 hover:bg-cyber-800 rounded transition text-xs"><i class="fa-solid fa-trash"></i></button>`}
+          </td>
+        </tr>
       `).join('');
-
-      const codeBlock = document.getElementById('inspectCodeBlock');
-      codeBlock.className = `language-${snip.language === 'shell' ? 'bash' : snip.language}`;
-      codeBlock.textContent = snip.code;
-      Prism.highlightElement(codeBlock);
-
-      renderInspectComments(snip);
-
-      inspectModal.classList.remove('hidden');
-      inspectModal.classList.add('flex');
-    };
-
-    function closeInspectModal() {
-      inspectModal.classList.add('hidden');
-      inspectModal.classList.remove('flex');
-      inspectingSnippetId = null;
     }
 
-    function renderInspectComments(snip) {
+    // Window Globals for Card Inline Actions
+    window._deleteUser = (username) => { if (db && username !== 'admin') remove(ref(db, `team_users/${username}`)); else { users = users.filter(u=>u.username!==username); renderAdminUsersTable(); } };
+    window._toggleStar = (id) => { const s = snippets.find(x => x.id === id); if (s) { if(db) update(ref(db, `snippets/${id}`), { starred: !s.starred }); else { s.starred = !s.starred; renderUI(); } } };
+    window._deleteSnippet = (id) => { if (db) remove(ref(db, `snippets/${id}`)); else { snippets = snippets.filter(x => x.id !== id); renderUI(); } };
+    window._copySnippet = (id) => { const s = snippets.find(x => x.id === id); if (s) { executeCopy(s.code); showToast(`Copied ${s.title}!`, 'success'); } };
+    window._downloadSnippet = (id) => {
+      const s = snippets.find(x => x.id === id);
+      if (!s) return;
+      const fn = `${s.title.toLowerCase().replace(/[^a-z0-9]/g, '_')}.${EXTENSION_MAP[s.language] || 'txt'}`;
+      const url = URL.createObjectURL(new Blob([s.code], { type: 'text/plain;charset=utf-8' }));
+      const a = document.createElement('a'); a.href = url; a.download = fn; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+      showToast(`Downloaded ${fn}`, 'info');
+    };
+
+    window._inspectSnippet = (id) => {
+      const s = snippets.find(x => x.id === id);
+      if (!s) return;
+      inspectingSnippetId = id;
+      document.getElementById('inspectTitle').textContent = s.title;
+      document.getElementById('inspectLangBadge').textContent = s.language;
+      document.getElementById('inspectMeta').textContent = `By ${s.author?.fullName || s.author?.username} • ${s.author?.role} • ${formatTimeAgo(s.createdAt)}`;
+      document.getElementById('inspectDesc').textContent = s.description || 'No integration notes.';
+      document.getElementById('inspectFilename').textContent = `${s.title.toLowerCase().replace(/[^a-z0-9]/g, '_')}.${EXTENSION_MAP[s.language] || 'txt'}`;
+      document.getElementById('inspectLineCount').textContent = `${s.code.split('\n').length} lines`;
+      
+      document.getElementById('inspectTags').innerHTML = (s.tags || []).map(t => `<span class="text-xs bg-cyber-950 text-cyan-300 px-2.5 py-1 rounded-md border border-cyan-500/20 font-mono">#${escapeHtml(t)}</span>`).join('');
+      
+      const cb = document.getElementById('inspectCodeBlock');
+      cb.className = `language-${s.language === 'shell' ? 'bash' : s.language}`;
+      cb.textContent = s.code;
+      Prism.highlightElement(cb);
+      
+      renderInspectComments(s);
+      document.getElementById('inspectModal').classList.remove('hidden');
+      document.getElementById('inspectModal').classList.add('flex');
+    };
+    document.getElementById('btnCloseInspectModal').onclick = () => { document.getElementById('inspectModal').classList.add('hidden'); inspectingSnippetId = null; };
+    document.getElementById('inspectCopyBtn').onclick = () => { if(inspectingSnippetId) window._copySnippet(inspectingSnippetId); };
+    document.getElementById('inspectDownloadBtn').onclick = () => { if(inspectingSnippetId) window._downloadSnippet(inspectingSnippetId); };
+
+    function renderInspectComments(s) {
       const list = document.getElementById('inspectCommentsList');
-      const comments = snip.comments || [];
-      document.getElementById('inspectCommentCount').textContent = comments.length;
-
-      if (comments.length === 0) {
-        list.innerHTML = `<p class="text-xs text-slate-500 italic">No notes posted yet.</p>`;
-        return;
-      }
-
-      list.innerHTML = comments.map(c => `
+      document.getElementById('inspectCommentCount').textContent = s.comments?.length || 0;
+      if (!s.comments || s.comments.length === 0) { list.innerHTML = `<p class="text-xs text-slate-500 italic">No notes posted yet.</p>`; return; }
+      list.innerHTML = s.comments.map(c => `
         <div class="bg-cyber-950/80 border border-cyber-700/60 p-2.5 rounded-xl flex items-start gap-2.5">
-          <div class="w-6 h-6 rounded-md bg-cyber-800 text-cyan-300 font-mono text-[10px] flex items-center justify-center font-bold">
-            ${c.username ? c.username.substring(0, 2).toUpperCase() : '??'}
-          </div>
+          <div class="w-6 h-6 rounded-md bg-cyber-800 text-cyan-300 font-mono text-[10px] flex items-center justify-center font-bold">${c.username ? c.username.substring(0, 2).toUpperCase() : '??'}</div>
           <div class="flex-1">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-slate-200">escapeHtml(c.username||'User')<spanclass="text-[10px]text-cyan-400font-mono">({escapeHtml(c.role || 'Hacker')})</span></span>
+              <span class="text-xs font-bold text-slate-200">${escapeHtml(c.username || 'User')} <span class="text-[10px] text-cyan-400 font-mono">(${escapeHtml(c.role || 'Hacker')})</span></span>
               <span class="text-[10px] text-slate-500">${formatTimeAgo(c.time || Date.now())}</span>
             </div>
             <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${escapeHtml(c.text)}</p>
@@ -1420,509 +1001,200 @@
       `).join('');
     }
 
-    function addCommentToCurrentInspect(e) {
+    document.getElementById('inspectCommentForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      if (!currentUser || !inspectingSnippetId) return;
+      const inp = document.getElementById('inspectCommentInput');
+      const text = inp.value.trim();
+      if (!text || !inspectingSnippetId) return;
+      const cData = { username: currentUser.username, role: currentUser.role, text, time: Date.now() };
+      if (db) {
+        push(ref(db, `snippets/${inspectingSnippetId}/comments`), cData).then(() => inp.value = '').catch(err => showToast(err.message, 'error'));
+      } else {
+        const s = snippets.find(x => x.id === inspectingSnippetId);
+        if (s) { s.comments.push(cData); inp.value = ''; renderInspectComments(s); localStorage.setItem('devvault_snippets_store', JSON.stringify(snippets)); }
+      }
+    });
 
-      const input = document.getElementById('inspectCommentInput');
-      const text = input.value.trim();
-      if (!text) return;
+    // Scratchpad UI
+    const scPad = document.getElementById('teamScratchpad');
+    document.getElementById('btnCopyScratchpad').onclick = () => { if(!scPad.value.trim()) return showToast('Empty', 'error'); executeCopy(scPad.value); showToast('Copied!', 'success'); };
+    document.getElementById('btnClearScratchpad').onclick = () => { scPad.value = ''; if(db) set(ref(db, 'scratchpad'), {content: ''}); };
+    scPad.addEventListener('input', (e) => { if(db) set(ref(db, 'scratchpad'), {content: e.target.value}); else localStorage.setItem('devvault_team_scratchpad', e.target.value); });
 
-      const commentData = {
-        username: currentUser.username,
-        role: currentUser.role,
-        text: text,
-        time: Date.now()
+    // Scope & Search Filtering
+    ['all', 'mine', 'starred'].forEach(s => {
+      document.getElementById(`scopeBtn-${s}`).onclick = () => {
+        activeScope = s;
+        ['all', 'mine', 'starred'].forEach(x => {
+          document.getElementById(`scopeBtn-${x}`).className = x === s 
+            ? 'w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition bg-cyan-500/15 text-cyan-300 border border-cyan-500/30'
+            : 'w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition text-slate-400 hover:text-slate-200 hover:bg-cyber-800';
+        });
+        renderUI();
       };
+    });
+    
+    window._filterLanguage = (lang) => { selectedLanguage = selectedLanguage === lang ? null : lang; renderUI(); };
+    document.getElementById('btnClearLanguageFilter').onclick = () => { selectedLanguage = null; renderUI(); };
+    document.getElementById('searchInput').addEventListener('input', (e) => { searchQuery = e.target.value.trim(); renderUI(); });
+    document.getElementById('categoryFilter').addEventListener('change', (e) => { selectedCategory = e.target.value; renderUI(); });
 
-      if (db) {
-        const commentRef = push(ref(db, `snippets/${inspectingSnippetId}/comments`));
-        set(commentRef, commentData)
-          .then(() => {
-            input.value = '';
-            showToast('Note synced to Firebase!', 'success');
-          })
-          .catch((err) => showToast('Error adding note: ' + err.message, 'error'));
-      } else {
-        const snip = snippets.find(s => s.id === inspectingSnippetId);
-        if (snip) {
-          if (!snip.comments) snip.comments = [];
-          snip.comments.push({ id: 'cmt_' + Date.now(), ...commentData });
-          input.value = '';
-          localStorage.setItem('devvault_snippets_store', JSON.stringify(snippets));
-          renderInspectComments(snip);
-          renderUI();
-        }
+    // Main Render Loop
+    function renderUI() {
+      if (!currentUser) return;
+      let filtered = snippets.filter(s => {
+        if (activeScope === 'mine') return s.author?.username?.toLowerCase() === currentUser.username.toLowerCase();
+        if (activeScope === 'starred') return s.starred;
+        return true;
+      });
+      if (selectedLanguage) filtered = filtered.filter(s => s.language === selectedLanguage);
+      if (selectedCategory !== 'all') filtered = filtered.filter(s => s.category === selectedCategory);
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(s => s.title?.toLowerCase().includes(q) || s.description?.toLowerCase().includes(q) || s.author?.username?.toLowerCase().includes(q) || s.tags?.some(t => t.toLowerCase().includes(q)) || s.code?.toLowerCase().includes(q));
       }
+
+      document.getElementById('statSnippetCount').textContent = snippets.length;
+      document.getElementById('badgeCountAll').textContent = snippets.length;
+      document.getElementById('badgeCountMine').textContent = snippets.filter(s => s.author?.username?.toLowerCase() === currentUser.username.toLowerCase()).length;
+      document.getElementById('badgeCountStarred').textContent = snippets.filter(s => s.starred).length;
+
+      // Render Language sidebar list
+      const counts = {}; snippets.forEach(s => { counts[s.language] = (counts[s.language] || 0) + 1; });
+      document.getElementById('languageFilterList').innerHTML = Object.keys(EXTENSION_MAP).map(lang => `
+        <button onclick="window._filterLanguage('${lang}')" class="w-full text-left px-2 py-1 rounded-lg text-xs flex items-center justify-between transition ${selectedLanguage === lang ? 'bg-cyan-500/20 text-cyan-300 font-bold' : 'text-slate-400 hover:text-white hover:bg-cyber-800'}">
+          <span class="capitalize">${lang}</span><span class="font-mono text-[10px] text-slate-500">${counts[lang] || 0}</span>
+        </button>
+      `).join('');
+
+      const container = document.getElementById('snippetsContainer');
+      const empty = document.getElementById('emptyVaultState');
+
+      if (filtered.length === 0) { container.innerHTML = ''; empty.classList.remove('hidden'); empty.classList.add('flex'); return; }
+      empty.classList.add('hidden'); empty.classList.remove('flex');
+
+      container.innerHTML = filtered.map(s => {
+        const isMine = s.author?.username?.toLowerCase() === currentUser.username.toLowerCase();
+        const codeLines = (s.code || '').split('\n');
+        const previewCode = codeLines.slice(0, 5).join('\n');
+        const langClass = `language-${s.language === 'shell' ? 'bash' : s.language}`;
+        
+        let badgeClass = 'bg-slate-800 text-slate-300 border-slate-700';
+        if(s.language === 'python') badgeClass = 'bg-emerald-950 text-emerald-300 border-emerald-800';
+        if(s.language === 'javascript') badgeClass = 'bg-amber-950 text-amber-300 border-amber-800';
+        if(s.language === 'typescript') badgeClass = 'bg-blue-950 text-blue-300 border-blue-800';
+        if(s.language === 'cpp') badgeClass = 'bg-sky-950 text-sky-300 border-sky-800';
+
+        return `
+          <div class="bg-cyber-900 border border-cyber-700/80 hover:border-cyber-600 rounded-2xl overflow-hidden shadow-sm transition duration-150">
+            <div class="p-4 border-b border-cyber-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-lg bg-cyber-800 border border-cyber-600 flex items-center justify-center font-mono text-xs font-bold text-cyan-400 mt-0.5">${s.author?.username ? s.author.username.substring(0, 2).toUpperCase() : '??'}</div>
+                <div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <h3 onclick="window._inspectSnippet('${s.id}')" class="text-sm font-bold text-white hover:text-cyan-400 cursor-pointer transition">${escapeHtml(s.title)}</h3>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase border ${badgeClass}">${s.language}</span>
+                    ${s.starred ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-800 flex items-center gap-1"><i class="fa-solid fa-star text-[9px]"></i> Starred</span>' : ''}
+                  </div>
+                  <p class="text-xs text-slate-400 mt-0.5">by <span class="text-slate-200 font-semibold">${escapeHtml(s.author?.fullName || s.author?.username || 'Dev')}</span> <span class="text-cyan-400 font-mono text-[11px]">(${escapeHtml(s.author?.role || 'Hacker')})</span> • <span>${formatTimeAgo(s.createdAt || Date.now())}</span></p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 self-end sm:self-center">
+                <button onclick="window._toggleStar('${s.id}')" class="p-1.5 text-xs rounded-lg transition ${s.starred ? 'text-amber-400 bg-amber-400/10' : 'text-slate-400 hover:text-slate-200 hover:bg-cyber-800'}"><i class="fa-${s.starred ? 'solid' : 'regular'} fa-star"></i></button>
+                <button onclick="window._copySnippet('${s.id}')" class="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyber-800 rounded-lg transition text-xs"><i class="fa-solid fa-copy"></i></button>
+                <button onclick="window._downloadSnippet('${s.id}')" class="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-cyber-800 rounded-lg transition text-xs"><i class="fa-solid fa-download"></i></button>
+                <button onclick="window._inspectSnippet('${s.id}')" class="p-1.5 text-slate-400 hover:text-white hover:bg-cyber-800 rounded-lg transition text-xs"><i class="fa-solid fa-expand"></i></button>
+                ${isMine || currentUser.isAdmin ? `<button onclick="window._deleteSnippet('${s.id}')" class="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-cyber-800 rounded-lg transition text-xs"><i class="fa-solid fa-trash"></i></button>` : ''}
+              </div>
+            </div>
+            ${s.description ? `<div class="px-4 pt-3 pb-1 text-xs text-slate-300">${escapeHtml(s.description)}</div>` : ''}
+            <div class="p-3">
+              <div onclick="window._inspectSnippet('${s.id}')" class="rounded-xl overflow-hidden border border-cyber-700/60 bg-cyber-950 cursor-pointer hover:border-cyan-500/50 transition">
+                <pre class="${langClass}"><code class="${langClass}">${escapeHtml(previewCode)}${codeLines.length > 5 ? '\n// ... click card to inspect full ' + codeLines.length + ' lines' : ''}</code></pre>
+              </div>
+            </div>
+            <div class="px-4 py-2 bg-cyber-950/70 border-t border-cyber-700/50 flex items-center justify-between text-xs text-slate-400">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[10px] font-semibold bg-cyber-800 text-slate-300 px-2 py-0.5 rounded">${s.category || 'General'}</span>
+                ${(s.tags || []).map(t => `<span class="text-[10px] text-slate-400 bg-cyber-900 px-2 py-0.5 rounded border border-cyber-700/50">#${escapeHtml(t)}</span>`).join('')}
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-[11px] font-mono text-slate-500">${codeLines.length} lines</span>
+                <button onclick="window._inspectSnippet('${s.id}')" class="flex items-center gap-1.5 hover:text-cyan-400 transition"><i class="fa-regular fa-comment text-xs"></i><span class="font-mono text-xs">${s.comments?.length || 0}</span></button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      Prism.highlightAll();
     }
 
-    // Copy & Download
-    window._copySnippet = function(id) {
-      const snip = snippets.find(s => s.id === id);
-      if (!snip) return;
-      executeCopy(snip.code);
-      showToast(`Copied ${snip.title} to clipboard!`, 'success');
-    };
-
-    function copyCurrentInspectCode() {
-      if (!inspectingSnippetId) return;
-      window._copySnippet(inspectingSnippetId);
-    }
-
-    window._downloadSnippet = function(id) {
-      const snip = snippets.find(s => s.id === id);
-      if (!snip) return;
-
-      const ext = EXTENSION_MAP[snip.language] || 'txt';
-      const cleanName = snip.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
-      const filename = `cleanName.{ext}`;
-
-      const blob = new Blob([snip.code], { type: 'text/plain;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      showToast(`Downloaded ${filename}`, 'info');
-    };
-
-    function downloadCurrentInspectCode() {
-      if (!inspectingSnippetId) return;
-      window._downloadSnippet(inspectingSnippetId);
-    }
-
-    // Scratchpad handlers
-    function syncScratchpad(val) {
-      if (db) {
-        set(ref(db, 'scratchpad'), { content: val, updatedBy: currentUser ? currentUser.username : 'anon', time: Date.now() });
-      } else {
-        localStorage.setItem('devvault_team_scratchpad', val);
-      }
-    }
-
-    function copyScratchpad() {
-      const pad = teamScratchpad.value;
-      if (!pad.trim()) {
-        showToast('Scratchpad is empty', 'error');
-        return;
-      }
-      executeCopy(pad);
-      showToast('Scratchpad content copied!', 'success');
-    }
-
-    function clearScratchpad() {
-      teamScratchpad.value = '';
-      syncScratchpad('');
-      showToast('Scratchpad cleared', 'info');
-    }
-
+    // Sprint Timer Logic
     function initSprintTimer() {
-      sprintEndTime = Date.now() + 24 * 60 * 60 * 1000;
+      sprintEndTime = Date.now() + 86400000;
       if (timerInterval) clearInterval(timerInterval);
       timerInterval = setInterval(updateTimerDisplay, 1000);
       updateTimerDisplay();
     }
 
     function updateTimerDisplay() {
-      const display = document.getElementById('hackCountdown');
-      const modalDisplay = document.getElementById('modalTimerDisplay');
-      const dot = document.getElementById('timerStatusDot');
-      const stateText = document.getElementById('modalTimerStateText');
-      const pauseText = document.getElementById('pausePlayText');
-      const pauseIcon = document.getElementById('pausePlayIcon');
-
-      let remaining = 0;
-
-      if (isTimerPaused) {
-        remaining = pausedRemainingMs;
-        if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-400';
-        if (stateText) {
-          stateText.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Paused';
-          stateText.className = 'text-[11px] text-amber-400 font-mono flex items-center gap-1 mt-0.5';
-        }
-        if (pauseText) pauseText.textContent = 'Resume';
-        if (pauseIcon) pauseIcon.className = 'fa-solid fa-play';
-      } else {
-        remaining = Math.max(0, (sprintEndTime || Date.now()) - Date.now());
-        if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
-        if (stateText) {
-          stateText.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Running';
-          stateText.className = 'text-[11px] text-emerald-400 font-mono flex items-center gap-1 mt-0.5';
-        }
-        if (pauseText) pauseText.textContent = 'Pause';
-        if (pauseIcon) pauseIcon.className = 'fa-solid fa-pause';
-      }
-
-      const formatted = formatDuration(remaining);
-
-      if (display) {
-        if (remaining <= 0 && !isTimerPaused) {
-          display.textContent = 'SPRINT ENDED';
-          display.className = 'font-mono font-bold text-rose-400';
-        } else {
-          display.textContent = formatted;
-          display.className = isTimerPaused ? 'font-mono font-bold text-amber-300' : 'font-mono font-bold text-slate-200';
-        }
-      }
-
-      if (modalDisplay) {
-        modalDisplay.textContent = formatted;
-      }
+      let remaining = isTimerPaused ? pausedRemainingMs : Math.max(0, (sprintEndTime || Date.now()) - Date.now());
+      document.getElementById('timerStatusDot').className = isTimerPaused ? 'w-2 h-2 rounded-full bg-amber-400' : 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+      document.getElementById('modalTimerStateText').innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${isTimerPaused ? 'bg-amber-400' : 'bg-emerald-400'}"></span> ${isTimerPaused ? 'Paused' : 'Running'}`;
+      document.getElementById('modalTimerStateText').className = `text-[11px] ${isTimerPaused ? 'text-amber-400' : 'text-emerald-400'} font-mono flex items-center gap-1 mt-0.5`;
+      document.getElementById('pausePlayText').textContent = isTimerPaused ? 'Resume' : 'Pause';
+      document.getElementById('pausePlayIcon').className = isTimerPaused ? 'fa-solid fa-play' : 'fa-solid fa-pause';
+      const formatted = remaining <= 0 ? '00h 00m 00s' : `${Math.floor(remaining / 3600000)}h ${Math.floor((remaining % 3600000) / 60000).toString().padStart(2, '0')}m ${Math.floor((remaining % 60000) / 1000).toString().padStart(2, '0')}s`;
+      document.getElementById('hackCountdown').textContent = remaining <= 0 && !isTimerPaused ? 'SPRINT ENDED' : formatted;
+      document.getElementById('hackCountdown').className = remaining <= 0 && !isTimerPaused ? 'font-mono font-bold text-rose-400' : isTimerPaused ? 'font-mono font-bold text-amber-300' : 'font-mono font-bold text-slate-200';
+      document.getElementById('modalTimerDisplay').textContent = formatted;
     }
 
-    function formatDuration(ms) {
-      if (ms <= 0) return '00h 00m 00s';
-      const hours = Math.floor(ms / (1000 * 60 * 60));
-      const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((ms % (1000 * 60)) / 1000);
-      return `${hours}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
-    }
+    document.getElementById('toggleTimerPauseBtn').onclick = () => {
+      if (isTimerPaused) { if(db) set(ref(db, 'sprint_timer'), { endTime: Date.now() + pausedRemainingMs, isPaused: false, pausedRemainingMs: 0 }); }
+      else { if(db) set(ref(db, 'sprint_timer'), { endTime: sprintEndTime, isPaused: true, pausedRemainingMs: Math.max(0, sprintEndTime - Date.now()) }); }
+    };
+    
+    document.querySelectorAll('.preset-timer-btn').forEach(btn => {
+      btn.onclick = () => {
+        const ms = Math.floor(parseFloat(btn.getAttribute('data-hours')) * 3600000);
+        if(db) set(ref(db, 'sprint_timer'), { endTime: Date.now() + ms, isPaused: false, pausedRemainingMs: 0 });
+        document.getElementById('timerSettingsModal').classList.add('hidden');
+      };
+    });
 
-    function openTimerSettingsModal() {
-      updateTimerDisplay();
-      timerSettingsModal.classList.remove('hidden');
-      timerSettingsModal.classList.add('flex');
-    }
-
-    function closeTimerSettingsModal() {
-      timerSettingsModal.classList.add('hidden');
-      timerSettingsModal.classList.remove('flex');
-    }
-
-    function toggleTimerPause() {
-      if (isTimerPaused) {
-        // Resume timer
-        const newEndTime = Date.now() + pausedRemainingMs;
-        syncTimerToFirebase(newEndTime, false, 0);
-        showToast('Sprint timer resumed', 'success');
-      } else {
-        // Pause timer
-        const remaining = Math.max(0, (sprintEndTime || Date.now()) - Date.now());
-        syncTimerToFirebase(sprintEndTime, true, remaining);
-        showToast('Sprint timer paused', 'info');
-      }
-    }
-
-    function resetTimerHours(hours) {
-      const ms = Math.floor(hours * 60 * 60 * 1000);
-      const newEndTime = Date.now() + ms;
-      syncTimerToFirebase(newEndTime, false, 0);
-      closeTimerSettingsModal();
-      showToast(`Timer reset to hourshour{hours === 1 ? '' : 's'} across all teammates!`, 'success');
-    }
-
-    function applyCustomDurationReset() {
-      const h = parseInt(document.getElementById('customTimerHours').value, 10) || 0;
-      const m = parseInt(document.getElementById('customTimerMinutes').value, 10) || 0;
-
-      if (h <= 0 && m <= 0) {
-        showToast('Please specify at least 1 minute', 'error');
-        return;
-      }
-
-      const totalMs = (h * 60 * 60 * 1000) + (m * 60 * 1000);
-      const newEndTime = Date.now() + totalMs;
-      syncTimerToFirebase(newEndTime, false, 0);
-      closeTimerSettingsModal();
-      showToast(`Timer set to ${h}h ${m}m!`, 'success');
-    }
-
-    function syncTimerToFirebase(endTime, isPaused, pausedMs) {
-      sprintEndTime = endTime;
-      isTimerPaused = isPaused;
-      pausedRemainingMs = pausedMs;
-
-      if (db) {
-        set(ref(db, 'sprint_timer'), {
-          endTime: endTime,
-          isPaused: isPaused,
-          pausedRemainingMs: pausedMs,
-          updatedAt: Date.now()
-        });
-      }
-      updateTimerDisplay();
-    }
-
-    function renderUI() {
-      if (!currentUser) return;
-
-      const container = document.getElementById('snippetsContainer');
-      const emptyState = document.getElementById('emptyVaultState');
-
-      let filtered = snippets.filter(s => {
-        if (activeScope === 'mine') {
-          return s.author && s.author.username && s.author.username.toLowerCase() === currentUser.username.toLowerCase();
-        } else if (activeScope === 'starred') {
-          return s.starred;
-        }
-        return true;
-      });
-
-      if (selectedLanguage) {
-        filtered = filtered.filter(s => s.language === selectedLanguage);
-      }
-
-      if (selectedCategory !== 'all') {
-        filtered = filtered.filter(s => s.category === selectedCategory);
-      }
-
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        filtered = filtered.filter(s => {
-          return (s.title && s.title.toLowerCase().includes(q)) ||
-                 (s.description && s.description.toLowerCase().includes(q)) ||
-                 (s.author && s.author.username && s.author.username.toLowerCase().includes(q)) ||
-                 (s.tags && s.tags.some(t => t.toLowerCase().includes(q))) ||
-                 (s.code && s.code.toLowerCase().includes(q));
-        });
-      }
-
-      document.getElementById('statSnippetCount').textContent = snippets.length;
-      document.getElementById('statUserCount').textContent = users.length;
-      document.getElementById('badgeCountAll').textContent = snippets.length;
-      document.getElementById('badgeCountMine').textContent = snippets.filter(s => s.author && s.author.username && s.author.username.toLowerCase() === currentUser.username.toLowerCase()).length;
-      document.getElementById('badgeCountStarred').textContent = snippets.filter(s => s.starred).length;
-
-      renderLanguageList();
-
-      if (filtered.length === 0) {
-        container.innerHTML = '';
-        emptyState.classList.remove('hidden');
-        emptyState.classList.add('flex');
-        return;
-      }
-
-      emptyState.classList.add('hidden');
-      emptyState.classList.remove('flex');
-
-      container.innerHTML = filtered.map(snippet => generateCardHTML(snippet)).join('');
-      Prism.highlightAll();
-    }
-
-    function generateCardHTML(snippet) {
-      const isMine = snippet.author && snippet.author.username && snippet.author.username.toLowerCase() === currentUser.username.toLowerCase();
-      const isAdmin = currentUser.username.toLowerCase() === 'admin' || currentUser.isAdmin;
-      const codeLines = (snippet.code || '').split('\n');
-      const lineCount = codeLines.length;
-      const previewCode = codeLines.slice(0, 5).join('\n');
-      const langClass = `language-${snippet.language === 'shell' ? 'bash' : snippet.language}`;
-      const authorInitial = snippet.author && snippet.author.username ? snippet.author.username.substring(0, 2).toUpperCase() : '??';
-
-      return `
-        <div class="bg-cyber-900 border border-cyber-700/80 hover:border-cyber-600 rounded-2xl overflow-hidden shadow-sm transition duration-150">
-          
-          <div class="p-4 border-b border-cyber-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-            <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-lg bg-cyber-800 border border-cyber-600 flex items-center justify-center font-mono text-xs font-bold text-cyan-400 mt-0.5">
-                ${authorInitial}
-              </div>
-              <div>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <h3 onclick="window._inspectSnippet('${snippet.id}')" class="text-sm font-bold text-white hover:text-cyan-400 cursor-pointer transition">
-                    ${escapeHtml(snippet.title)}
-                  </h3>
-                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase ${getLangBadgeStyle(snippet.language)}">
-                    ${snippet.language}
-                  </span>
-                  ${snippet.starred ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-800 flex items-center gap-1"><i class="fa-solid fa-star text-[9px]"></i> Starred</span>' : ''}
-                </div>
-                <p class="text-xs text-slate-400 mt-0.5">
-                  by <span class="text-slate-200 font-semibold">${escapeHtml(snippet.author ? (snippet.author.fullName || snippet.author.username) : 'Dev')}</span> 
-                  <span class="text-cyan-400 font-mono text-[11px]">(${escapeHtml(snippet.author ? snippet.author.role : 'Hacker')})</span> • 
-                  <span>${formatTimeAgo(snippet.createdAt || Date.now())}</span>
-                </p>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-1 self-end sm:self-center">
-              <button onclick="window._toggleStar('${snippet.id}')" title="Star snippet" class="p-1.5 text-xs rounded-lg transition ${snippet.starred ? 'text-amber-400 bg-amber-400/10' : 'text-slate-400 hover:text-slate-200 hover:bg-cyber-800'}">
-                <i class="fa-${snippet.starred ? 'solid' : 'regular'} fa-star"></i>
-              </button>
-              
-              <button onclick="window._copySnippet('${snippet.id}')" title="Copy raw code" class="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyber-800 rounded-lg transition text-xs">
-                <i class="fa-solid fa-copy"></i>
-              </button>
-
-              <button onclick="window._downloadSnippet('${snippet.id}')" title="Download file" class="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-cyber-800 rounded-lg transition text-xs">
-                <i class="fa-solid fa-download"></i>
-              </button>
-
-              <button onclick="window._inspectSnippet('${snippet.id}')" title="Inspect & Discuss" class="p-1.5 text-slate-400 hover:text-white hover:bg-cyber-800 rounded-lg transition text-xs">
-                <i class="fa-solid fa-expand"></i>
-              </button>
-
-              ${(isMine || isAdmin) ? `
-                <button onclick="window._deleteSnippet('${snippet.id}')" title="Delete code" class="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-cyber-800 rounded-lg transition text-xs">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              ` : ''}
-            </div>
-          </div>
-
-          ${snippet.description ? `
-            <div class="px-4 pt-3 pb-1 text-xs text-slate-300">
-              ${escapeHtml(snippet.description)}
-            </div>
-          ` : ''}
-
-          <div class="p-3">
-            <div onclick="window._inspectSnippet('${snippet.id}')" class="rounded-xl overflow-hidden border border-cyber-700/60 bg-cyber-950 cursor-pointer hover:border-cyan-500/50 transition">
-              <pre class="langClass"><codeclass="{langClass}">escapeHtml(previewCode){lineCount > 5 ? '\n// ... click card to inspect full ' + lineCount + ' lines' : ''}</code></pre>
-            </div>
-          </div>
-
-          <div class="px-4 py-2 bg-cyber-950/70 border-t border-cyber-700/50 flex items-center justify-between text-xs text-slate-400">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="text-[10px] font-semibold bg-cyber-800 text-slate-300 px-2 py-0.5 rounded">
-                ${snippet.category || 'General'}
-              </span>
-              ${(snippet.tags || []).map(tag => `
-                <span class="text-[10px] text-slate-400 bg-cyber-900 px-2 py-0.5 rounded border border-cyber-700/50">
-                  #${escapeHtml(tag)}
-                </span>
-              `).join('')}
-            </div>
-
-            <div class="flex items-center gap-3">
-              <span class="text-[11px] font-mono text-slate-500">${lineCount} lines</span>
-              <button onclick="window._inspectSnippet('${snippet.id}')" class="flex items-center gap-1.5 hover:text-cyan-400 transition">
-                <i class="fa-regular fa-comment text-xs"></i>
-                <span class="font-mono text-xs">${snippet.comments ? snippet.comments.length : 0}</span>
-              </button>
-            </div>
-          </div>
-
-        </div>
-      `;
-    }
-
-    function renderLanguageList() {
-      const counts = {};
-      snippets.forEach(s => {
-        counts[s.language] = (counts[s.language] || 0) + 1;
-      });
-
-      const container = document.getElementById('languageFilterList');
-      const supportedLangs = Object.keys(EXTENSION_MAP);
-
-      container.innerHTML = supportedLangs.map(lang => {
-        const count = counts[lang] || 0;
-        const active = selectedLanguage === lang;
-        return `
-          <button onclick="window._filterLanguage('${lang}')" class="w-full text-left px-2 py-1 rounded-lg text-xs flex items-center justify-between transition ${active ? 'bg-cyan-500/20 text-cyan-300 font-bold' : 'text-slate-400 hover:text-white hover:bg-cyber-800'}">
-            <span class="capitalize">${lang}</span>
-            <span class="font-mono text-[10px] text-slate-500">${count}</span>
-          </button>
-        `;
-      }).join('');
-    }
-
-    window._filterLanguage = function(lang) {
-      selectedLanguage = (selectedLanguage === lang) ? null : lang;
-      renderUI();
+    document.getElementById('btnApplyCustomDuration').onclick = () => {
+      const ms = (parseInt(document.getElementById('customTimerHours').value, 10)*3600000) + (parseInt(document.getElementById('customTimerMinutes').value, 10)*60000);
+      if(db && ms > 0) set(ref(db, 'sprint_timer'), { endTime: Date.now() + ms, isPaused: false, pausedRemainingMs: 0 });
+      document.getElementById('timerSettingsModal').classList.add('hidden');
     };
 
-    function setScope(scope) {
-      activeScope = scope;
-      ['all', 'mine', 'starred'].forEach(s => {
-        const btn = document.getElementById(`scopeBtn-${s}`);
-        if (s === scope) {
-          btn.className = 'w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition bg-cyan-500/15 text-cyan-300 border border-cyan-500/30';
-        } else {
-          btn.className = 'w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition text-slate-400 hover:text-slate-200 hover:bg-cyber-800';
-        }
-      });
-      renderUI();
-    }
-
-    function getLangBadgeStyle(lang) {
-      switch ((lang || '').toLowerCase()) {
-        case 'python': return 'bg-emerald-950 text-emerald-300 border border-emerald-800';
-        case 'javascript': return 'bg-amber-950 text-amber-300 border border-amber-800';
-        case 'typescript': return 'bg-blue-950 text-blue-300 border border-blue-800';
-        case 'cpp': return 'bg-sky-950 text-sky-300 border border-sky-800';
-        case 'rust': return 'bg-orange-950 text-orange-300 border border-orange-800';
-        case 'go': return 'bg-cyan-950 text-cyan-300 border border-cyan-800';
-        case 'html': return 'bg-rose-950 text-rose-300 border border-rose-800';
-        case 'sql': return 'bg-purple-950 text-purple-300 border border-purple-800';
-        default: return 'bg-slate-800 text-slate-300 border border-slate-700';
-      }
-    }
-
+    // Generic Helpers
     function setupTabIndentation() {
-      const textarea = document.getElementById('snippetCodeInput');
-      textarea.addEventListener('keydown', function(e) {
-        if (e.key === 'Tab') {
-          e.preventDefault();
-          const start = this.selectionStart;
-          const end = this.selectionEnd;
-          this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
-          this.selectionStart = this.selectionEnd = start + 2;
-        }
+      document.getElementById('snippetCodeInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') { e.preventDefault(); const start = this.selectionStart, end = this.selectionEnd; this.value = this.value.substring(0, start) + "  " + this.value.substring(end); this.selectionStart = this.selectionEnd = start + 2; }
       });
     }
 
     function executeCopy(text) {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+      if(navigator.clipboard) navigator.clipboard.writeText(text).catch(fallback); else fallback();
+      function fallback() { const ta = document.createElement('textarea'); ta.value = text; ta.style.position='fixed'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }
     }
 
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-
-      let icon = 'fa-circle-info';
-      let border = 'border-cyan-500/40 text-cyan-200';
-      if (type === 'success') {
-        icon = 'fa-circle-check';
-        border = 'border-emerald-500/40 text-emerald-200';
-      } else if (type === 'error') {
-        icon = 'fa-triangle-exclamation';
-        border = 'border-rose-500/40 text-rose-200';
-      }
-
-      toast.className = `bg-cyber-900/95 backdrop-blur-md border ${border} px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 text-xs font-medium transform transition-all duration-300 translate-y-3 opacity-0`;
-      toast.innerHTML = `<i class="fa-solid icon"></i><span>{escapeHtml(message)}</span>`;
-
-      container.appendChild(toast);
-
-      requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-3', 'opacity-0');
-      });
-
-      setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-3');
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
+      const t = document.createElement('div');
+      const icon = type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-info';
+      const border = type === 'success' ? 'border-emerald-500/40 text-emerald-200' : type === 'error' ? 'border-rose-500/40 text-rose-200' : 'border-cyan-500/40 text-cyan-200';
+      t.className = `bg-cyber-900/95 backdrop-blur-md border ${border} px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 text-xs font-medium transform transition-all duration-300 translate-y-3 opacity-0`;
+      t.innerHTML = `<i class="fa-solid ${icon}"></i><span>${escapeHtml(message)}</span>`;
+      container.appendChild(t);
+      requestAnimationFrame(() => t.classList.remove('translate-y-3', 'opacity-0'));
+      setTimeout(() => { t.classList.add('opacity-0', 'translate-y-3'); setTimeout(() => t.remove(), 300); }, 3000);
     }
 
-    function formatTimeAgo(timestamp) {
-      const elapsed = Math.floor((Date.now() - timestamp) / 1000);
-      if (elapsed < 60) return 'Just now';
-      if (elapsed < 3600) return `${Math.floor(elapsed / 60)}m ago`;
-      if (elapsed < 86400) return `${Math.floor(elapsed / 3600)}h ago`;
-      return `${Math.floor(elapsed / 86400)}d ago`;
-    }
-
-    function escapeHtml(text) {
-      if (!text) return '';
-      return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
+    function formatTimeAgo(ts) { const e = Math.floor((Date.now() - ts) / 1000); return e < 60 ? 'Just now' : e < 3600 ? `${Math.floor(e/60)}m ago` : e < 86400 ? `${Math.floor(e/3600)}h ago` : `${Math.floor(e/86400)}d ago`; }
+    function escapeHtml(str) { return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;") : ''; }
   </script>
 </body>
 </html>
