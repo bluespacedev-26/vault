@@ -45,6 +45,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
   
+  <!-- JSZip for multi-file bundle downloads -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -81,18 +84,22 @@
       tab-size: 2;
       -moz-tab-size: 2;
     }
+
+    .pitch-mode pre[class*="language-"] {
+      font-size: 1.05rem !important;
+      line-height: 1.7 !important;
+    }
   </style>
 </head>
 
 <body class="bg-cyber-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-cyan-500/25 selection:text-cyan-300 antialiased overflow-x-hidden">
 
+  <!-- Sign In Modal -->
   <div id="loginPortal" class="fixed inset-0 z-50 bg-cyber-950 flex flex-col items-center justify-center p-4 cyber-grid">
     <div class="absolute w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -top-10 -left-10"></div>
     <div class="absolute w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none -bottom-10 -right-10"></div>
 
     <div class="relative w-full max-w-md bg-cyber-900/95 border border-cyber-700/80 rounded-2xl p-6 sm:p-8 backdrop-blur-xl glow-cyan shadow-2xl">
-      
-      <!-- Terminal Header -->
       <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-cyber-700/60 text-xs font-mono text-slate-400">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
@@ -106,7 +113,6 @@
         </div>
       </div>
 
-      <!-- App Title -->
       <div class="text-center mb-6">
         <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 shadow-md shadow-cyan-500/20 mb-3 text-white text-xl">
           <i class="fa-solid fa-code-commit"></i>
@@ -115,9 +121,7 @@
         <p class="text-xs text-slate-400 mt-1">Sign in with your team credentials to access snippets</p>
       </div>
 
-      <!-- Login Form (Only Username & Password) -->
       <form id="authPortalForm" class="space-y-4">
-        
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1.5">
             <i class="fa-solid fa-user text-cyan-400 mr-1.5"></i> Username
@@ -155,7 +159,6 @@
           </div>
         </div>
 
-        <!-- Submit Button -->
         <button 
           type="submit" 
           class="w-full py-2.5 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-lg shadow-cyan-500/25 transition transform active:scale-98 flex items-center justify-center gap-2 pt-3 pb-3"
@@ -163,16 +166,14 @@
           <i class="fa-solid fa-arrow-right-to-bracket"></i>
           <span>Sign In to Vault</span>
         </button>
-
       </form>
-
     </div>
   </div>
 
+  <!-- Header Navigation -->
   <header class="sticky top-0 z-40 bg-cyber-900/90 backdrop-blur-md border-b border-cyber-700/60 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
       
-      <!-- Brand & Team Info -->
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-md shadow-cyan-500/20">
           <i class="fa-solid fa-laptop-code text-xl text-white"></i>
@@ -181,30 +182,49 @@
           <div class="flex items-center gap-2">
             <span class="font-extrabold text-base sm:text-lg tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">DEVVAULT</span>
             <span id="firebaseStatusBadge" class="text-[10px] font-mono uppercase bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-800 font-bold flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> FIREBASE LIVE
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> SYNCED
             </span>
           </div>
           <div class="text-[11px] text-slate-400">Hackathon Code Base & Realtime Sync</div>
         </div>
       </div>
 
-      <!-- Live Sprint Countdown Clock with Settings trigger -->
+      <!-- Live Sprint Countdown Clock -->
       <div class="hidden md:flex items-center gap-2 bg-cyber-950/80 border border-cyber-700/80 pl-3.5 pr-1.5 py-1 rounded-full shadow-inner text-xs">
         <span id="timerStatusDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
         <span class="font-mono text-cyan-400 font-bold">HACK SPRINT:</span>
         <span id="hackCountdown" class="font-mono font-bold text-slate-200">23h 59m 59s</span>
         <button 
           id="btnOpenTimerSettings"
-          title="Configure / Reset Sprint Timer" 
+          title="Configure Sprint Timer" 
           class="ml-1 p-1 px-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyber-800 rounded-full transition flex items-center justify-center text-xs"
         >
           <i class="fa-solid fa-gear"></i>
         </button>
       </div>
 
-      <!-- Active User Actions & Admin Hub Button -->
+      <!-- User Actions & Tools -->
       <div class="flex items-center gap-2 sm:gap-3">
-        
+        <!-- Pitch/Presenter Mode Toggle -->
+        <button 
+          id="btnTogglePitchMode" 
+          title="Toggle Judge/Pitch Mode"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-cyber-800 hover:bg-cyber-700 border border-cyber-600 text-slate-300 rounded-lg transition"
+        >
+          <i class="fa-solid fa-tv text-cyan-400"></i>
+          <span class="hidden sm:inline">Pitch View</span>
+        </button>
+
+        <!-- Multi-Snippet Zip Download -->
+        <button 
+          id="btnExportZip" 
+          title="Download All Code as .ZIP Bundle"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-cyber-800 hover:bg-cyber-700 border border-cyber-600 text-slate-300 rounded-lg transition"
+        >
+          <i class="fa-solid fa-file-zipper text-amber-400"></i>
+          <span class="hidden sm:inline">Export .ZIP</span>
+        </button>
+
         <!-- Super Admin Only: User Management Button -->
         <button 
           id="adminManageBtn" 
@@ -235,18 +255,51 @@
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </button>
         </div>
-
       </div>
 
     </div>
   </header>
 
+  <!-- Main Body Content -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6">
 
-    <!-- Left Controls, Scope & Scratchpad -->
-    <aside class="w-full lg:w-72 flex-shrink-0 space-y-4">
+    <!-- Left Controls & Hackathon Essentials -->
+    <aside id="mainSidebar" class="w-full lg:w-72 flex-shrink-0 space-y-4">
       
-      <!-- Team Status Card -->
+      <!-- Submission Links & Live Deliverables -->
+      <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-3.5 shadow-sm space-y-2.5">
+        <div class="flex items-center justify-between pb-2 border-b border-cyber-700/60">
+          <h2 class="text-[10px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-flag-checkered text-emerald-400"></i> Sprint Deliverables
+          </h2>
+          <span class="text-[10px] text-cyan-400 font-mono font-semibold">FINALS</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <input 
+            type="text" 
+            id="repoUrlInput" 
+            placeholder="GitHub Repo URL" 
+            class="col-span-2 bg-cyber-950 border border-cyber-700 rounded-lg px-2.5 py-1.5 text-[11px] text-slate-200 focus:outline-none focus:border-cyan-400"
+          >
+          <input 
+            type="text" 
+            id="liveDemoUrlInput" 
+            placeholder="Live Demo URL" 
+            class="col-span-2 bg-cyber-950 border border-cyber-700 rounded-lg px-2.5 py-1.5 text-[11px] text-slate-200 focus:outline-none focus:border-cyan-400"
+          >
+        </div>
+        <div class="flex items-center justify-between text-[11px] pt-1">
+          <button id="btnSaveLinks" class="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Sync Links
+          </button>
+          <div class="flex gap-2">
+            <a id="btnOpenRepo" href="#" target="_blank" class="text-slate-400 hover:text-white" title="Open GitHub Repo"><i class="fa-brands fa-github text-sm"></i></a>
+            <a id="btnOpenLiveDemo" href="#" target="_blank" class="text-slate-400 hover:text-emerald-400" title="Open Live Demo"><i class="fa-solid fa-rocket text-sm"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Stats Card -->
       <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-4 shadow-sm">
         <div class="flex items-center justify-between pb-3 border-b border-cyber-700/60 mb-3">
           <div>
@@ -254,7 +307,7 @@
             <div class="text-sm font-extrabold text-white mt-0.5">Firebase Synced</div>
           </div>
           <span class="px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded text-[10px] font-mono">
-            RTDB ONLINE
+            LIVE ONLINE
           </span>
         </div>
 
@@ -302,12 +355,10 @@
           <h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Languages</h3>
           <button id="btnClearLanguageFilter" class="text-[10px] text-cyan-400 hover:underline">Clear</button>
         </div>
-        <div id="languageFilterList" class="space-y-0.5 max-h-40 overflow-y-auto pr-1">
-          <!-- Rendered in JS -->
-        </div>
+        <div id="languageFilterList" class="space-y-0.5 max-h-40 overflow-y-auto pr-1"></div>
       </div>
 
-      <!-- Team Scratchpad -->
+      <!-- Shared Team Scratchpad -->
       <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-4 flex flex-col">
         <div class="flex items-center justify-between mb-1.5">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
@@ -316,7 +367,7 @@
           <span class="text-[10px] text-slate-500 font-mono">Firebase Synced</span>
         </div>
         <p class="text-[10px] text-slate-400 mb-2 leading-tight">
-          Drop temporary env tokens, curls, and webhook endpoints:
+          Drop temporary env tokens, test keys, and endpoints:
         </p>
         <textarea 
           id="teamScratchpad" 
@@ -328,40 +379,47 @@
           <button id="btnCopyScratchpad" class="font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
             <i class="fa-solid fa-copy"></i> Copy
           </button>
-          <button id="btnClearScratchpad" class="text-slate-500 hover:text-rose-400">
-            Clear
-          </button>
+          <button id="btnClearScratchpad" class="text-slate-500 hover:text-rose-400">Clear</button>
         </div>
       </div>
 
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- Main Snippets Stream -->
     <section class="flex-1 flex flex-col space-y-4 min-w-0">
       
-      <!-- Search & Category Bar -->
+      <!-- Search, State & Category Filters -->
       <div class="bg-cyber-900 border border-cyber-700/80 p-3 rounded-2xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
         <div class="relative w-full sm:flex-1">
           <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
           <input 
             type="text" 
             id="searchInput" 
-            placeholder="Search code by title, content, author, tag..." 
+            placeholder="Search code by title, extension, tags, author..." 
             class="w-full bg-cyber-950 border border-cyber-700 rounded-xl pl-9 pr-4 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition"
           >
         </div>
 
-        <select id="categoryFilter" class="w-full sm:w-auto bg-cyber-950 border border-cyber-700 text-xs text-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-400">
-          <option value="all">All Domains / Categories</option>
-          <option value="API / Endpoints">API & Endpoints</option>
-          <option value="Authentication">Auth & Security</option>
-          <option value="AI / Prompts">AI & LLM Prompting</option>
-          <option value="UI Components">UI Components</option>
-          <option value="Database / ORM">Database & Queries</option>
-          <option value="Algorithms">Algorithms & Logic</option>
-          <option value="Utils / Helpers">Utils & Helpers</option>
-          <option value="DevOps / Config">DevOps & Config</option>
-        </select>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <select id="statusFilter" class="bg-cyber-950 border border-cyber-700 text-xs text-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-400">
+            <option value="all">All Statuses</option>
+            <option value="READY">Ready for Squad</option>
+            <option value="WIP">Work in Progress</option>
+            <option value="DEPRECATED">Deprecated</option>
+          </select>
+
+          <select id="categoryFilter" class="bg-cyber-950 border border-cyber-700 text-xs text-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-400">
+            <option value="all">All Domains</option>
+            <option value="API / Endpoints">API & Endpoints</option>
+            <option value="Authentication">Auth & Security</option>
+            <option value="AI / Prompts">AI & LLM Prompting</option>
+            <option value="UI Components">UI Components</option>
+            <option value="Database / ORM">Database & Queries</option>
+            <option value="Algorithms">Algorithms & Logic</option>
+            <option value="Utils / Helpers">Utils & Helpers</option>
+            <option value="DevOps / Config">DevOps & Config</option>
+          </select>
+        </div>
       </div>
 
       <!-- Snippets Feed List -->
@@ -385,10 +443,242 @@
 
   </main>
 
+  <!-- Save / Upload Snippet Modal -->
+  <div id="snippetModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-cyber-900 border border-cyber-700 w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+      
+      <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/60">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-code"></i>
+          </div>
+          <div>
+            <h2 id="modalHeaderTitle" class="text-sm font-bold text-white">Save Snippet to Team Vault</h2>
+            <p class="text-[11px] text-slate-400">Retain exact extensions & auto-populate from file</p>
+          </div>
+        </div>
+        <button id="btnCloseSnippetModal" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="snippetForm" class="flex-1 overflow-y-auto p-6 space-y-4">
+        <input type="hidden" id="editSnippetId" value="">
+
+        <!-- File Upload Helper -->
+        <div class="p-3 bg-cyber-950/80 border border-cyber-700/80 rounded-xl">
+          <label class="block text-xs font-semibold text-cyan-400 mb-1 flex items-center gap-1.5">
+            <i class="fa-solid fa-file-arrow-up"></i> Upload File (Retains Original Extension & Name)
+          </label>
+          <input 
+            type="file" 
+            id="snippetFileInput" 
+            class="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyber-800 file:text-cyan-400 hover:file:bg-cyber-700 bg-cyber-950 border border-cyber-700 rounded-lg p-1 cursor-pointer"
+          >
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Snippet Title <span class="text-rose-400">*</span></label>
+            <input 
+              type="text" 
+              id="snippetTitleInput" 
+              required 
+              placeholder="e.g. Gemini Stream Handler or JWT Auth Middleware"
+              class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+            >
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Explicit File Extension</label>
+            <input 
+              type="text" 
+              id="snippetExtensionInput" 
+              placeholder="e.g. py, ts, json, env, sh" 
+              class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono text-cyan-300 focus:outline-none focus:border-cyan-400"
+            >
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Syntax Language</label>
+            <select id="snippetLangSelect" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
+              <option value="python">Python (.py)</option>
+              <option value="javascript">JavaScript (.js)</option>
+              <option value="typescript">TypeScript (.ts)</option>
+              <option value="cpp">C++ (.cpp)</option>
+              <option value="rust">Rust (.rs)</option>
+              <option value="go">Go (.go)</option>
+              <option value="html">HTML / CSS</option>
+              <option value="sql">SQL / Postgres</option>
+              <option value="shell">Shell / Bash (.sh)</option>
+              <option value="json">JSON / YAML</option>
+              <option value="java">Java (.java)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Squad Status</label>
+            <select id="snippetStatusSelect" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
+              <option value="READY">Ready for Squad</option>
+              <option value="WIP">Work in Progress (Claimed)</option>
+              <option value="DEPRECATED">Deprecated / Do Not Use</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Category</label>
+            <select id="snippetCategorySelect" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
+              <option value="API / Endpoints">API & Endpoints</option>
+              <option value="Authentication">Auth & Security</option>
+              <option value="AI / Prompts">AI & LLM Prompting</option>
+              <option value="UI Components">UI Components</option>
+              <option value="Database / ORM">Database & Queries</option>
+              <option value="Algorithms">Algorithms & Logic</option>
+              <option value="Utils / Helpers">Utils & Helpers</option>
+              <option value="DevOps / Config">DevOps & Config</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Tags (comma-separated)</label>
+          <input 
+            type="text" 
+            id="snippetTagsInput" 
+            placeholder="e.g. fast, auth, edge, streaming"
+            class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+          >
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Notes / How to integrate</label>
+          <input 
+            type="text" 
+            id="snippetDescInput" 
+            placeholder="Where should teammates integrate this or what parameters are needed?"
+            class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+          >
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold text-slate-300">Code Snippet <span class="text-rose-400">*</span></label>
+            <span class="text-[11px] text-slate-400 font-mono">Press [Tab] for 2 spaces</span>
+          </div>
+          <textarea 
+            id="snippetCodeInput" 
+            required 
+            rows="10" 
+            placeholder="// Paste your production code or upload file above..."
+            class="w-full bg-cyber-950 border border-cyber-700 rounded-xl p-3.5 font-mono text-xs sm:text-sm text-cyan-300 focus:outline-none focus:border-cyan-400 editor-textarea leading-relaxed"
+            spellcheck="false"
+          ></textarea>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-cyber-700/70">
+          <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+            <input type="checkbox" id="snippetStarredCheck" class="rounded bg-cyber-950 border-cyber-700 text-cyan-500 focus:ring-0">
+            <span>Mark as Critical / Starred</span>
+          </label>
+
+          <div class="flex items-center gap-2.5">
+            <button type="button" id="btnCancelSnippet" class="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-xl hover:bg-cyber-800 transition">
+              Cancel
+            </button>
+            <button type="submit" class="px-5 py-2 text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-900 rounded-xl shadow-lg shadow-cyan-500/20 transition transform active:scale-95">
+              Save to Squad
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Detailed Inspect & Discussion Modal -->
+  <div id="inspectModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6">
+    <div class="bg-cyber-900 border border-cyber-700 w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+      
+      <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
+        <div class="flex items-center gap-3">
+          <span id="inspectLangBadge" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase bg-cyan-950 text-cyan-400 border border-cyan-800">
+            PY
+          </span>
+          <span id="inspectStatusBadge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold">
+            READY
+          </span>
+          <div>
+            <h3 id="inspectTitle" class="text-sm sm:text-base font-bold text-white tracking-tight">Snippet Title</h3>
+            <p id="inspectMeta" class="text-xs text-slate-400">By user • Role • 10m ago</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="inspectCopyFetchBtn" title="Copy Fetch boilerplate" class="px-3 py-1.5 bg-cyber-800 hover:bg-cyber-700 text-slate-200 text-xs rounded-xl flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-terminal text-cyan-400"></i>
+            <span>cURL/Fetch</span>
+          </button>
+          <button id="inspectCopyBtn" class="px-3 py-1.5 bg-cyber-800 hover:bg-cyber-700 text-slate-200 text-xs rounded-xl flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-copy"></i>
+            <span>Copy</span>
+          </button>
+          <button id="inspectDownloadBtn" class="px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold text-xs rounded-xl flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-download"></i>
+            <span>Download</span>
+          </button>
+          <button id="btnCloseInspectModal" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 space-y-5">
+        <div>
+          <p id="inspectDesc" class="text-xs sm:text-sm text-slate-300 leading-relaxed bg-cyber-950/60 p-3 rounded-xl border border-cyber-700/60 font-sans">
+            Instructions...
+          </p>
+          <div id="inspectTags" class="flex flex-wrap gap-1.5 mt-2.5"></div>
+        </div>
+
+        <div class="rounded-xl overflow-hidden border border-cyber-700 shadow-xl">
+          <div class="bg-cyber-950 px-4 py-2 border-b border-cyber-700/80 flex items-center justify-between text-xs text-slate-400 font-mono">
+            <span id="inspectFilename" class="text-cyan-400 font-bold">snippet.py</span>
+            <span id="inspectLineCount" class="text-slate-500">24 lines</span>
+          </div>
+          <pre class="overflow-x-auto"><code id="inspectCodeBlock" class="language-python"></code></pre>
+        </div>
+
+        <!-- Teammate Notes -->
+        <div class="border-t border-cyber-700/70 pt-4">
+          <h4 class="text-xs font-bold text-slate-200 mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-comments text-cyan-400"></i> Teammate Notes & Feedback (<span id="inspectCommentCount">0</span>)
+          </h4>
+          <div id="inspectCommentsList" class="space-y-2 mb-3"></div>
+
+          <form id="inspectCommentForm" class="flex gap-2">
+            <input 
+              type="text" 
+              id="inspectCommentInput" 
+              required 
+              placeholder="Leave a note or endpoint detail for your teammates..." 
+              class="flex-1 bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+            >
+            <button type="submit" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold text-xs rounded-xl transition">
+              Add Note
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- User Management Modal -->
   <div id="adminUserModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
       
-      <!-- Modal Header -->
       <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm font-bold">
@@ -404,10 +694,7 @@
         </button>
       </div>
 
-      <!-- Modal Body -->
       <div class="p-6 overflow-y-auto space-y-6">
-        
-        <!-- Create User Form (Admin Exclusive) -->
         <div class="bg-cyber-950/70 border border-cyber-700/80 p-4 rounded-xl">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 mb-3 flex items-center gap-2">
             <i class="fa-solid fa-user-plus text-cyan-400"></i> Provision New Hacker Account
@@ -459,18 +746,16 @@
             </div>
 
             <button type="submit" class="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold rounded-lg text-xs transition">
-              <i class="fa-solid fa-plus mr-1"></i> Register Team Member (Saves to Firebase)
+              <i class="fa-solid fa-plus mr-1"></i> Register Team Member
             </button>
           </form>
         </div>
 
-        <!-- Registered Team Users Table -->
         <div>
           <div class="flex items-center justify-between mb-2.5">
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">
               Active Team Members (<span id="adminUserCountLabel">1</span>)
             </h3>
-            <span class="text-[11px] text-slate-500">Only Admin can manage credentials</span>
           </div>
 
           <div class="border border-cyber-700/80 rounded-xl overflow-hidden">
@@ -483,9 +768,7 @@
                   <th class="p-3 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody id="adminUserTableBody" class="divide-y divide-cyber-700/50">
-                <!-- Injected via JavaScript -->
-              </tbody>
+              <tbody id="adminUserTableBody" class="divide-y divide-cyber-700/50"></tbody>
             </table>
           </div>
         </div>
@@ -494,201 +777,7 @@
     </div>
   </div>
 
-  <div id="snippetModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-cyber-900 border border-cyber-700 w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-      
-      <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/60">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-sm">
-            <i class="fa-solid fa-code"></i>
-          </div>
-          <div>
-            <h2 id="modalHeaderTitle" class="text-sm font-bold text-white">Save Snippet to Team Vault</h2>
-            <p class="text-[11px] text-slate-400">Share reusable code with teammates in realtime</p>
-          </div>
-        </div>
-        <button id="btnCloseSnippetModal" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-
-      <!-- Modal Body -->
-      <form id="snippetForm" class="flex-1 overflow-y-auto p-6 space-y-4">
-        <input type="hidden" id="editSnippetId" value="">
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="md:col-span-2">
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Snippet Title <span class="text-rose-400">*</span></label>
-            <input 
-              type="text" 
-              id="snippetTitleInput" 
-              required 
-              placeholder="e.g. Gemini Stream Handler or JWT Auth Middleware"
-              class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-            >
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Language <span class="text-rose-400">*</span></label>
-            <select id="snippetLangSelect" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
-              <option value="python">Python (.py)</option>
-              <option value="javascript">JavaScript (.js)</option>
-              <option value="typescript">TypeScript (.ts)</option>
-              <option value="cpp">C++ (.cpp)</option>
-              <option value="rust">Rust (.rs)</option>
-              <option value="go">Go (.go)</option>
-              <option value="html">HTML / CSS</option>
-              <option value="sql">SQL / Postgres</option>
-              <option value="shell">Shell / Bash (.sh)</option>
-              <option value="json">JSON / YAML</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Domain Category</label>
-            <select id="snippetCategorySelect" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
-              <option value="API / Endpoints">API & Endpoints</option>
-              <option value="Authentication">Auth & Security</option>
-              <option value="AI / Prompts">AI & LLM Prompting</option>
-              <option value="UI Components">UI Components</option>
-              <option value="Database / ORM">Database & Queries</option>
-              <option value="Algorithms">Algorithms & Logic</option>
-              <option value="Utils / Helpers">Utils & Helpers</option>
-              <option value="DevOps / Config">DevOps & Config</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Tags (comma-separated)</label>
-            <input 
-              type="text" 
-              id="snippetTagsInput" 
-              placeholder="e.g. fast, auth, edge, streaming"
-              class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-            >
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Description / Teammate Notes</label>
-          <input 
-            type="text" 
-            id="snippetDescInput" 
-            placeholder="Where should teammates integrate this or what parameters are needed?"
-            class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-          >
-        </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="block text-xs font-semibold text-slate-300">Code Snippet <span class="text-rose-400">*</span></label>
-            <span class="text-[11px] text-slate-400 font-mono">Press [Tab] for 2 spaces</span>
-          </div>
-          <textarea 
-            id="snippetCodeInput" 
-            required 
-            rows="10" 
-            placeholder="// Paste your production code here..."
-            class="w-full bg-cyber-950 border border-cyber-700 rounded-xl p-3.5 font-mono text-xs sm:text-sm text-cyan-300 focus:outline-none focus:border-cyan-400 editor-textarea leading-relaxed"
-            spellcheck="false"
-          ></textarea>
-        </div>
-
-        <div class="flex items-center justify-between pt-3 border-t border-cyber-700/70">
-          <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
-            <input type="checkbox" id="snippetStarredCheck" class="rounded bg-cyber-950 border-cyber-700 text-cyan-500 focus:ring-0">
-            <span>Mark as Critical / Starred</span>
-          </label>
-
-          <div class="flex items-center gap-2.5">
-            <button type="button" id="btnCancelSnippet" class="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-xl hover:bg-cyber-800 transition">
-              Cancel
-            </button>
-            <button type="submit" class="px-5 py-2 text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-900 rounded-xl shadow-lg shadow-cyan-500/20 transition transform active:scale-95">
-              Save to Squad
-            </button>
-          </div>
-        </div>
-
-      </form>
-    </div>
-  </div>
-
-  <div id="inspectModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6">
-    <div class="bg-cyber-900 border border-cyber-700 w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
-      
-      <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
-        <div class="flex items-center gap-3">
-          <span id="inspectLangBadge" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase bg-cyan-950 text-cyan-400 border border-cyan-800">
-            PY
-          </span>
-          <div>
-            <h3 id="inspectTitle" class="text-sm sm:text-base font-bold text-white tracking-tight">Snippet Title</h3>
-            <p id="inspectMeta" class="text-xs text-slate-400">By user • Role • 10m ago</p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <button id="inspectCopyBtn" class="px-3 py-1.5 bg-cyber-800 hover:bg-cyber-700 text-slate-200 text-xs rounded-xl flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-copy"></i>
-            <span>Copy</span>
-          </button>
-          <button id="inspectDownloadBtn" class="px-3 py-1.5 bg-cyber-800 hover:bg-cyber-700 text-slate-200 text-xs rounded-xl flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-download"></i>
-            <span>Download</span>
-          </button>
-          <button id="btnCloseInspectModal" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition">
-            <i class="fa-solid fa-xmark text-lg"></i>
-          </button>
-        </div>
-      </div>
-
-      <div class="flex-1 overflow-y-auto p-6 space-y-5">
-        <div>
-          <p id="inspectDesc" class="text-xs sm:text-sm text-slate-300 leading-relaxed bg-cyber-950/60 p-3 rounded-xl border border-cyber-700/60 font-sans">
-            Instructions...
-          </p>
-          <div id="inspectTags" class="flex flex-wrap gap-1.5 mt-2.5"></div>
-        </div>
-
-        <div class="rounded-xl overflow-hidden border border-cyber-700 shadow-xl">
-          <div class="bg-cyber-950 px-4 py-2 border-b border-cyber-700/80 flex items-center justify-between text-xs text-slate-400 font-mono">
-            <span id="inspectFilename" class="text-cyan-400">snippet.py</span>
-            <span id="inspectLineCount" class="text-slate-500">24 lines</span>
-          </div>
-          <pre class="overflow-x-auto"><code id="inspectCodeBlock" class="language-python"></code></pre>
-        </div>
-
-        <div class="border-t border-cyber-700/70 pt-4">
-          <h4 class="text-xs font-bold text-slate-200 mb-2 flex items-center gap-2">
-            <i class="fa-solid fa-comments text-cyan-400"></i> Teammate Notes & Feedback (<span id="inspectCommentCount">0</span>)
-          </h4>
-          <div id="inspectCommentsList" class="space-y-2 mb-3"></div>
-
-          <form id="inspectCommentForm" class="flex gap-2">
-            <input 
-              type="text" 
-              id="inspectCommentInput" 
-              required 
-              placeholder="Leave a note or endpoint detail for your teammates..." 
-              class="flex-1 bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-            >
-            <button type="submit" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold text-xs rounded-xl transition">
-              Add Note
-            </button>
-          </form>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Toast Notification Container -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
+  <!-- Timer Modal -->
   <div id="timerSettingsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden">
       
@@ -708,8 +797,6 @@
       </div>
 
       <div class="p-6 space-y-5">
-        
-        <!-- Live Preview & Play/Pause -->
         <div class="bg-cyber-950 border border-cyber-700/80 rounded-xl p-4 flex items-center justify-between">
           <div>
             <div class="text-[10px] uppercase font-mono tracking-wider text-slate-400">Remaining Time</div>
@@ -727,75 +814,25 @@
           </button>
         </div>
 
-        <!-- Quick Reset Presets -->
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-2">
-            <i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Quick Preset Resets
-          </label>
+          <label class="block text-xs font-semibold text-slate-300 mb-2">Quick Preset Resets</label>
           <div class="grid grid-cols-3 gap-2">
-            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition text-center font-mono" data-hours="1">
-              1 Hour
-            </button>
-            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition text-center font-mono" data-hours="12">
-              12 Hours
-            </button>
-            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition text-center font-mono font-bold text-cyan-400" data-hours="24">
-              24 Hours
-            </button>
-            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition text-center font-mono" data-hours="36">
-              36 Hours
-            </button>
-            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition text-center font-mono" data-hours="48">
-              48 Hours
-            </button>
-            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition text-center font-mono text-slate-400" data-hours="0.5">
-              30 Mins
-            </button>
+            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-xl text-xs font-mono" data-hours="1">1 Hour</button>
+            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-xl text-xs font-mono" data-hours="12">12 Hours</button>
+            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-xl text-xs font-mono text-cyan-400 font-bold" data-hours="24">24 Hours</button>
+            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-xl text-xs font-mono" data-hours="36">36 Hours</button>
+            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-xl text-xs font-mono" data-hours="48">48 Hours</button>
+            <button class="preset-timer-btn px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-xl text-xs font-mono text-slate-400" data-hours="0.5">30 Mins</button>
           </div>
         </div>
-
-        <!-- Custom Duration Form -->
-        <div class="border-t border-cyber-700/60 pt-4">
-          <label class="block text-xs font-semibold text-slate-300 mb-2">
-            <i class="fa-solid fa-sliders text-cyan-400 mr-1"></i> Custom Sprint Duration
-          </label>
-          <div class="grid grid-cols-2 gap-3 mb-3">
-            <div>
-              <span class="text-[11px] text-slate-400">Hours</span>
-              <input 
-                type="number" 
-                id="customTimerHours" 
-                min="0" 
-                max="168" 
-                value="24" 
-                class="w-full mt-1 bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-cyan-400"
-              >
-            </div>
-            <div>
-              <span class="text-[11px] text-slate-400">Minutes</span>
-              <input 
-                type="number" 
-                id="customTimerMinutes" 
-                min="0" 
-                max="59" 
-                value="0" 
-                class="w-full mt-1 bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-cyan-400"
-              >
-            </div>
-          </div>
-          <button 
-            id="btnApplyCustomDuration"
-            class="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5"
-          >
-            <i class="fa-solid fa-rotate-right"></i>
-            <span>Set Custom Duration & Reset</span>
-          </button>
-        </div>
-
       </div>
     </div>
   </div>
 
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Module Script with Firebase & Complete Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
@@ -810,7 +847,6 @@
       update 
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-    // Your provided Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyA4Hxj1BVv1bScRyUa-Vs9Wuv4N8b5RmpE",
       authDomain: "devvault-114f3.firebaseapp.com",
@@ -822,15 +858,13 @@
       measurementId: "G-1XEBVM1JKY"
     };
 
-    // Initialize Firebase Services
     let app, analytics, db;
     try {
       app = initializeApp(firebaseConfig);
       analytics = getAnalytics(app);
       db = getDatabase(app);
-      console.log("Firebase initialized successfully with Realtime Database.");
     } catch (err) {
-      console.warn("Firebase initialization warning (falling back if needed):", err);
+      console.warn("Using offline fallback:", err);
     }
 
     const EXTENSION_MAP = {
@@ -843,10 +877,29 @@
       html: 'html',
       sql: 'sql',
       shell: 'sh',
-      json: 'json'
+      json: 'json',
+      java: 'java'
     };
 
-    // Seed admin credentials
+    const REV_EXTENSION_MAP = {
+      py: 'python',
+      js: 'javascript',
+      ts: 'typescript',
+      jsx: 'javascript',
+      tsx: 'typescript',
+      cpp: 'cpp',
+      c: 'cpp',
+      rs: 'rust',
+      go: 'go',
+      html: 'html',
+      css: 'html',
+      sql: 'sql',
+      sh: 'shell',
+      bash: 'shell',
+      json: 'json',
+      java: 'java'
+    };
+
     const DEFAULT_ADMIN = {
       username: 'admin',
       password: 'admin@123',
@@ -863,12 +916,14 @@
     let activeScope = 'all';
     let selectedLanguage = null;
     let selectedCategory = 'all';
+    let selectedStatus = 'all';
     let searchQuery = '';
     let inspectingSnippetId = null;
     let sprintEndTime = null;
     let isTimerPaused = false;
     let pausedRemainingMs = 0;
     let timerInterval = null;
+    let pitchMode = false;
 
     // References to DOM Elements
     const loginPortal = document.getElementById('loginPortal');
@@ -890,6 +945,7 @@
     const btnCancelSnippet = document.getElementById('btnCancelSnippet');
     const snippetModal = document.getElementById('snippetModal');
     const snippetForm = document.getElementById('snippetForm');
+    const snippetFileInput = document.getElementById('snippetFileInput');
 
     const adminUserModal = document.getElementById('adminUserModal');
     const btnCloseAdminModal = document.getElementById('btnCloseAdminModal');
@@ -899,12 +955,12 @@
     const btnOpenTimerSettings = document.getElementById('btnOpenTimerSettings');
     const btnCloseTimerSettings = document.getElementById('btnCloseTimerSettings');
     const toggleTimerPauseBtn = document.getElementById('toggleTimerPauseBtn');
-    const btnApplyCustomDuration = document.getElementById('btnApplyCustomDuration');
 
     const inspectModal = document.getElementById('inspectModal');
     const btnCloseInspectModal = document.getElementById('btnCloseInspectModal');
     const inspectCopyBtn = document.getElementById('inspectCopyBtn');
     const inspectDownloadBtn = document.getElementById('inspectDownloadBtn');
+    const inspectCopyFetchBtn = document.getElementById('inspectCopyFetchBtn');
     const inspectCommentForm = document.getElementById('inspectCommentForm');
 
     const teamScratchpad = document.getElementById('teamScratchpad');
@@ -914,8 +970,15 @@
 
     const searchInput = document.getElementById('searchInput');
     const categoryFilter = document.getElementById('categoryFilter');
+    const statusFilter = document.getElementById('statusFilter');
 
-    // Attach Event Listeners
+    const btnTogglePitchMode = document.getElementById('btnTogglePitchMode');
+    const btnExportZip = document.getElementById('btnExportZip');
+    const repoUrlInput = document.getElementById('repoUrlInput');
+    const liveDemoUrlInput = document.getElementById('liveDemoUrlInput');
+    const btnSaveLinks = document.getElementById('btnSaveLinks');
+
+    // Attach Listeners
     btnTogglePw.addEventListener('click', togglePasswordVisibility);
     authPortalForm.addEventListener('submit', handleLoginSubmit);
     btnLogout.addEventListener('click', logoutPortal);
@@ -930,10 +993,9 @@
     btnCancelSnippet.addEventListener('click', closeSnippetModal);
     snippetForm.addEventListener('submit', saveSnippet);
 
-    btnOpenTimerSettings.addEventListener('click', openTimerSettingsModal);
-    btnCloseTimerSettings.addEventListener('click', closeTimerSettingsModal);
+    btnOpenTimerSettings.addEventListener('click', () => { timerSettingsModal.classList.remove('hidden'); timerSettingsModal.classList.add('flex'); });
+    btnCloseTimerSettings.addEventListener('click', () => { timerSettingsModal.classList.add('hidden'); timerSettingsModal.classList.remove('flex'); });
     toggleTimerPauseBtn.addEventListener('click', toggleTimerPause);
-    btnApplyCustomDuration.addEventListener('click', applyCustomDurationReset);
 
     document.querySelectorAll('.preset-timer-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -945,6 +1007,7 @@
     btnCloseInspectModal.addEventListener('click', closeInspectModal);
     inspectCopyBtn.addEventListener('click', copyCurrentInspectCode);
     inspectDownloadBtn.addEventListener('click', downloadCurrentInspectCode);
+    inspectCopyFetchBtn.addEventListener('click', copyCurrentInspectFetch);
     inspectCommentForm.addEventListener('submit', addCommentToCurrentInspect);
 
     btnCopyScratchpad.addEventListener('click', copyScratchpad);
@@ -970,12 +1033,105 @@
       renderUI();
     });
 
-    setupTabIndentation();
+    statusFilter.addEventListener('change', (e) => {
+      selectedStatus = e.target.value;
+      renderUI();
+    });
 
-    // Start App & Realtime Sync
+    btnTogglePitchMode.addEventListener('click', togglePitchMode);
+    btnExportZip.addEventListener('click', exportSquadZip);
+    btnSaveLinks.addEventListener('click', saveProjectLinks);
+
+    // Auto-detect file extension on file upload
+    snippetFileInput.addEventListener('change', handleFileUpload);
+
+    setupTabIndentation();
     initSession();
     initSprintTimer();
     startFirebaseSync();
+
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const titleInput = document.getElementById('snippetTitleInput');
+      const extInput = document.getElementById('snippetExtensionInput');
+      const langSelect = document.getElementById('snippetLangSelect');
+      const codeInput = document.getElementById('snippetCodeInput');
+
+      const parts = file.name.split('.');
+      let ext = '';
+      if (parts.length > 1) {
+        ext = parts.pop().toLowerCase();
+        titleInput.value = parts.join('.');
+      } else {
+        titleInput.value = file.name;
+      }
+      extInput.value = ext;
+
+      if (ext && REV_EXTENSION_MAP[ext]) {
+        langSelect.value = REV_EXTENSION_MAP[ext];
+      }
+
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        codeInput.value = evt.target.result;
+      };
+      reader.readAsText(file);
+    }
+
+    function togglePitchMode() {
+      pitchMode = !pitchMode;
+      document.body.classList.toggle('pitch-mode', pitchMode);
+      document.getElementById('mainSidebar').classList.toggle('hidden', pitchMode);
+      btnTogglePitchMode.classList.toggle('bg-cyan-500', pitchMode);
+      btnTogglePitchMode.classList.toggle('text-slate-900', pitchMode);
+      showToast(pitchMode ? 'Pitch View Enabled' : 'Standard View Restored', 'info');
+    }
+
+    function saveProjectLinks() {
+      const repo = repoUrlInput.value.trim();
+      const live = liveDemoUrlInput.value.trim();
+
+      if (db) {
+        set(ref(db, 'project_links'), { repo, live, updatedAt: Date.now() })
+          .then(() => showToast('Submission Links Synced to Firebase!', 'success'));
+      } else {
+        localStorage.setItem('devvault_project_links', JSON.stringify({ repo, live }));
+        showToast('Links saved locally!', 'success');
+      }
+      updateLinkButtons(repo, live);
+    }
+
+    function updateLinkButtons(repo, live) {
+      document.getElementById('btnOpenRepo').href = repo || '#';
+      document.getElementById('btnOpenLiveDemo').href = live || '#';
+    }
+
+    function exportSquadZip() {
+      if (!snippets.length) {
+        showToast('No code snippets to export', 'error');
+        return;
+      }
+      const zip = new JSZip();
+      snippets.forEach(s => {
+        const ext = s.fileExtension || EXTENSION_MAP[s.language] || 'txt';
+        const cleanName = s.title.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+        zip.file(`cleanName.{ext}`, s.code || '');
+      });
+
+      zip.generateAsync({ type: 'blob' }).then(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `DevVault_Squad_Bundle_${Date.now()}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Exported complete project ZIP bundle!', 'success');
+      });
+    }
 
     function startFirebaseSync() {
       if (!db) {
@@ -983,32 +1139,24 @@
         return;
       }
 
-      // 1. Sync Users
-      const usersRef = ref(db, 'team_users');
-      onValue(usersRef, (snapshot) => {
+      // Users
+      onValue(ref(db, 'team_users'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
           const list = Object.keys(data).map(key => ({ ...data[key], _key: key }));
-          if (!list.some(u => u.username === 'admin')) {
-            list.unshift(DEFAULT_ADMIN);
-          }
+          if (!list.some(u => u.username === 'admin')) list.unshift(DEFAULT_ADMIN);
           users = list;
         } else {
-          // Seed default admin in Firebase if empty
           users = [DEFAULT_ADMIN];
           set(ref(db, 'team_users/admin'), DEFAULT_ADMIN);
         }
         updateHeaderUser();
         renderAdminUsersTable();
         renderUI();
-      }, (err) => {
-        console.warn('Realtime Database Users read error, using local fallback:', err);
-        initLocalFallback();
       });
 
-      // 2. Sync Snippets
-      const snippetsRef = ref(db, 'snippets');
-      onValue(snippetsRef, (snapshot) => {
+      // Snippets
+      onValue(ref(db, 'snippets'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
           const list = Object.keys(data).map(key => ({
@@ -1016,7 +1164,6 @@
             ...data[key],
             comments: data[key].comments ? Object.values(data[key].comments) : []
           }));
-          // Sort newest first
           list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
           snippets = list;
         } else {
@@ -1029,9 +1176,8 @@
         }
       });
 
-      // 3. Sync Team Scratchpad
-      const scratchpadRef = ref(db, 'scratchpad');
-      onValue(scratchpadRef, (snapshot) => {
+      // Scratchpad
+      onValue(ref(db, 'scratchpad'), (snapshot) => {
         const data = snapshot.val();
         if (data && typeof data.content === 'string') {
           if (document.activeElement !== teamScratchpad) {
@@ -1040,15 +1186,24 @@
         }
       });
 
-      // 4. Sync Sprint Timer
-      const timerRef = ref(db, 'sprint_timer');
-      onValue(timerRef, (snapshot) => {
+      // Sprint Timer
+      onValue(ref(db, 'sprint_timer'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
           sprintEndTime = data.endTime || (Date.now() + 24 * 60 * 60 * 1000);
           isTimerPaused = !!data.isPaused;
           pausedRemainingMs = data.pausedRemainingMs || 0;
           updateTimerDisplay();
+        }
+      });
+
+      // Project Links
+      onValue(ref(db, 'project_links'), (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          repoUrlInput.value = data.repo || '';
+          liveDemoUrlInput.value = data.live || '';
+          updateLinkButtons(data.repo, data.live);
         }
       });
     }
@@ -1061,6 +1216,14 @@
 
         const storedSnippets = localStorage.getItem('devvault_snippets_store');
         snippets = storedSnippets ? JSON.parse(storedSnippets) : [];
+
+        const storedLinks = localStorage.getItem('devvault_project_links');
+        if (storedLinks) {
+          const l = JSON.parse(storedLinks);
+          repoUrlInput.value = l.repo || '';
+          liveDemoUrlInput.value = l.live || '';
+          updateLinkButtons(l.repo, l.live);
+        }
       } catch (e) {
         users = [DEFAULT_ADMIN];
         snippets = [];
@@ -1068,7 +1231,6 @@
       renderUI();
     }
 
-    // Session Management
     function initSession() {
       try {
         const storedSession = localStorage.getItem('devvault_current_user');
@@ -1097,7 +1259,6 @@
       }
     }
 
-    // Login Handler
     function handleLoginSubmit(e) {
       e.preventDefault();
       const userVal = loginUsername.value.trim();
@@ -1121,7 +1282,7 @@
       loginPortal.classList.add('hidden');
       updateHeaderUser();
       renderUI();
-      showToast(`Logged in as currentUser.username({currentUser.role})`, 'success');
+      showToast(`Logged in as ${currentUser.username}`, 'success');
     }
 
     function logoutPortal() {
@@ -1202,38 +1363,24 @@
       }
       if (db) {
         remove(ref(db, `team_users/${username}`))
-          .then(() => showToast(`User "${username}" revoked from Firebase!`, 'info'))
+          .then(() => showToast(`User "${username}" revoked!`, 'info'))
           .catch(() => showToast('Failed to revoke user', 'error'));
       } else {
         users = users.filter(u => u.username.toLowerCase() !== username.toLowerCase());
         localStorage.setItem('devvault_users_store', JSON.stringify(users));
         renderAdminUsersTable();
-        showToast(`User "${username}" deleted locally`, 'info');
+        showToast(`User "${username}" deleted`, 'info');
       }
     };
 
     function handleCreateUser(e) {
       e.preventDefault();
-      if (!currentUser || currentUser.username.toLowerCase() !== 'admin') {
-        showToast('Only admin can create users!', 'error');
-        return;
-      }
-
       const uName = document.getElementById('newUsername').value.trim();
       const pWord = document.getElementById('newPassword').value.trim();
       const fName = document.getElementById('newFullName').value.trim();
       const role = document.getElementById('newRole').value;
 
-      if (!uName || !pWord) {
-        showToast('Username and password are required', 'error');
-        return;
-      }
-
-      const exists = users.some(u => u.username.toLowerCase() === uName.toLowerCase());
-      if (exists) {
-        showToast(`Username "${uName}" is already taken!`, 'error');
-        return;
-      }
+      if (!uName || !pWord) return;
 
       const newUser = {
         username: uName,
@@ -1247,12 +1394,10 @@
       if (db) {
         set(ref(db, `team_users/${uName}`), newUser)
           .then(() => {
-            showToast(`Registered ${uName}! Synced with Firebase.`, 'success');
+            showToast(`Registered ${uName}!`, 'success');
             createUserForm.reset();
           })
-          .catch((err) => {
-            showToast('Firebase write failed: ' + err.message, 'error');
-          });
+          .catch((err) => showToast('Firebase write failed: ' + err.message, 'error'));
       } else {
         users.push(newUser);
         localStorage.setItem('devvault_users_store', JSON.stringify(users));
@@ -1281,11 +1426,15 @@
 
       const title = document.getElementById('snippetTitleInput').value.trim();
       const language = document.getElementById('snippetLangSelect').value;
+      const status = document.getElementById('snippetStatusSelect').value;
       const category = document.getElementById('snippetCategorySelect').value;
       const rawTags = document.getElementById('snippetTagsInput').value.trim();
       const description = document.getElementById('snippetDescInput').value.trim();
       const code = document.getElementById('snippetCodeInput').value;
       const starred = document.getElementById('snippetStarredCheck').checked;
+      
+      const explicitExt = document.getElementById('snippetExtensionInput').value.trim().replace(/^\./, '');
+      const finalExtension = explicitExt || EXTENSION_MAP[language] || 'txt';
 
       const tags = rawTags
         ? rawTags.split(',').map(t => t.trim()).filter(Boolean)
@@ -1294,6 +1443,8 @@
       const snippetData = {
         title,
         language,
+        status,
+        fileExtension: finalExtension,
         category,
         tags,
         description,
@@ -1312,7 +1463,7 @@
         set(newRef, snippetData)
           .then(() => {
             closeSnippetModal();
-            showToast('Code snippet published live to Firebase!', 'success');
+            showToast('Code snippet saved live to Firebase!', 'success');
           })
           .catch((err) => showToast('Failed to save: ' + err.message, 'error'));
       } else {
@@ -1331,9 +1482,7 @@
       const nextStarred = !snip.starred;
 
       if (db) {
-        update(ref(db, `snippets/${id}`), { starred: nextStarred })
-          .then(() => showToast(nextStarred ? 'Starred code' : 'Unstarred code', 'info'))
-          .catch(() => showToast('Update failed', 'error'));
+        update(ref(db, `snippets/${id}`), { starred: nextStarred });
       } else {
         snip.starred = nextStarred;
         localStorage.setItem('devvault_snippets_store', JSON.stringify(snippets));
@@ -1344,8 +1493,7 @@
     window._deleteSnippet = function(id) {
       if (db) {
         remove(ref(db, `snippets/${id}`))
-          .then(() => showToast('Snippet removed from Firebase', 'info'))
-          .catch(() => showToast('Delete failed', 'error'));
+          .then(() => showToast('Snippet removed from Firebase', 'info'));
       } else {
         snippets = snippets.filter(s => s.id !== id);
         localStorage.setItem('devvault_snippets_store', JSON.stringify(snippets));
@@ -1361,11 +1509,16 @@
 
       document.getElementById('inspectTitle').textContent = snip.title;
       document.getElementById('inspectLangBadge').textContent = snip.language;
+      
+      const statusBadge = document.getElementById('inspectStatusBadge');
+      statusBadge.textContent = snip.status || 'READY';
+      statusBadge.className = `px-2 py-0.5 rounded text-[10px] font-mono font-bold ${getStatusBadgeStyle(snip.status)}`;
+
       document.getElementById('inspectMeta').textContent = `By ${snip.author.fullName || snip.author.username} • ${snip.author.role} • ${formatTimeAgo(snip.createdAt)}`;
       document.getElementById('inspectDesc').textContent = snip.description || 'No specific integration notes provided.';
 
-      const ext = EXTENSION_MAP[snip.language] || 'txt';
-      const cleanName = snip.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      const ext = snip.fileExtension || EXTENSION_MAP[snip.language] || 'txt';
+      const cleanName = snip.title.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
       document.getElementById('inspectFilename').textContent = `cleanName.{ext}`;
 
       const lines = snip.code.split('\n').length;
@@ -1436,13 +1589,11 @@
       };
 
       if (db) {
-        const commentRef = push(ref(db, `snippets/${inspectingSnippetId}/comments`));
-        set(commentRef, commentData)
+        push(ref(db, `snippets/${inspectingSnippetId}/comments`), commentData)
           .then(() => {
             input.value = '';
             showToast('Note synced to Firebase!', 'success');
-          })
-          .catch((err) => showToast('Error adding note: ' + err.message, 'error'));
+          });
       } else {
         const snip = snippets.find(s => s.id === inspectingSnippetId);
         if (snip) {
@@ -1456,7 +1607,7 @@
       }
     }
 
-    // Copy & Download
+    // Direct Copy & Download Handlers
     window._copySnippet = function(id) {
       const snip = snippets.find(s => s.id === id);
       if (!snip) return;
@@ -1469,12 +1620,22 @@
       window._copySnippet(inspectingSnippetId);
     }
 
+    function copyCurrentInspectFetch() {
+      const snip = snippets.find(s => s.id === inspectingSnippetId);
+      if (!snip) return;
+
+      const template = `// Generated API boilerplate for ${snip.title}\nfetch("http://localhost:3000/api", {\n  method: "POST",\n  headers: { "Content-Type": "application/json" },\n  body: JSON.stringify(${JSON.stringify(snip.code)})\n})\n.then(res => res.json())\n.then(data => console.log(data));`;
+      executeCopy(template);
+      showToast('Copied cURL/Fetch boilerplate!', 'success');
+    }
+
     window._downloadSnippet = function(id) {
       const snip = snippets.find(s => s.id === id);
       if (!snip) return;
 
-      const ext = EXTENSION_MAP[snip.language] || 'txt';
-      const cleanName = snip.title.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      // Retain exact original or chosen extension
+      const ext = snip.fileExtension || EXTENSION_MAP[snip.language] || 'txt';
+      const cleanName = snip.title.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
       const filename = `cleanName.{ext}`;
 
       const blob = new Blob([snip.code], { type: 'text/plain;charset=utf-8' });
@@ -1495,7 +1656,6 @@
       window._downloadSnippet(inspectingSnippetId);
     }
 
-    // Scratchpad handlers
     function syncScratchpad(val) {
       if (db) {
         set(ref(db, 'scratchpad'), { content: val, updatedBy: currentUser ? currentUser.username : 'anon', time: Date.now() });
@@ -1506,10 +1666,7 @@
 
     function copyScratchpad() {
       const pad = teamScratchpad.value;
-      if (!pad.trim()) {
-        showToast('Scratchpad is empty', 'error');
-        return;
-      }
+      if (!pad.trim()) return;
       executeCopy(pad);
       showToast('Scratchpad content copied!', 'success');
     }
@@ -1531,47 +1688,19 @@
       const display = document.getElementById('hackCountdown');
       const modalDisplay = document.getElementById('modalTimerDisplay');
       const dot = document.getElementById('timerStatusDot');
-      const stateText = document.getElementById('modalTimerStateText');
-      const pauseText = document.getElementById('pausePlayText');
-      const pauseIcon = document.getElementById('pausePlayIcon');
 
       let remaining = 0;
-
       if (isTimerPaused) {
         remaining = pausedRemainingMs;
         if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-400';
-        if (stateText) {
-          stateText.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Paused';
-          stateText.className = 'text-[11px] text-amber-400 font-mono flex items-center gap-1 mt-0.5';
-        }
-        if (pauseText) pauseText.textContent = 'Resume';
-        if (pauseIcon) pauseIcon.className = 'fa-solid fa-play';
       } else {
         remaining = Math.max(0, (sprintEndTime || Date.now()) - Date.now());
         if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
-        if (stateText) {
-          stateText.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Running';
-          stateText.className = 'text-[11px] text-emerald-400 font-mono flex items-center gap-1 mt-0.5';
-        }
-        if (pauseText) pauseText.textContent = 'Pause';
-        if (pauseIcon) pauseIcon.className = 'fa-solid fa-pause';
       }
 
       const formatted = formatDuration(remaining);
-
-      if (display) {
-        if (remaining <= 0 && !isTimerPaused) {
-          display.textContent = 'SPRINT ENDED';
-          display.className = 'font-mono font-bold text-rose-400';
-        } else {
-          display.textContent = formatted;
-          display.className = isTimerPaused ? 'font-mono font-bold text-amber-300' : 'font-mono font-bold text-slate-200';
-        }
-      }
-
-      if (modalDisplay) {
-        modalDisplay.textContent = formatted;
-      }
+      if (display) display.textContent = formatted;
+      if (modalDisplay) modalDisplay.textContent = formatted;
     }
 
     function formatDuration(ms) {
@@ -1582,53 +1711,21 @@
       return `${hours}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
     }
 
-    function openTimerSettingsModal() {
-      updateTimerDisplay();
-      timerSettingsModal.classList.remove('hidden');
-      timerSettingsModal.classList.add('flex');
-    }
-
-    function closeTimerSettingsModal() {
-      timerSettingsModal.classList.add('hidden');
-      timerSettingsModal.classList.remove('flex');
-    }
-
     function toggleTimerPause() {
       if (isTimerPaused) {
-        // Resume timer
         const newEndTime = Date.now() + pausedRemainingMs;
         syncTimerToFirebase(newEndTime, false, 0);
-        showToast('Sprint timer resumed', 'success');
       } else {
-        // Pause timer
         const remaining = Math.max(0, (sprintEndTime || Date.now()) - Date.now());
         syncTimerToFirebase(sprintEndTime, true, remaining);
-        showToast('Sprint timer paused', 'info');
       }
     }
 
     function resetTimerHours(hours) {
       const ms = Math.floor(hours * 60 * 60 * 1000);
-      const newEndTime = Date.now() + ms;
-      syncTimerToFirebase(newEndTime, false, 0);
-      closeTimerSettingsModal();
-      showToast(`Timer reset to hourshour{hours === 1 ? '' : 's'} across all teammates!`, 'success');
-    }
-
-    function applyCustomDurationReset() {
-      const h = parseInt(document.getElementById('customTimerHours').value, 10) || 0;
-      const m = parseInt(document.getElementById('customTimerMinutes').value, 10) || 0;
-
-      if (h <= 0 && m <= 0) {
-        showToast('Please specify at least 1 minute', 'error');
-        return;
-      }
-
-      const totalMs = (h * 60 * 60 * 1000) + (m * 60 * 1000);
-      const newEndTime = Date.now() + totalMs;
-      syncTimerToFirebase(newEndTime, false, 0);
-      closeTimerSettingsModal();
-      showToast(`Timer set to ${h}h ${m}m!`, 'success');
+      syncTimerToFirebase(Date.now() + ms, false, 0);
+      timerSettingsModal.classList.add('hidden');
+      timerSettingsModal.classList.remove('flex');
     }
 
     function syncTimerToFirebase(endTime, isPaused, pausedMs) {
@@ -1670,11 +1767,16 @@
         filtered = filtered.filter(s => s.category === selectedCategory);
       }
 
+      if (selectedStatus !== 'all') {
+        filtered = filtered.filter(s => (s.status || 'READY') === selectedStatus);
+      }
+
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         filtered = filtered.filter(s => {
           return (s.title && s.title.toLowerCase().includes(q)) ||
                  (s.description && s.description.toLowerCase().includes(q)) ||
+                 (s.fileExtension && s.fileExtension.toLowerCase().includes(q)) ||
                  (s.author && s.author.username && s.author.username.toLowerCase().includes(q)) ||
                  (s.tags && s.tags.some(t => t.toLowerCase().includes(q))) ||
                  (s.code && s.code.toLowerCase().includes(q));
@@ -1711,6 +1813,7 @@
       const previewCode = codeLines.slice(0, 5).join('\n');
       const langClass = `language-${snippet.language === 'shell' ? 'bash' : snippet.language}`;
       const authorInitial = snippet.author && snippet.author.username ? snippet.author.username.substring(0, 2).toUpperCase() : '??';
+      const fileExt = snippet.fileExtension || EXTENSION_MAP[snippet.language] || 'txt';
 
       return `
         <div class="bg-cyber-900 border border-cyber-700/80 hover:border-cyber-600 rounded-2xl overflow-hidden shadow-sm transition duration-150">
@@ -1726,7 +1829,10 @@
                     ${escapeHtml(snippet.title)}
                   </h3>
                   <span class="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase ${getLangBadgeStyle(snippet.language)}">
-                    ${snippet.language}
+                    .${fileExt}
+                  </span>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded font-bold ${getStatusBadgeStyle(snippet.status)}">
+                    ${snippet.status || 'READY'}
                   </span>
                   ${snippet.starred ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-800 flex items-center gap-1"><i class="fa-solid fa-star text-[9px]"></i> Starred</span>' : ''}
                 </div>
@@ -1747,7 +1853,7 @@
                 <i class="fa-solid fa-copy"></i>
               </button>
 
-              <button onclick="window._downloadSnippet('${snippet.id}')" title="Download file" class="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-cyber-800 rounded-lg transition text-xs">
+              <button onclick="window._downloadSnippet('snippet.id')"title="Downloadwithoriginalextension(.{fileExt} )" class="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-cyber-800 rounded-lg transition text-xs">
                 <i class="fa-solid fa-download"></i>
               </button>
 
@@ -1839,6 +1945,14 @@
       renderUI();
     }
 
+    function getStatusBadgeStyle(status) {
+      switch (status) {
+        case 'WIP': return 'bg-amber-950 text-amber-300 border border-amber-800';
+        case 'DEPRECATED': return 'bg-rose-950 text-rose-300 border border-rose-800';
+        default: return 'bg-emerald-950 text-emerald-300 border border-emerald-800';
+      }
+    }
+
     function getLangBadgeStyle(lang) {
       switch ((lang || '').toLowerCase()) {
         case 'python': return 'bg-emerald-950 text-emerald-300 border border-emerald-800';
@@ -1926,3 +2040,4 @@
   </script>
 </body>
 </html>
+
