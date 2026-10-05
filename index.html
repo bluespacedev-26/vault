@@ -182,7 +182,7 @@
           <div class="flex items-center gap-2">
             <span class="font-extrabold text-base sm:text-lg tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">DEVVAULT</span>
             <span id="firebaseStatusBadge" class="text-[10px] font-mono uppercase bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-800 font-bold flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> SYNCED
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> LIVE SYNC
             </span>
           </div>
           <div class="text-[11px] text-slate-400">Hackathon Code Base & Realtime Sync</div>
@@ -205,7 +205,6 @@
 
       <!-- User Actions & Tools -->
       <div class="flex items-center gap-2 sm:gap-3">
-        <!-- Pitch/Presenter Mode Toggle -->
         <button 
           id="btnTogglePitchMode" 
           title="Toggle Judge/Pitch Mode"
@@ -215,7 +214,6 @@
           <span class="hidden sm:inline">Pitch View</span>
         </button>
 
-        <!-- Multi-Snippet Zip Download -->
         <button 
           id="btnExportZip" 
           title="Download All Code as .ZIP Bundle"
@@ -225,7 +223,6 @@
           <span class="hidden sm:inline">Export .ZIP</span>
         </button>
 
-        <!-- Super Admin Only: User Management Button -->
         <button 
           id="adminManageBtn" 
           class="hidden items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-lg transition"
@@ -242,7 +239,6 @@
           <span class="hidden sm:inline">Post Snippet</span>
         </button>
 
-        <!-- Profile & Logout -->
         <div class="flex items-center gap-2.5 pl-2 border-l border-cyber-700">
           <div class="text-right hidden sm:block">
             <div id="headerUserName" class="text-xs font-bold text-slate-200">admin</div>
@@ -832,7 +828,7 @@
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- Module Script with Firebase & Complete Logic -->
+  <!-- Main JavaScript Module -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
@@ -872,13 +868,25 @@
       javascript: 'js',
       typescript: 'ts',
       cpp: 'cpp',
+      c: 'c',
+      csharp: 'cs',
       rust: 'rs',
       go: 'go',
       html: 'html',
+      css: 'css',
       sql: 'sql',
       shell: 'sh',
+      bash: 'sh',
       json: 'json',
-      java: 'java'
+      yaml: 'yaml',
+      yml: 'yml',
+      java: 'java',
+      kotlin: 'kt',
+      swift: 'swift',
+      php: 'php',
+      ruby: 'rb',
+      dockerfile: 'dockerfile',
+      markdown: 'md'
     };
 
     const REV_EXTENSION_MAP = {
@@ -889,6 +897,7 @@
       tsx: 'typescript',
       cpp: 'cpp',
       c: 'cpp',
+      cs: 'cpp',
       rs: 'rust',
       go: 'go',
       html: 'html',
@@ -897,7 +906,11 @@
       sh: 'shell',
       bash: 'shell',
       json: 'json',
-      java: 'java'
+      yaml: 'json',
+      yml: 'json',
+      java: 'java',
+      kt: 'java',
+      php: 'php'
     };
 
     const DEFAULT_ADMIN = {
@@ -909,7 +922,7 @@
       createdAt: Date.now()
     };
 
-    // State Variables
+    // Global State
     let users = [DEFAULT_ADMIN];
     let currentUser = null;
     let snippets = [];
@@ -925,7 +938,7 @@
     let timerInterval = null;
     let pitchMode = false;
 
-    // References to DOM Elements
+    // DOM Elements
     const loginPortal = document.getElementById('loginPortal');
     const authPortalForm = document.getElementById('authPortalForm');
     const loginUsername = document.getElementById('loginUsername');
@@ -978,7 +991,7 @@
     const liveDemoUrlInput = document.getElementById('liveDemoUrlInput');
     const btnSaveLinks = document.getElementById('btnSaveLinks');
 
-    // Attach Listeners
+    // Bind Event Listeners
     btnTogglePw.addEventListener('click', togglePasswordVisibility);
     authPortalForm.addEventListener('submit', handleLoginSubmit);
     btnLogout.addEventListener('click', logoutPortal);
@@ -1042,13 +1055,62 @@
     btnExportZip.addEventListener('click', exportSquadZip);
     btnSaveLinks.addEventListener('click', saveProjectLinks);
 
-    // Auto-detect file extension on file upload
     snippetFileInput.addEventListener('change', handleFileUpload);
 
     setupTabIndentation();
     initSession();
     initSprintTimer();
     startFirebaseSync();
+
+    // Direct Download Implementation
+    window._downloadSnippet = function(id, evt) {
+      if (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+      }
+
+      const snip = snippets.find(s => s.id === id);
+      if (!snip) {
+        showToast('Snippet not found', 'error');
+        return;
+      }
+
+      const langKey = (snip.language || '').toLowerCase().trim();
+      const langExt = EXTENSION_MAP[langKey] || 'txt';
+      const customExt = (snip.fileExtension || '').trim().replace(/^\./, '');
+      const chosenExt = customExt || langExt;
+
+      let baseName = (snip.title || 'snippet').trim();
+      const extRegex = new RegExp(`\\.chosenExt`, 'i');
+      if (extRegex.test(baseName)) {
+        baseName = baseName.replace(extRegex, '');
+      }
+
+      const cleanBase = baseName.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+      const filename = `cleanBase.{chosenExt}`;
+
+      const codeContent = snip.code || '';
+      const blob = new Blob([codeContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 150);
+
+      showToast(`Downloaded ${filename}`, 'info');
+    };
+
+    function downloadCurrentInspectCode(e) {
+      if (!inspectingSnippetId) return;
+      window._downloadSnippet(inspectingSnippetId, e);
+    }
 
     function handleFileUpload(e) {
       const file = e.target.files[0];
@@ -1115,8 +1177,12 @@
       }
       const zip = new JSZip();
       snippets.forEach(s => {
-        const ext = s.fileExtension || EXTENSION_MAP[s.language] || 'txt';
-        const cleanName = s.title.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+        const langKey = (s.language || '').toLowerCase().trim();
+        const ext = s.fileExtension || EXTENSION_MAP[langKey] || 'txt';
+        let base = (s.title || 'snippet').trim();
+        const extRegex = new RegExp(`\\.ext`, 'i');
+        if (extRegex.test(base)) base = base.replace(extRegex, '');
+        const cleanName = base.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
         zip.file(`cleanName.{ext}`, s.code || '');
       });
 
@@ -1139,7 +1205,6 @@
         return;
       }
 
-      // Users
       onValue(ref(db, 'team_users'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1155,7 +1220,6 @@
         renderUI();
       });
 
-      // Snippets
       onValue(ref(db, 'snippets'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1176,7 +1240,6 @@
         }
       });
 
-      // Scratchpad
       onValue(ref(db, 'scratchpad'), (snapshot) => {
         const data = snapshot.val();
         if (data && typeof data.content === 'string') {
@@ -1186,7 +1249,6 @@
         }
       });
 
-      // Sprint Timer
       onValue(ref(db, 'sprint_timer'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1197,7 +1259,6 @@
         }
       });
 
-      // Project Links
       onValue(ref(db, 'project_links'), (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -1346,7 +1407,7 @@
             </td>
             <td class="p-3 text-right">
               ${isSuper ? '<span class="text-[10px] text-slate-500 font-mono">Protected</span>' : `
-                <button onclick="window._deleteUser('${u.username}')" class="px-2 py-1 text-slate-400 hover:text-rose-400 hover:bg-cyber-800 rounded transition text-xs" title="Revoke User Access">
+                <button onclick="window._deleteUser('${u.username}', event)" class="px-2 py-1 text-slate-400 hover:text-rose-400 hover:bg-cyber-800 rounded transition text-xs" title="Revoke User Access">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               `}
@@ -1356,7 +1417,8 @@
       }).join('');
     }
 
-    window._deleteUser = function(username) {
+    window._deleteUser = function(username, evt) {
+      if (evt) evt.stopPropagation();
       if (username.toLowerCase() === 'admin') {
         showToast('Cannot delete super admin account!', 'error');
         return;
@@ -1434,7 +1496,7 @@
       const starred = document.getElementById('snippetStarredCheck').checked;
       
       const explicitExt = document.getElementById('snippetExtensionInput').value.trim().replace(/^\./, '');
-      const finalExtension = explicitExt || EXTENSION_MAP[language] || 'txt';
+      const finalExtension = explicitExt || EXTENSION_MAP[language.toLowerCase()] || 'txt';
 
       const tags = rawTags
         ? rawTags.split(',').map(t => t.trim()).filter(Boolean)
@@ -1476,7 +1538,8 @@
       }
     }
 
-    window._toggleStar = function(id) {
+    window._toggleStar = function(id, evt) {
+      if (evt) evt.stopPropagation();
       const snip = snippets.find(s => s.id === id);
       if (!snip) return;
       const nextStarred = !snip.starred;
@@ -1490,7 +1553,8 @@
       }
     };
 
-    window._deleteSnippet = function(id) {
+    window._deleteSnippet = function(id, evt) {
+      if (evt) evt.stopPropagation();
       if (db) {
         remove(ref(db, `snippets/${id}`))
           .then(() => showToast('Snippet removed from Firebase', 'info'));
@@ -1500,6 +1564,14 @@
         renderUI();
         showToast('Snippet deleted', 'info');
       }
+    };
+
+    window._copySnippet = function(id, evt) {
+      if (evt) evt.stopPropagation();
+      const snip = snippets.find(s => s.id === id);
+      if (!snip) return;
+      executeCopy(snip.code);
+      showToast(`Copied ${snip.title} to clipboard!`, 'success');
     };
 
     window._inspectSnippet = function(id) {
@@ -1517,8 +1589,12 @@
       document.getElementById('inspectMeta').textContent = `By ${snip.author.fullName || snip.author.username} • ${snip.author.role} • ${formatTimeAgo(snip.createdAt)}`;
       document.getElementById('inspectDesc').textContent = snip.description || 'No specific integration notes provided.';
 
-      const ext = snip.fileExtension || EXTENSION_MAP[snip.language] || 'txt';
-      const cleanName = snip.title.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+      const langKey = (snip.language || '').toLowerCase().trim();
+      const ext = snip.fileExtension || EXTENSION_MAP[langKey] || 'txt';
+      let base = (snip.title || 'snippet').trim();
+      const extRegex = new RegExp(`\\.ext`, 'i');
+      if (extRegex.test(base)) base = base.replace(extRegex, '');
+      const cleanName = base.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
       document.getElementById('inspectFilename').textContent = `cleanName.{ext}`;
 
       const lines = snip.code.split('\n').length;
@@ -1547,6 +1623,7 @@
       inspectingSnippetId = null;
     }
 
+    // Complete Robust Comments Implementation
     function renderInspectComments(snip) {
       const list = document.getElementById('inspectCommentsList');
       const comments = snip.comments || [];
@@ -1557,25 +1634,47 @@
         return;
       }
 
-      list.innerHTML = comments.map(c => `
-        <div class="bg-cyber-950/80 border border-cyber-700/60 p-2.5 rounded-xl flex items-start gap-2.5">
-          <div class="w-6 h-6 rounded-md bg-cyber-800 text-cyan-300 font-mono text-[10px] flex items-center justify-center font-bold">
-            ${c.username ? c.username.substring(0, 2).toUpperCase() : '??'}
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-slate-200">escapeHtml(c.username||'User')<spanclass="text-[10px]text-cyan-400font-mono">({escapeHtml(c.role || 'Hacker')})</span></span>
-              <span class="text-[10px] text-slate-500">${formatTimeAgo(c.time || Date.now())}</span>
+      list.innerHTML = comments.map(c => {
+        const authorName = c.fullName || c.username || 'Hacker';
+        const rawUsername = c.username || 'user';
+        const initials = rawUsername.substring(0, 2).toUpperCase();
+        const role = c.role || 'Hacker';
+        const timeDisplay = formatTimeAgo(c.time || Date.now());
+
+        return `
+          <div class="bg-cyber-950/80 border border-cyber-700/60 p-2.5 rounded-xl flex items-start gap-2.5">
+            <div class="w-6 h-6 rounded-md bg-cyber-800 text-cyan-300 font-mono text-[10px] flex items-center justify-center font-bold flex-shrink-0">
+              ${initials}
             </div>
-            <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">${escapeHtml(c.text)}</p>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-bold text-slate-200 truncate">
+                  ${escapeHtml(authorName)}
+                  <span class="text-[10px] text-cyan-400 font-mono font-normal">(@${escapeHtml(rawUsername)} • ${escapeHtml(role)})</span>
+                </span>
+                <span class="text-[10px] text-slate-500 flex-shrink-0">${timeDisplay}</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed break-words">${escapeHtml(c.text)}</p>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function addCommentToCurrentInspect(e) {
       e.preventDefault();
-      if (!currentUser || !inspectingSnippetId) return;
+
+      if (!currentUser) {
+        try {
+          const stored = localStorage.getItem('devvault_current_user');
+          if (stored) currentUser = JSON.parse(stored);
+        } catch(err) {}
+      }
+
+      if (!currentUser || !inspectingSnippetId) {
+        showToast('Please sign in to leave a note', 'error');
+        return;
+      }
 
       const input = document.getElementById('inspectCommentInput');
       const text = input.value.trim();
@@ -1583,17 +1682,20 @@
 
       const commentData = {
         username: currentUser.username,
-        role: currentUser.role,
+        fullName: currentUser.fullName || currentUser.username,
+        role: currentUser.role || 'Hacker',
         text: text,
         time: Date.now()
       };
 
       if (db) {
-        push(ref(db, `snippets/${inspectingSnippetId}/comments`), commentData)
+        const commentsRef = push(ref(db, `snippets/${inspectingSnippetId}/comments`));
+        set(commentsRef, commentData)
           .then(() => {
             input.value = '';
             showToast('Note synced to Firebase!', 'success');
-          });
+          })
+          .catch(err => showToast('Failed to post note: ' + err.message, 'error'));
       } else {
         const snip = snippets.find(s => s.id === inspectingSnippetId);
         if (snip) {
@@ -1603,57 +1705,23 @@
           localStorage.setItem('devvault_snippets_store', JSON.stringify(snippets));
           renderInspectComments(snip);
           renderUI();
+          showToast('Note saved locally!', 'success');
         }
       }
     }
 
-    // Direct Copy & Download Handlers
-    window._copySnippet = function(id) {
-      const snip = snippets.find(s => s.id === id);
-      if (!snip) return;
-      executeCopy(snip.code);
-      showToast(`Copied ${snip.title} to clipboard!`, 'success');
-    };
-
-    function copyCurrentInspectCode() {
+    function copyCurrentInspectCode(e) {
       if (!inspectingSnippetId) return;
-      window._copySnippet(inspectingSnippetId);
+      window._copySnippet(inspectingSnippetId, e);
     }
 
     function copyCurrentInspectFetch() {
       const snip = snippets.find(s => s.id === inspectingSnippetId);
       if (!snip) return;
 
-      const template = `// Generated API boilerplate for ${snip.title}\nfetch("http://localhost:3000/api", {\n  method: "POST",\n  headers: { "Content-Type": "application/json" },\n  body: JSON.stringify(${JSON.stringify(snip.code)})\n})\n.then(res => res.json())\n.then(data => console.log(data));`;
+      const template = `// Generated API test call for ${snip.title}\nfetch("http://localhost:3000/api", {\n  method: "POST",\n  headers: { "Content-Type": "application/json" },\n  body: JSON.stringify(${JSON.stringify(snip.code)})\n})\n.then(res => res.json())\n.then(data => console.log(data));`;
       executeCopy(template);
       showToast('Copied cURL/Fetch boilerplate!', 'success');
-    }
-
-    window._downloadSnippet = function(id) {
-      const snip = snippets.find(s => s.id === id);
-      if (!snip) return;
-
-      // Retain exact original or chosen extension
-      const ext = snip.fileExtension || EXTENSION_MAP[snip.language] || 'txt';
-      const cleanName = snip.title.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
-      const filename = `cleanName.{ext}`;
-
-      const blob = new Blob([snip.code], { type: 'text/plain;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      showToast(`Downloaded ${filename}`, 'info');
-    };
-
-    function downloadCurrentInspectCode() {
-      if (!inspectingSnippetId) return;
-      window._downloadSnippet(inspectingSnippetId);
     }
 
     function syncScratchpad(val) {
@@ -1813,7 +1881,9 @@
       const previewCode = codeLines.slice(0, 5).join('\n');
       const langClass = `language-${snippet.language === 'shell' ? 'bash' : snippet.language}`;
       const authorInitial = snippet.author && snippet.author.username ? snippet.author.username.substring(0, 2).toUpperCase() : '??';
-      const fileExt = snippet.fileExtension || EXTENSION_MAP[snippet.language] || 'txt';
+      
+      const langKey = (snippet.language || '').toLowerCase().trim();
+      const fileExt = snippet.fileExtension || EXTENSION_MAP[langKey] || 'txt';
 
       return `
         <div class="bg-cyber-900 border border-cyber-700/80 hover:border-cyber-600 rounded-2xl overflow-hidden shadow-sm transition duration-150">
@@ -1844,16 +1914,18 @@
               </div>
             </div>
 
+            <!-- Direct Action Controls -->
             <div class="flex items-center gap-1 self-end sm:self-center">
-              <button onclick="window._toggleStar('${snippet.id}')" title="Star snippet" class="p-1.5 text-xs rounded-lg transition ${snippet.starred ? 'text-amber-400 bg-amber-400/10' : 'text-slate-400 hover:text-slate-200 hover:bg-cyber-800'}">
+              <button onclick="window._toggleStar('${snippet.id}', event)" title="Star snippet" class="p-1.5 text-xs rounded-lg transition ${snippet.starred ? 'text-amber-400 bg-amber-400/10' : 'text-slate-400 hover:text-slate-200 hover:bg-cyber-800'}">
                 <i class="fa-${snippet.starred ? 'solid' : 'regular'} fa-star"></i>
               </button>
               
-              <button onclick="window._copySnippet('${snippet.id}')" title="Copy raw code" class="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyber-800 rounded-lg transition text-xs">
+              <button onclick="window._copySnippet('${snippet.id}', event)" title="Copy raw code" class="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyber-800 rounded-lg transition text-xs">
                 <i class="fa-solid fa-copy"></i>
               </button>
 
-              <button onclick="window._downloadSnippet('snippet.id')"title="Downloadwithoriginalextension(.{fileExt} )" class="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-cyber-800 rounded-lg transition text-xs">
+              <!-- Single Click Direct Download -->
+              <button onclick="window._downloadSnippet('snippet.id',event)"title="Directdownload(.{fileExt})" class="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-cyber-800 rounded-lg transition text-xs">
                 <i class="fa-solid fa-download"></i>
               </button>
 
@@ -1862,7 +1934,7 @@
               </button>
 
               ${(isMine || isAdmin) ? `
-                <button onclick="window._deleteSnippet('${snippet.id}')" title="Delete code" class="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-cyber-800 rounded-lg transition text-xs">
+                <button onclick="window._deleteSnippet('${snippet.id}', event)" title="Delete code" class="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-cyber-800 rounded-lg transition text-xs">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               ` : ''}
