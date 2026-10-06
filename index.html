@@ -301,6 +301,36 @@
         </button>
       </div>
 
+      <!-- Folders -->
+      <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-3.5 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-folder-tree text-amber-400"></i> Folders
+          </h3>
+          <button id="btnCreateFolder" title="Create Folder"
+            class="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-cyber-800 rounded-lg transition">
+            <i class="fa-solid fa-folder-plus text-xs"></i>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mb-2">
+          <button id="btnUploadFolder" type="button"
+            class="px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-lg text-[10px] font-semibold text-amber-300 flex items-center justify-center gap-1.5 transition">
+            <i class="fa-solid fa-folder-open"></i>
+            Upload Folder
+          </button>
+
+          <button id="btnRootFolder" type="button"
+            class="px-2.5 py-2 bg-cyber-950 hover:bg-cyber-800 border border-cyber-700 rounded-lg text-[10px] font-semibold text-slate-300 flex items-center justify-center gap-1.5 transition">
+            <i class="fa-solid fa-house"></i>
+            Root
+          </button>
+        </div>
+
+        <input type="file" id="folderUploadInput" webkitdirectory directory multiple hidden>
+        <div id="folderList" class="space-y-1"></div>
+      </div>
+
       <!-- Languages -->
       <div class="bg-cyber-900 border border-cyber-700/80 rounded-2xl p-3.5">
         <div class="flex items-center justify-between mb-2">
@@ -403,6 +433,14 @@
             <input type="text" id="snippetExtensionInput" maxlength="16" placeholder="e.g. py, ts, json, env, sh"
               class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs sm:text-sm font-mono text-cyan-300 focus:outline-none focus:border-cyan-400">
           </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Folder</label>
+          <select id="snippetFolderSelect" class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
+            <option value="">Root / No Folder</option>
+          </select>
+          <p class="text-[10px] text-slate-500 mt-1">Put this file inside a shared team folder.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -606,6 +644,33 @@
     </div>
   </div>
 
+  <!-- Create Folder Modal -->
+  <div id="folderModal" role="dialog" aria-modal="true" aria-labelledby="folderModalTitle" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-cyber-900 border border-cyber-700 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-cyber-700 flex items-center justify-between bg-cyber-950/70">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-folder-plus"></i></div>
+          <div>
+            <h2 id="folderModalTitle" class="text-sm font-bold text-white">Create Folder</h2>
+            <p class="text-[11px] text-slate-400">Create a shared place for related code files</p>
+          </div>
+        </div>
+        <button id="btnCloseFolderModal" aria-label="Close" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-cyber-800 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form id="folderForm" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Folder Name</label>
+          <input id="folderNameInput" type="text" required maxlength="80" placeholder="e.g. Backend API"
+            class="w-full bg-cyber-950 border border-cyber-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400">
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" id="btnCancelFolder" class="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-xl hover:bg-cyber-800">Cancel</button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-xl"><i class="fa-solid fa-folder-plus mr-1"></i>Create Folder</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Timer Modal -->
   <div id="timerSettingsModal" role="dialog" aria-modal="true" aria-labelledby="timerModalTitle" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-cyber-900 border border-cyber-700 w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden">
@@ -744,6 +809,8 @@
     let pitchMode = false;
     let scratchpadDebounce = null;
     let firebaseReady = false;
+    let folders = [];
+    let activeFolderId = null;
 
     const $ = (id) => document.getElementById(id);
 
@@ -779,6 +846,15 @@
     const btnCloseAdminModal = $('btnCloseAdminModal');
     const createUserForm = $('createUserForm');
     const createUserBtn = $('createUserBtn');
+
+    const folderModal = $('folderModal');
+    const folderForm = $('folderForm');
+    const btnCreateFolder = $('btnCreateFolder');
+    const btnCloseFolderModal = $('btnCloseFolderModal');
+    const btnCancelFolder = $('btnCancelFolder');
+    const btnUploadFolder = $('btnUploadFolder');
+    const folderUploadInput = $('folderUploadInput');
+    const btnRootFolder = $('btnRootFolder');
 
     const timerSettingsModal = $('timerSettingsModal');
     const btnOpenTimerSettings = $('btnOpenTimerSettings');
@@ -973,6 +1049,15 @@
           if (updated) renderInspect(updated);
         }
       }, (error) => handleDataError('snippets', error)));
+
+      dataUnsubscribers.push(onValue(ref(db, 'folders'), (snapshot) => {
+        const data = snapshot.val() || {};
+        folders = Object.entries(data).map(([id, value]) => ({ id, ...value }));
+        folders.sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
+        renderFolderList();
+        populateFolderSelect();
+        renderUI();
+      }, (error) => handleDataError('folders', error)));
 
       dataUnsubscribers.push(onValue(ref(db, 'comments'), (snapshot) => {
         commentsBySnippet = snapshot.val() || {};
@@ -1188,12 +1273,17 @@
       if (!title) return showToast('Snippet title is required.', 'error');
       if (!code.trim()) return showToast('Code cannot be empty.', 'error');
 
+      const selectedFolderId = $('snippetFolderSelect').value.trim();
+      const generatedName = buildFileName({ title, language, fileExtension: finalExtension });
+      const originalFileName = $('snippetOriginalFileName').value.trim() || generatedName;
       const baseData = {
         title,
         language,
         status,
         fileExtension: finalExtension,
-        originalFileName: $('snippetOriginalFileName').value.trim() || buildFileName({ title, language, fileExtension: finalExtension }),
+        originalFileName,
+        relativePath: originalFileName,
+        folderId: selectedFolderId || null,
         category,
         tags,
         description,
@@ -1339,7 +1429,7 @@
       const author = snip.author || {};
       $('inspectMeta').textContent = `By ${author.fullName || author.username || 'Dev'} • ${author.role || 'Team Member'} • ${formatTimeAgo(snip.createdAt || Date.now())}`;
       $('inspectDesc').textContent = snip.description || 'No specific integration notes provided.';
-      $('inspectFilename').textContent = buildFileName(snip);
+      $('inspectFilename').textContent = getSnippetDisplayPath(snip);
       const lines = String(snip.code || '').split('\n').length;
       $('inspectLineCount').textContent = `${lines} ${lines === 1 ? 'line' : 'lines'}`;
       $('inspectTags').innerHTML = (snip.tags || []).map((t) => `<span class="text-xs bg-cyber-950 text-cyan-300 px-2.5 py-1 rounded-md border border-cyan-500/20 font-mono">#${escapeHtml(t)}</span>`).join('');
@@ -1398,7 +1488,6 @@
       const text = input.value.trim();
       if (!text) return;
       const profile = getProfileForCurrentUser();
-
       try {
         const commentRef = push(ref(db, `comments/${inspectingSnippetId}`));
         await set(commentRef, {
@@ -1534,6 +1623,218 @@
       }
     }
 
+    function populateFolderSelect() {
+      const select = $('snippetFolderSelect');
+      if (!select) return;
+      const current = select.value;
+      select.innerHTML = '<option value="">Root / No Folder</option>' + folders
+        .map((folder) => `<option value="${escapeHtml(folder.id)}">${escapeHtml(folder.name)}</option>`)
+        .join('');
+      const preferred = current || activeFolderId || '';
+      if ([...select.options].some((option) => option.value === preferred)) select.value = preferred;
+    }
+
+    function renderFolderList() {
+      const container = $('folderList');
+      if (!container) return;
+      if (!folders.length) {
+        container.innerHTML = '<div class="text-[10px] text-slate-500 px-2 py-2 italic">No folders yet. Create one or upload a folder.</div>';
+        return;
+      }
+
+      container.innerHTML = folders.map((folder) => {
+        const count = snippets.filter((s) => s.folderId === folder.id).length;
+        const active = activeFolderId === folder.id;
+        return `<div class="flex items-center gap-1.5">
+          <button onclick="window._selectFolder('${escapeHtml(folder.id)}')" class="flex-1 text-left px-2.5 py-2 rounded-lg text-xs flex items-center justify-between transition ${active ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30' : 'text-slate-400 hover:text-white hover:bg-cyber-800 border border-transparent'}">
+            <span class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-folder ${active ? 'text-amber-400' : 'text-amber-500'}"></i><span class="truncate">${escapeHtml(folder.name)}</span></span>
+            <span class="font-mono text-[10px] text-slate-500">${count}</span>
+          </button>
+          ${isAdmin() ? `<button onclick="window._deleteFolder('${escapeHtml(folder.id)}',event)" title="Delete folder" class="p-1.5 text-slate-500 hover:text-rose-400 rounded-lg hover:bg-cyber-800"><i class="fa-solid fa-trash text-[10px]"></i></button>` : ''}
+        </div>`;
+      }).join('');
+    }
+
+    window._selectFolder = function(folderId) {
+      activeFolderId = activeFolderId === folderId ? null : folderId;
+      renderFolderList();
+      renderUI();
+    };
+
+    function openFolderModal() {
+      if (!currentUser || !db) return showToast('Please sign in first.', 'error');
+      folderForm.reset();
+      openModal(folderModal);
+      setTimeout(() => $('folderNameInput').focus(), 50);
+    }
+
+    async function createFolder(event) {
+      event.preventDefault();
+      if (!currentUser || !db) return;
+      const name = $('folderNameInput').value.trim();
+      if (!name) return;
+      if (folders.some((f) => String(f.name || '').trim().toLowerCase() === name.toLowerCase())) {
+        return showToast('A folder with that name already exists.', 'error');
+      }
+
+      try {
+        const newRef = push(ref(db, 'folders'));
+        await set(newRef, {
+          name,
+          createdBy: currentUser.uid,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        });
+        activeFolderId = newRef.key;
+        closeModal(folderModal);
+        showToast(`Folder "${name}" created.`, 'success');
+      } catch (error) {
+        showToast(`Could not create folder: ${error.message}`, 'error');
+      }
+    }
+
+    window._deleteFolder = async function(folderId, event) {
+      event?.stopPropagation();
+      if (!isAdmin() || !db) return showToast('Admin only.', 'error');
+      const folder = folders.find((f) => f.id === folderId);
+      if (!folder) return;
+      const files = snippets.filter((s) => s.folderId === folderId);
+      const message = files.length
+        ? `Delete "${folder.name}"? ${files.length} file(s) will be moved to Root.`
+        : `Delete "${folder.name}"?`;
+      if (!confirm(message)) return;
+
+      try {
+        if (files.length) {
+          const updates = {};
+          files.forEach((file) => {
+            updates[`snippets/${file.id}/folderId`] = null;
+          });
+          await update(ref(db), updates);
+        }
+        await remove(ref(db, `folders/${folderId}`));
+        if (activeFolderId === folderId) activeFolderId = null;
+        showToast(`Folder "${folder.name}" deleted.`, 'info');
+      } catch (error) {
+        showToast(`Could not delete folder: ${error.message}`, 'error');
+      }
+    };
+
+    function sanitizeRelativePath(value) {
+      return String(value || '')
+        .replace(/\\/g, '/')
+        .split('/')
+        .filter((part) => part && part !== '.' && part !== '..')
+        .map((part) => part.replace(/[<>:"|?*\u0000-\u001f]/g, '_'))
+        .join('/');
+    }
+
+    function getSnippetDisplayPath(snippet) {
+      const relative = sanitizeRelativePath(snippet.relativePath || buildFileName(snippet));
+      const folder = folders.find((f) => f.id === snippet.folderId);
+      return folder ? `${folder.name}/${relative}` : relative;
+    }
+
+    async function uploadFolderFiles(fileList) {
+      if (!currentUser || !db) return;
+      const files = Array.from(fileList || []);
+      if (!files.length) return;
+
+      if (files.length > 100) {
+        showToast('Please upload 100 files or fewer at once.', 'error');
+        return;
+      }
+
+      const firstPath = files[0].webkitRelativePath || files[0].name;
+      const rootName = firstPath.split('/')[0] || 'Imported Folder';
+      let folder = folders.find((f) => String(f.name || '').toLowerCase() === rootName.toLowerCase());
+
+      try {
+        if (!folder) {
+          const folderRef = push(ref(db, 'folders'));
+          folder = { id: folderRef.key, name: rootName };
+          await set(folderRef, {
+            name: rootName,
+            createdBy: currentUser.uid,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            source: 'folder-upload'
+          });
+        }
+
+        const updates = {};
+        let imported = 0;
+        let skipped = 0;
+        const now = Date.now();
+        const profile = getProfileForCurrentUser();
+
+        for (const file of files) {
+          const fullRelativePath = sanitizeRelativePath(file.webkitRelativePath || file.name);
+          const fullParts = fullRelativePath.split('/');
+          const relativePath = fullParts.length > 1 ? fullParts.slice(1).join('/') : (fullParts[0] || file.name);
+          const pathParts = relativePath.split('/');
+          const fileName = pathParts[pathParts.length - 1] || file.name;
+          const lowerName = fileName.toLowerCase();
+          const lastDot = fileName.lastIndexOf('.');
+          const rawExt = lowerName === 'dockerfile'
+            ? 'dockerfile'
+            : (lastDot > 0 ? fileName.slice(lastDot + 1).toLowerCase() : '');
+          const language = REV_EXTENSION_MAP[rawExt] || 'text';
+          const acceptable = file.type.startsWith('text/') ||
+            !!REV_EXTENSION_MAP[rawExt] ||
+            ['env', 'toml', 'ini', 'conf'].includes(rawExt);
+
+          if (!acceptable || file.size > 1024 * 1024) {
+            skipped++;
+            continue;
+          }
+
+          const code = await file.text();
+          const base = lastDot > 0 ? fileName.slice(0, lastDot) : fileName;
+          const newRef = push(ref(db, 'snippets'));
+          updates[`snippets/${newRef.key}`] = {
+            title: base,
+            language,
+            status: 'READY',
+            fileExtension: normalizeExtension(rawExt || EXTENSION_MAP[language] || 'txt'),
+            originalFileName: fileName,
+            relativePath,
+            folderId: folder.id,
+            category: 'Utils / Helpers',
+            tags: [language, rootName],
+            description: `Imported from ${relativePath}`,
+            code,
+            starred: false,
+            author: {
+              uid: currentUser.uid,
+              username: profile.username,
+              fullName: profile.fullName || profile.username,
+              role: profile.role || 'Team Member'
+            },
+            createdAt: now,
+            updatedAt: now
+          };
+          imported++;
+        }
+
+        if (!imported) {
+          showToast('No supported text/code files were found in that folder.', 'error');
+          return;
+        }
+
+        await update(ref(db), updates);
+        activeFolderId = folder.id;
+        renderFolderList();
+        renderUI();
+        showToast(`Imported ${imported} file(s) into "${folder.name}"${skipped ? `; skipped ${skipped}` : ''}.`, 'success');
+      } catch (error) {
+        console.error(error);
+        showToast(`Folder upload failed: ${error.message}`, 'error');
+      } finally {
+        folderUploadInput.value = '';
+      }
+    }
+
     function saveProjectLinks() {
       if (!db || !currentUser) return;
       const repo = normalizeUrl(repoUrlInput.value);
@@ -1585,15 +1886,18 @@
       }));
 
       for (const s of snippets) {
-        const categoryFolder = sanitizeFileBase(s.category || 'General').replace(/\./g, '_');
-        let filename = buildFileName(s);
-        const base = filename.replace(/\.[^.]+$/, '');
-        const ext = filename.includes('.') ? filename.slice(filename.lastIndexOf('.')) : '';
-        let candidate = `${categoryFolder}/${filename}`;
+        const folder = folders.find((f) => f.id === s.folderId);
+        const folderName = folder ? sanitizeFileBase(folder.name) : 'Root';
+        let relative = sanitizeRelativePath(s.relativePath || buildFileName(s));
+        if (!relative || !relative.includes('.')) relative = buildFileName(s);
+        let candidate = `${folderName}/${relative}`;
+        const extMatch = relative.match(/(\.[^.]+)$/);
+        const ext = extMatch ? extMatch[1] : '';
+        const base = relative.replace(/\.[^.]+$/, '');
         let counter = 2;
         while (used.has(candidate)) {
-          filename = `${base}-${counter}${ext}`;
-          candidate = `${categoryFolder}/${filename}`;
+          relative = `${base}-${counter}${ext}`;
+          candidate = `${folderName}/${relative}`;
           counter += 1;
         }
         used.add(candidate);
@@ -1753,6 +2057,7 @@
         return true;
       });
 
+      if (activeFolderId) filtered = filtered.filter((s) => s.folderId === activeFolderId);
       if (selectedLanguage) filtered = filtered.filter((s) => (s.language || 'text').toLowerCase() === selectedLanguage.toLowerCase());
       if (selectedCategory !== 'all') filtered = filtered.filter((s) => s.category === selectedCategory);
       if (selectedStatus !== 'all') filtered = filtered.filter((s) => (s.status || 'READY') === selectedStatus);
@@ -1836,6 +2141,7 @@
 
         <div class="px-4 py-2 bg-cyber-950/70 border-t border-cyber-700/50 flex items-center justify-between text-xs text-slate-400 gap-3">
           <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+            ${snippet.folderId ? `<span class="text-[10px] font-semibold bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/20"><i class="fa-solid fa-folder mr-1"></i>${escapeHtml(folders.find((f) => f.id === snippet.folderId)?.name || 'Folder')}</span>` : ''}
             <span class="text-[10px] font-semibold bg-cyber-800 text-slate-300 px-2 py-0.5 rounded">${escapeHtml(snippet.category || 'General')}</span>
             ${(snippet.tags || []).slice(0, 8).map((tag) => `<span class="text-[10px] text-slate-400 bg-cyber-900 px-2 py-0.5 rounded border border-cyber-700/50">#${escapeHtml(tag)}</span>`).join('')}
           </div>
@@ -1993,6 +2299,21 @@
     btnCloseAdminModal.addEventListener('click', closeAdminUsersModal);
     createUserForm.addEventListener('submit', handleCreateUser);
 
+    btnCreateFolder.addEventListener('click', openFolderModal);
+    btnCloseFolderModal.addEventListener('click', () => closeModal(folderModal));
+    btnCancelFolder.addEventListener('click', () => closeModal(folderModal));
+    folderForm.addEventListener('submit', createFolder);
+    btnUploadFolder.addEventListener('click', () => {
+      if (!currentUser) return showToast('Please sign in first.', 'error');
+      folderUploadInput.click();
+    });
+    folderUploadInput.addEventListener('change', (event) => uploadFolderFiles(event.target.files));
+    btnRootFolder.addEventListener('click', () => {
+      activeFolderId = null;
+      renderFolderList();
+      renderUI();
+    });
+
     btnOpenPostSnippet.addEventListener('click', () => openSnippetModal());
     btnEmptyPostSnippet.addEventListener('click', () => openSnippetModal());
     btnCloseSnippetModal.addEventListener('click', closeSnippetModal);
@@ -2036,12 +2357,13 @@
         if (!snippetModal.classList.contains('hidden')) closeSnippetModal();
         else if (!inspectModal.classList.contains('hidden')) closeInspectModal();
         else if (!adminUserModal.classList.contains('hidden')) closeAdminUsersModal();
+        else if (!folderModal.classList.contains('hidden')) closeModal(folderModal);
         else if (!timerSettingsModal.classList.contains('hidden')) closeModal(timerSettingsModal);
         else if (!passwordModal.classList.contains('hidden')) closeModal(passwordModal);
       }
     });
 
-    [snippetModal, inspectModal, adminUserModal, timerSettingsModal, passwordModal].forEach((modal) => {
+    [snippetModal, inspectModal, adminUserModal, folderModal, timerSettingsModal, passwordModal].forEach((modal) => {
       modal.addEventListener('mousedown', (event) => { if (event.target === modal) closeModal(modal); });
     });
 
