@@ -1080,7 +1080,7 @@
           sprintEndTime = null;
           isTimerPaused = false;
           pausedRemainingMs = 0;
-          if (isAdmin()) set(ref(db, 'sprint_timer'), { endTime: Date.now() + 24 * 60 * 60 * 1000, isPaused: false, pausedRemainingMs: 0, updatedAt: Date.now() }).catch(() => {});
+          if (isAdmin()) set(ref(db, 'sprint_timer'), { endTime: Date.now() + 24 * 60 * 60 * 1000, isPaused: false, pausedRemainingMs: 0, updatedAt: Date.now(), updatedBy: currentUser.uid }).catch((error) => console.warn('Initial sprint timer sync failed:', error));
         } else {
           sprintEndTime = Number(data.endTime) || null;
           isTimerPaused = !!data.isPaused;
@@ -1737,6 +1737,7 @@
 
     async function uploadFolderFiles(fileList) {
       if (!currentUser || !db) return;
+
       const files = Array.from(fileList || []);
       if (!files.length) return;
 
@@ -1746,32 +1747,31 @@
       }
 
       const firstPath = files[0].webkitRelativePath || files[0].name;
-      const rootName = firstPath.split('/')[0] || 'Imported Folder';
-      let folder = folders.find((f) => String(f.name || '').toLowerCase() === rootName.toLowerCase());
+      const rootName = (firstPath.split('/')[0] || 'Imported Folder').trim();
+      if (!rootName) {
+        showToast('Could not determine the folder name.', 'error');
+        return;
+      }
+
+      const profile = getProfileForCurrentUser();
+      if (!profile?.username) {
+        showToast('Your DevVault profile is incomplete. Sign out and sign in again.', 'error');
+        return;
+      }
 
       try {
-        if (!folder) {
-          const folderRef = push(ref(db, 'folders'));
-          folder = { id: folderRef.key, name: rootName };
-          await set(folderRef, {
-            name: rootName,
-            createdBy: currentUser.uid,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-            source: 'folder-upload'
-          });
-        }
-
-        const updates = {};
-        let imported = 0;
-        let skipped = 0;
-        const now = Date.now();
-        const profile = getProfileForCurrentUser();
+        // Validate every file BEFORE touching Firebase. This prevents one bad file
+        // from causing the complete multi-location upload to be rejected.
+        const preparedFiles = [];
+        const skippedFiles = [];
 
         for (const file of files) {
           const fullRelativePath = sanitizeRelativePath(file.webkitRelativePath || file.name);
           const fullParts = fullRelativePath.split('/');
-          const relativePath = fullParts.length > 1 ? fullParts.slice(1).join('/') : (fullParts[0] || file.name);
+          const relativePath = fullParts.length > 1
+            ? fullParts.slice(1).join('/')
+            : (fullParts[0] || file.name);
+
           const pathParts = relativePath.split('/');
           const fileName = pathParts[pathParts.length - 1] || file.name;
           const lowerName = fileName.toLowerCase();
@@ -1784,26 +1784,100 @@
             !!REV_EXTENSION_MAP[rawExt] ||
             ['env', 'toml', 'ini', 'conf'].includes(rawExt);
 
-          if (!acceptable || file.size > 1024 * 1024) {
-            skipped++;
+          if (!acceptable) {
+            skippedFiles.push(`${relativePath} (unsupported file type)`);
             continue;
           }
 
-          const code = await file.text();
+          if (file.size > 1024 * 1024) {
+            skippedFiles.push(`${relativePath} (larger than 1 MB)`);
+            continue;
+          }
+
+          let code;
+          try {
+            code = await file.text();
+          } catch (readError) {
+            skippedFiles.push(`${relativePath} (could not read file)`);
+            console.warn('Could not read folder-upload file:', relativePath, readError);
+            continue;
+          }
+
+          if (code.length > 100000) {
+            skippedFiles.push(`${relativePath} (over 100,000 characters)`);
+            continue;
+          }
+
           const base = lastDot > 0 ? fileName.slice(0, lastDot) : fileName;
-          const newRef = push(ref(db, 'snippets'));
-          updates[`snippets/${newRef.key}`] = {
-            title: base,
-            language,
-            status: 'READY',
-            fileExtension: normalizeExtension(rawExt || EXTENSION_MAP[language] || 'txt'),
-            originalFileName: fileName,
+          const title = base.slice(0, 120) || 'Imported File';
+
+          preparedFiles.push({
+            fileName,
             relativePath,
+            rawExt,
+            language,
+            title,
+            code
+          });
+        }
+
+        if (!preparedFiles.length) {
+          const detail = skippedFiles.length
+            ? `\n\nSkipped:\n${skippedFiles.slice(0, 8).join('\n')}${skippedFiles.length > 8 ? '\n…and more.' : ''}`
+            : '';
+          showToast(`No supported files could be imported.${detail}`, 'error');
+          return;
+        }
+
+        // Create the DevVault folder only after we know there is at least one
+        // valid file ready to import.
+        let folder = folders.find(
+          (f) => String(f.name || '').trim().toLowerCase() === rootName.toLowerCase()
+        );
+
+        if (!folder) {
+          const folderRef = push(ref(db, 'folders'));
+          const folderData = {
+            name: rootName.slice(0, 80),
+            createdBy: currentUser.uid,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            source: 'folder-upload'
+          };
+
+          try {
+            await set(folderRef, folderData);
+          } catch (error) {
+            console.error('Folder creation failed:', error);
+            showToast(`Folder creation failed: ${error.code || error.message}`, 'error');
+            return;
+          }
+
+          folder = { id: folderRef.key, ...folderData };
+        }
+
+        let imported = 0;
+        const failedFiles = [];
+        const now = Date.now();
+
+        // Upload snippets one-by-one. That way a single rejected record cannot
+        // cancel all the other valid files, and we can report the exact filename.
+        for (const item of preparedFiles) {
+          const newRef = push(ref(db, 'snippets'));
+          const snippetData = {
+            title: item.title,
+            language: item.language,
+            status: 'READY',
+            fileExtension: normalizeExtension(
+              item.rawExt || EXTENSION_MAP[item.language] || 'txt'
+            ),
+            originalFileName: item.fileName,
+            relativePath: item.relativePath,
             folderId: folder.id,
             category: 'Utils / Helpers',
-            tags: [language, rootName],
-            description: `Imported from ${relativePath}`,
-            code,
+            tags: [item.language, rootName.slice(0, 80)],
+            description: `Imported from ${item.relativePath}`.slice(0, 300),
+            code: item.code,
             starred: false,
             author: {
               uid: currentUser.uid,
@@ -1814,22 +1888,44 @@
             createdAt: now,
             updatedAt: now
           };
-          imported++;
+
+          try {
+            await set(newRef, snippetData);
+            imported++;
+          } catch (error) {
+            console.error(`Folder import failed for ${item.relativePath}:`, error);
+            failedFiles.push(`${item.relativePath} (${error.code || error.message})`);
+          }
         }
 
-        if (!imported) {
-          showToast('No supported text/code files were found in that folder.', 'error');
-          return;
-        }
-
-        await update(ref(db), updates);
         activeFolderId = folder.id;
         renderFolderList();
         renderUI();
-        showToast(`Imported ${imported} file(s) into "${folder.name}"${skipped ? `; skipped ${skipped}` : ''}.`, 'success');
+
+        if (!imported) {
+          const detail = failedFiles.length
+            ? `\n\nFirst Firebase error:\n${failedFiles[0]}`
+            : '';
+          showToast(`No files were imported.${detail}`, 'error');
+          return;
+        }
+
+        let message = `Imported ${imported} file(s) into "${folder.name}"`;
+        const totalSkipped = skippedFiles.length + failedFiles.length;
+        if (totalSkipped) message += `; skipped/failed ${totalSkipped}`;
+
+        showToast(message + '.', failedFiles.length ? 'error' : 'success');
+
+        // Log details so the browser console tells us exactly which file failed.
+        if (skippedFiles.length || failedFiles.length) {
+          console.warn('DevVault folder import details:', {
+            skippedFiles,
+            failedFiles
+          });
+        }
       } catch (error) {
-        console.error(error);
-        showToast(`Folder upload failed: ${error.message}`, 'error');
+        console.error('Folder upload failed:', error);
+        showToast(`Folder upload failed: ${error.code || error.message}`, 'error');
       } finally {
         folderUploadInput.value = '';
       }
