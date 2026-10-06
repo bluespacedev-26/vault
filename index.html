@@ -1743,126 +1743,119 @@
 
       if (files.length > 100) {
         showToast('Please upload 100 files or fewer at once.', 'error');
+        folderUploadInput.value = '';
         return;
       }
 
       const firstPath = files[0].webkitRelativePath || files[0].name;
-      const rootName = (firstPath.split('/')[0] || 'Imported Folder').trim();
-      if (!rootName) {
-        showToast('Could not determine the folder name.', 'error');
-        return;
-      }
+      const rootName = (firstPath.split('/')[0] || 'Imported Folder').slice(0, 80);
+      const existingFolder = folders.find(
+        (f) => String(f.name || '').toLowerCase() === rootName.toLowerCase()
+      );
 
       const profile = getProfileForCurrentUser();
-      if (!profile?.username) {
-        showToast('Your DevVault profile is incomplete. Sign out and sign in again.', 'error');
+      const now = Date.now();
+      const validFiles = [];
+      const skippedFiles = [];
+
+      // Validate every file BEFORE creating the folder or writing snippets.
+      for (const file of files) {
+        const fullRelativePath = sanitizeRelativePath(
+          file.webkitRelativePath || file.name
+        );
+        const fullParts = fullRelativePath.split('/');
+        const relativePath = fullParts.length > 1
+          ? fullParts.slice(1).join('/')
+          : (fullParts[0] || file.name);
+
+        const pathParts = relativePath.split('/');
+        const fileName = pathParts[pathParts.length - 1] || file.name;
+        const lowerName = fileName.toLowerCase();
+        const lastDot = fileName.lastIndexOf('.');
+        const rawExt = lowerName === 'dockerfile'
+          ? 'dockerfile'
+          : (lastDot > 0 ? fileName.slice(lastDot + 1).toLowerCase() : '');
+
+        const language = REV_EXTENSION_MAP[rawExt] || 'text';
+        const acceptable = file.type.startsWith('text/') ||
+          !!REV_EXTENSION_MAP[rawExt] ||
+          ['env', 'toml', 'ini', 'conf'].includes(rawExt);
+
+        if (!acceptable) {
+          skippedFiles.push(`${relativePath} (unsupported file type)`);
+          continue;
+        }
+
+        if (file.size > 1024 * 1024) {
+          skippedFiles.push(`${relativePath} (larger than 1 MB)`);
+          continue;
+        }
+
+        let code = '';
+        try {
+          code = await file.text();
+        } catch (error) {
+          skippedFiles.push(`${relativePath} (could not read file)`);
+          continue;
+        }
+
+        if (code.length > 100000) {
+          skippedFiles.push(`${relativePath} (over 100,000 characters)`);
+          continue;
+        }
+
+        // Firebase validates title length too.
+        const base = lastDot > 0 ? fileName.slice(0, lastDot) : fileName;
+        const title = base.slice(0, 120) || 'snippet';
+
+        validFiles.push({
+          file,
+          code,
+          relativePath,
+          fileName,
+          rawExt,
+          language,
+          title
+        });
+      }
+
+      if (!validFiles.length) {
+        folderUploadInput.value = '';
+        showToast(
+          `No files could be imported.${skippedFiles.length ? ` ${skippedFiles.slice(0, 2).join('; ')}` : ''}`,
+          'error'
+        );
         return;
       }
 
+      let folder = existingFolder;
+      let createdFolder = false;
+      let imported = 0;
+      let failed = 0;
+      const failedFiles = [];
+
       try {
-        // Validate every file BEFORE touching Firebase. This prevents one bad file
-        // from causing the complete multi-location upload to be rejected.
-        const preparedFiles = [];
-        const skippedFiles = [];
-
-        for (const file of files) {
-          const fullRelativePath = sanitizeRelativePath(file.webkitRelativePath || file.name);
-          const fullParts = fullRelativePath.split('/');
-          const relativePath = fullParts.length > 1
-            ? fullParts.slice(1).join('/')
-            : (fullParts[0] || file.name);
-
-          const pathParts = relativePath.split('/');
-          const fileName = pathParts[pathParts.length - 1] || file.name;
-          const lowerName = fileName.toLowerCase();
-          const lastDot = fileName.lastIndexOf('.');
-          const rawExt = lowerName === 'dockerfile'
-            ? 'dockerfile'
-            : (lastDot > 0 ? fileName.slice(lastDot + 1).toLowerCase() : '');
-          const language = REV_EXTENSION_MAP[rawExt] || 'text';
-          const acceptable = file.type.startsWith('text/') ||
-            !!REV_EXTENSION_MAP[rawExt] ||
-            ['env', 'toml', 'ini', 'conf'].includes(rawExt);
-
-          if (!acceptable) {
-            skippedFiles.push(`${relativePath} (unsupported file type)`);
-            continue;
-          }
-
-          if (file.size > 1024 * 1024) {
-            skippedFiles.push(`${relativePath} (larger than 1 MB)`);
-            continue;
-          }
-
-          let code;
-          try {
-            code = await file.text();
-          } catch (readError) {
-            skippedFiles.push(`${relativePath} (could not read file)`);
-            console.warn('Could not read folder-upload file:', relativePath, readError);
-            continue;
-          }
-
-          if (code.length > 100000) {
-            skippedFiles.push(`${relativePath} (over 100,000 characters)`);
-            continue;
-          }
-
-          const base = lastDot > 0 ? fileName.slice(0, lastDot) : fileName;
-          const title = base.slice(0, 120) || 'Imported File';
-
-          preparedFiles.push({
-            fileName,
-            relativePath,
-            rawExt,
-            language,
-            title,
-            code
-          });
-        }
-
-        if (!preparedFiles.length) {
-          const detail = skippedFiles.length
-            ? `\n\nSkipped:\n${skippedFiles.slice(0, 8).join('\n')}${skippedFiles.length > 8 ? '\n…and more.' : ''}`
-            : '';
-          showToast(`No supported files could be imported.${detail}`, 'error');
-          return;
-        }
-
-        // Create the DevVault folder only after we know there is at least one
-        // valid file ready to import.
-        let folder = folders.find(
-          (f) => String(f.name || '').trim().toLowerCase() === rootName.toLowerCase()
-        );
-
+        // Only create the folder after we know there are valid files.
         if (!folder) {
           const folderRef = push(ref(db, 'folders'));
-          const folderData = {
-            name: rootName.slice(0, 80),
-            createdBy: currentUser.uid,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-            source: 'folder-upload'
+          folder = {
+            id: folderRef.key,
+            name: rootName
           };
 
-          try {
-            await set(folderRef, folderData);
-          } catch (error) {
-            console.error('Folder creation failed:', error);
-            showToast(`Folder creation failed: ${error.code || error.message}`, 'error');
-            return;
-          }
-
-          folder = { id: folderRef.key, ...folderData };
+          await set(folderRef, {
+            name: rootName,
+            createdBy: currentUser.uid,
+            createdAt: now,
+            updatedAt: now,
+            source: 'folder-upload'
+          });
+          createdFolder = true;
         }
 
-        let imported = 0;
-        const failedFiles = [];
-        const now = Date.now();
-
-        // Upload snippets one-by-one. That way a single rejected record cannot
-        // cancel all the other valid files, and we can report the exact filename.
-        for (const item of preparedFiles) {
+        // Write each snippet separately. This prevents one invalid file from
+        // cancelling every other valid file in the folder.
+        for (const item of validFiles) {
           const newRef = push(ref(db, 'snippets'));
           const snippetData = {
             title: item.title,
@@ -1875,8 +1868,8 @@
             relativePath: item.relativePath,
             folderId: folder.id,
             category: 'Utils / Helpers',
-            tags: [item.language, rootName.slice(0, 80)],
-            description: `Imported from ${item.relativePath}`.slice(0, 300),
+            tags: [item.language, rootName],
+            description: `Imported from ${item.relativePath}`,
             code: item.code,
             starred: false,
             author: {
@@ -1893,8 +1886,9 @@
             await set(newRef, snippetData);
             imported++;
           } catch (error) {
+            failed++;
+            failedFiles.push(`${item.relativePath} (${error?.code || error?.message || 'write failed'})`);
             console.error(`Folder import failed for ${item.relativePath}:`, error);
-            failedFiles.push(`${item.relativePath} (${error.code || error.message})`);
           }
         }
 
@@ -1902,30 +1896,55 @@
         renderFolderList();
         renderUI();
 
-        if (!imported) {
-          const detail = failedFiles.length
-            ? `\n\nFirst Firebase error:\n${failedFiles[0]}`
+        if (imported > 0) {
+          const skippedCount = skippedFiles.length + failed;
+          const detail = skippedCount
+            ? `; skipped/failed ${skippedCount}`
             : '';
-          showToast(`No files were imported.${detail}`, 'error');
-          return;
-        }
+          showToast(
+            `Imported ${imported} file(s) into "${folder.name}"${detail}.`,
+            'success'
+          );
 
-        let message = `Imported ${imported} file(s) into "${folder.name}"`;
-        const totalSkipped = skippedFiles.length + failedFiles.length;
-        if (totalSkipped) message += `; skipped/failed ${totalSkipped}`;
+          if (failedFiles.length) {
+            console.warn('Folder import failures:', failedFiles);
+            showToast(
+              `Could not import: ${failedFiles.slice(0, 2).join('; ')}`,
+              'error'
+            );
+          }
+        } else {
+          // Avoid leaving an empty auto-created folder behind.
+          if (createdFolder) {
+            try {
+              await remove(ref(db, `folders/${folder.id}`));
+            } catch (cleanupError) {
+              console.warn('Could not remove empty imported folder:', cleanupError);
+            }
+          }
 
-        showToast(message + '.', failedFiles.length ? 'error' : 'success');
-
-        // Log details so the browser console tells us exactly which file failed.
-        if (skippedFiles.length || failedFiles.length) {
-          console.warn('DevVault folder import details:', {
-            skippedFiles,
-            failedFiles
-          });
+          showToast(
+            `No files were accepted by Firebase.${failedFiles.length ? ` ${failedFiles.slice(0, 2).join('; ')}` : ''}`,
+            'error'
+          );
         }
       } catch (error) {
         console.error('Folder upload failed:', error);
-        showToast(`Folder upload failed: ${error.code || error.message}`, 'error');
+
+        // If folder creation itself succeeded but no snippet could be written,
+        // clean up the auto-created empty folder.
+        if (createdFolder && folder && imported === 0) {
+          try {
+            await remove(ref(db, `folders/${folder.id}`));
+          } catch (cleanupError) {
+            console.warn('Could not remove failed imported folder:', cleanupError);
+          }
+        }
+
+        showToast(
+          `Folder upload failed: ${error?.code || error?.message || 'Unknown error'}`,
+          'error'
+        );
       } finally {
         folderUploadInput.value = '';
       }
