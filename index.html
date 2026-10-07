@@ -811,6 +811,7 @@
     let firebaseReady = false;
     let folders = [];
     let activeFolderId = null;
+    const expandedFolderIds = new Set();
 
     const $ = (id) => document.getElementById(id);
 
@@ -1714,6 +1715,7 @@
         }
         await remove(ref(db, `folders/${folderId}`));
         if (activeFolderId === folderId) activeFolderId = null;
+        expandedFolderIds.delete(folderId);
         showToast(`Folder "${folder.name}" deleted.`, 'info');
       } catch (error) {
         showToast(`Could not delete folder: ${error.message}`, 'error');
@@ -2319,17 +2321,35 @@
       </div>`;
     }
 
+    window._toggleFolderExpanded = function(folderId, event) {
+      event?.stopPropagation();
+      if (expandedFolderIds.has(folderId)) {
+        expandedFolderIds.delete(folderId);
+      } else {
+        expandedFolderIds.add(folderId);
+      }
+      renderUI();
+    };
+
     function generateFolderGroupHTML(folder, items) {
       const updated = Math.max(...items.map((s) => Number(s.updatedAt || s.createdAt || 0)));
       const languages = [...new Set(items.map((s) => s.language || 'text'))].slice(0, 4);
-      const folderIcon = activeFolderId === folder.id ? 'fa-folder-open' : 'fa-folder';
+      const isExpanded = expandedFolderIds.has(folder.id) || activeFolderId === folder.id;
+      const folderIcon = isExpanded ? 'fa-folder-open' : 'fa-folder';
+      const chevron = isExpanded ? 'fa-chevron-up' : 'fa-chevron-down';
       const isActive = activeFolderId === folder.id;
 
-      return `<section class="bg-cyber-900 border ${isActive ? 'border-amber-500/35' : 'border-cyber-700/70'} rounded-2xl overflow-hidden shadow-sm">
-        <div class="px-4 py-3 bg-cyber-950/45 border-b border-cyber-700/60 flex items-center gap-3">
-          <button onclick="window._selectFolder('${escapeHtml(folder.id)}')" class="w-9 h-9 rounded-xl ${isActive ? 'bg-amber-500/15 text-amber-300 border-amber-500/30' : 'bg-cyber-800 text-amber-400 border-cyber-700'} border flex items-center justify-center flex-shrink-0 hover:bg-amber-500/10 transition" title="${isActive ? 'Show all snippets' : 'Open folder'}">
+      return `<section class="bg-cyber-900 border ${isExpanded ? 'border-amber-500/30' : 'border-cyber-700/70'} rounded-2xl overflow-hidden shadow-sm transition-colors">
+        <button
+          onclick="window._toggleFolderExpanded('${escapeHtml(folder.id)}',event)"
+          class="w-full text-left px-4 py-3 bg-cyber-950/45 hover:bg-cyber-950/70 flex items-center gap-3 transition"
+          aria-expanded="${isExpanded ? 'true' : 'false'}"
+          title="${isExpanded ? 'Collapse folder' : 'Open folder'}"
+        >
+          <div class="w-9 h-9 rounded-xl ${isExpanded ? 'bg-amber-500/15 text-amber-300 border-amber-500/30' : 'bg-cyber-800 text-amber-400 border-cyber-700'} border flex items-center justify-center flex-shrink-0">
             <i class="fa-solid ${folderIcon} text-sm"></i>
-          </button>
+          </div>
+
           <div class="min-w-0 flex-1">
             <div class="flex items-center gap-2 min-w-0">
               <h3 class="text-sm font-bold text-white truncate">${escapeHtml(folder.name || 'Folder')}</h3>
@@ -2340,14 +2360,18 @@
               ${languages.map((lang) => `<span class="text-[9px] font-mono uppercase text-slate-400">${escapeHtml(lang)}</span>`).join('')}
             </div>
           </div>
-          <button onclick="window._selectFolder('${escapeHtml(folder.id)}')" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-semibold text-slate-400 hover:text-white bg-cyber-800/70 hover:bg-cyber-800 border border-cyber-700 rounded-lg transition">
-            <i class="fa-solid fa-filter"></i>${isActive ? 'Clear' : 'View Folder'}
-          </button>
-        </div>
 
-        <div class="p-2.5 space-y-1.5">
+          <div class="flex items-center gap-2 flex-shrink-0">
+            ${isActive ? '<span class="hidden sm:inline text-[9px] font-mono uppercase tracking-wider text-amber-300">FILTERED</span>' : ''}
+            <span class="w-7 h-7 rounded-lg bg-cyber-800/70 border border-cyber-700 flex items-center justify-center text-slate-500">
+              <i class="fa-solid ${chevron} text-[10px]"></i>
+            </span>
+          </div>
+        </button>
+
+        ${isExpanded ? `<div class="border-t border-cyber-700/60 p-2.5 space-y-1.5">
           ${items.map((snippet) => generateCompactSnippetHTML(snippet)).join('')}
-        </div>
+        </div>` : ''}
       </section>`;
     }
 
