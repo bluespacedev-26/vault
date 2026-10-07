@@ -295,6 +295,389 @@
       #mainSidebar > div + div { padding-top: .8rem !important; }
     }
 
+    /* === DevVault premium workspace theme === */
+/* DevVault — premium dark workspace redesign */
+    
+    :root {
+      --dv-bg: #080b10;
+      --dv-panel: #0c1016;
+      --dv-panel-2: #10151d;
+      --dv-border: #1b2430;
+      --dv-border-soft: #141b24;
+      --dv-text: #f3f6fa;
+      --dv-muted: #8b96a5;
+      --dv-faint: #5e6876;
+      --dv-accent: #55d6c2;
+      --dv-accent-soft: rgba(85,214,194,.10);
+      --dv-accent-border: rgba(85,214,194,.24);
+      --dv-danger: #f4778d;
+    }
+    
+    html, body {
+      background: var(--dv-bg) !important;
+      color: var(--dv-text) !important;
+    }
+    
+    body {
+      background:
+        radial-gradient(circle at 50% -30%, rgba(85,214,194,.045), transparent 35%),
+        var(--dv-bg) !important;
+    }
+    
+    .cyber-grid { background-image: none !important; }
+    
+    /* ---------- Header ---------- */
+    header {
+      height: 68px;
+      background: rgba(8,11,16,.92) !important;
+      border-bottom: 1px solid var(--dv-border) !important;
+      box-shadow: 0 1px 0 rgba(255,255,255,.02) !important;
+    }
+    
+    header > div {
+      max-width: 1400px !important;
+      height: 68px !important;
+    }
+    
+    header > div > div:first-child > div:first-child {
+      width: 36px !important;
+      height: 36px !important;
+      border-radius: 10px !important;
+      background: var(--dv-accent-soft) !important;
+      color: var(--dv-accent) !important;
+      box-shadow: none !important;
+    }
+    
+    header > div > div:first-child > div:first-child i { color: var(--dv-accent) !important; }
+    
+    header .bg-gradient-to-r,
+    header .bg-gradient-to-tr,
+    header .bg-gradient-to-t {
+      background-image: none !important;
+    }
+    
+    header .bg-clip-text {
+      background: none !important;
+      -webkit-background-clip: initial !important;
+      background-clip: initial !important;
+      color: #f5f7fa !important;
+      letter-spacing: .02em !important;
+    }
+    
+    #firebaseStatusBadge {
+      background: transparent !important;
+      border: 1px solid var(--dv-border) !important;
+      color: #91a0ae !important;
+      padding: 3px 7px !important;
+    }
+    
+    #firebaseStatusBadge span { background: #77818d !important; box-shadow: none !important; }
+    
+    header > div > div:nth-child(2) {
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+    }
+    
+    header > div > div:nth-child(2) .font-mono { color: var(--dv-muted) !important; }
+    #hackCountdown { color: #e9edf2 !important; }
+    
+    header button {
+      background: transparent !important;
+      border-color: var(--dv-border) !important;
+      box-shadow: none !important;
+      border-radius: 9px !important;
+    }
+    
+    header button:hover { background: #111720 !important; border-color: #263242 !important; }
+    
+    #btnOpenPostSnippet {
+      background: var(--dv-accent) !important;
+      color: #07100e !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      font-weight: 800 !important;
+    }
+    
+    #btnOpenPostSnippet:hover { background: #6fe1cf !important; }
+    #adminManageBtn { background: rgba(213,157,63,.10) !important; border-color: rgba(213,157,63,.28) !important; }
+    
+    /* ---------- App frame ---------- */
+    main {
+      max-width: 1400px !important;
+      padding-top: 24px !important;
+      padding-bottom: 40px !important;
+      gap: 28px !important;
+    }
+    
+    #mainSidebar {
+      width: 244px !important;
+      space-y: 0 !important;
+    }
+    
+    #mainSidebar > div {
+      background: transparent !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding: 0 0 17px !important;
+      margin: 0 0 17px !important;
+      position: relative;
+    }
+    
+    #mainSidebar > div + div { border-top: 1px solid var(--dv-border-soft) !important; padding-top: 17px !important; }
+    
+    #mainSidebar h2,
+    #mainSidebar h3 {
+      color: #7f8a98 !important;
+      font-size: 10px !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: .11em !important;
+    }
+    
+    #mainSidebar input,
+    #mainSidebar textarea,
+    #mainSidebar select {
+      background: #0a0e14 !important;
+      border: 1px solid var(--dv-border) !important;
+      color: #dbe1e8 !important;
+      border-radius: 8px !important;
+    }
+    
+    #mainSidebar input:focus,
+    #mainSidebar textarea:focus,
+    #mainSidebar select:focus { border-color: rgba(85,214,194,.42) !important; box-shadow: 0 0 0 3px rgba(85,214,194,.055) !important; }
+    
+    #mainSidebar .grid.grid-cols-2 > div {
+      background: transparent !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+    }
+    
+    #statSnippetCount,
+    #statUserCount { font-size: 1rem !important; }
+    
+    #mainSidebar .scope-btn {
+      border: 1px solid transparent !important;
+      border-radius: 8px !important;
+      background: transparent !important;
+      color: #98a2af !important;
+      padding: 8px 9px !important;
+    }
+    
+    #mainSidebar .scope-btn:hover { background: #0f141b !important; color: #e1e6ec !important; }
+    #mainSidebar .scope-btn.bg-cyan-500\/15,
+    #mainSidebar .scope-btn[style] { background: var(--dv-accent-soft) !important; border-color: var(--dv-accent-border) !important; color: #bfeee6 !important; }
+    
+    #mainSidebar .scope-btn span:last-child {
+      background: #0a0e14 !important;
+      border: 1px solid var(--dv-border) !important;
+    }
+    
+    #languageFilterList button {
+      background: transparent !important;
+      border-color: transparent !important;
+      color: #8893a2 !important;
+      border-radius: 7px !important;
+    }
+    #languageFilterList button:hover { background: #0f141b !important; color: #e1e6ec !important; }
+    
+    #teamScratchpad {
+      min-height: 104px !important;
+      background: #090d13 !important;
+      color: #bac9c7 !important;
+      line-height: 1.55 !important;
+    }
+    
+    #mainSidebar .text-cyan-400 { color: var(--dv-accent) !important; }
+    #mainSidebar .text-emerald-400 { color: #7fd6a3 !important; }
+    #mainSidebar .text-purple-400 { color: #b9a6ed !important; }
+    #mainSidebar .text-amber-400 { color: #d8b275 !important; }
+    
+    /* ---------- Content toolbar ---------- */
+    main > section { gap: 14px !important; }
+    
+    main > section > div:first-child {
+      background: #0a0e14 !important;
+      border: 1px solid var(--dv-border) !important;
+      border-radius: 11px !important;
+      padding: 6px !important;
+      box-shadow: none !important;
+    }
+    
+    #searchInput {
+      min-height: 42px !important;
+      background: transparent !important;
+      border: 1px solid transparent !important;
+      border-radius: 8px !important;
+      color: #f4f6f9 !important;
+    }
+    
+    #searchInput:focus {
+      background: #0d1218 !important;
+      border-color: rgba(85,214,194,.27) !important;
+      box-shadow: 0 0 0 3px rgba(85,214,194,.05) !important;
+    }
+    
+    main > section > div:first-child select {
+      min-height: 42px !important;
+      background: #0d1218 !important;
+      border: 1px solid var(--dv-border) !important;
+      color: #b9c2cc !important;
+      border-radius: 8px !important;
+    }
+    
+    /* ---------- Folder / snippet surfaces ---------- */
+    #snippetsContainer { gap: 10px !important; }
+    
+    .dv-folder-group {
+      background: #0a0e14 !important;
+      border: 1px solid var(--dv-border) !important;
+      border-radius: 11px !important;
+      box-shadow: none !important;
+    }
+    
+    .dv-folder-group:hover { border-color: #26303d !important; }
+    
+    .dv-folder-header {
+      padding: 13px 14px !important;
+      background: transparent !important;
+    }
+    .dv-folder-header:hover { background: #0d1218 !important; }
+    
+    .dv-folder-icon {
+      width: 34px !important;
+      height: 34px !important;
+      border-radius: 8px !important;
+      background: rgba(214,173,102,.075) !important;
+      border-color: rgba(214,173,102,.18) !important;
+      color: #d2ae70 !important;
+    }
+    
+    .dv-folder-header h3 { font-size: 13px !important; letter-spacing: 0 !important; text-transform: none !important; color: #e9edf2 !important; }
+    .dv-folder-header .bg-cyber-800 { background: #11161d !important; border-color: #202a35 !important; }
+    
+    .dv-folder-items {
+      background: #080c11 !important;
+      border-top: 1px solid var(--dv-border-soft) !important;
+      padding: 4px !important;
+    }
+    
+    .dv-snippet-row {
+      background: transparent !important;
+      border: 1px solid transparent !important;
+      border-radius: 8px !important;
+      padding: 9px 10px !important;
+    }
+    .dv-snippet-row:hover { background: #0d1218 !important; border-color: #18212b !important; }
+    
+    .dv-snippet-file-icon {
+      width: 30px !important;
+      height: 30px !important;
+      border-radius: 7px !important;
+      background: #0f151c !important;
+      border-color: #202a35 !important;
+      color: #76d7ca !important;
+    }
+    
+    .dv-snippet-row button.truncate { color: #dbe1e8 !important; font-weight: 600 !important; }
+    .dv-snippet-row button.truncate:hover { color: var(--dv-accent) !important; }
+    .dv-snippet-row .text-slate-500 { color: #687382 !important; }
+    
+    #emptyVaultState {
+      background: transparent !important;
+      border: 1px dashed #222c38 !important;
+      border-radius: 11px !important;
+      padding: 84px 24px !important;
+    }
+    
+    /* ---------- General chrome ---------- */
+    .bg-cyber-900 { background-color: #0c1117 !important; }
+    .bg-cyber-950 { background-color: #080c11 !important; }
+    .border-cyber-700, .border-cyber-700\/60, .border-cyber-700\/70, .border-cyber-700\/80 { border-color: var(--dv-border) !important; }
+    .text-slate-100 { color: #f1f4f7 !important; }
+    .text-slate-200 { color: #dce2e8 !important; }
+    .text-slate-300 { color: #bdc5cf !important; }
+    .text-slate-400 { color: #8b96a5 !important; }
+    .text-slate-500 { color: #697482 !important; }
+    
+    /* Keep colored status badges readable, but quieter */
+    .bg-emerald-950 { background: rgba(60,180,114,.07) !important; }
+    .bg-amber-950 { background: rgba(214,173,102,.07) !important; }
+    .bg-rose-950 { background: rgba(244,119,141,.07) !important; }
+    
+    /* ---------- Modals ---------- */
+    [role="dialog"] {
+      background: rgba(3,5,8,.80) !important;
+      backdrop-filter: blur(12px) !important;
+    }
+    
+    [role="dialog"] > div {
+      background: #0c1117 !important;
+      border: 1px solid #25303d !important;
+      border-radius: 14px !important;
+      box-shadow: 0 30px 90px rgba(0,0,0,.55) !important;
+    }
+    
+    [role="dialog"] input,
+    [role="dialog"] textarea,
+    [role="dialog"] select {
+      background: #080c11 !important;
+      border-color: #1d2732 !important;
+      border-radius: 8px !important;
+    }
+    
+    /* Upload chooser */
+    #uploadChoiceModal .group {
+      background: #0a0f15 !important;
+      border-color: #202a35 !important;
+      border-radius: 10px !important;
+    }
+    #uploadChoiceModal .group:hover { background: #0e141b !important; border-color: #30404e !important; }
+    
+    /* ---------- Login ---------- */
+    #loginPortal {
+      background:
+        radial-gradient(circle at 50% 0%, rgba(85,214,194,.08), transparent 28%),
+        #080b10 !important;
+    }
+    
+    #loginPortal > div:nth-child(3) {
+      background: #0c1117 !important;
+      border: 1px solid #25303d !important;
+      border-radius: 14px !important;
+      box-shadow: 0 30px 100px rgba(0,0,0,.52) !important;
+    }
+    
+    #loginPortal input {
+      background: #080c11 !important;
+      border-color: #1d2732 !important;
+      border-radius: 9px !important;
+    }
+    
+    #loginPortal input:focus { border-color: rgba(85,214,194,.42) !important; box-shadow: 0 0 0 3px rgba(85,214,194,.05) !important; }
+    #loginSubmitBtn { background: var(--dv-accent) !important; color: #07100e !important; box-shadow: none !important; border-radius: 9px !important; }
+    #loginSubmitBtn:hover { background: #6fe1cf !important; }
+    
+    /* ---------- Responsive ---------- */
+    @media (max-width: 1023px) {
+      #mainSidebar { width: 100% !important; }
+      #mainSidebar > div { padding-bottom: 14px !important; margin-bottom: 14px !important; }
+      #mainSidebar > div + div { padding-top: 14px !important; }
+    }
+    
+    @media (max-width: 767px) {
+      header { height: auto !important; }
+      header > div { height: auto !important; min-height: 68px !important; padding-top: 8px !important; padding-bottom: 8px !important; }
+      header > div > div:nth-child(2) { display: none !important; }
+      main { padding-top: 14px !important; gap: 18px !important; }
+      main > section > div:first-child { padding: 5px !important; }
+      main > section > div:first-child > div:last-child { width: 100% !important; }
+      main > section > div:first-child select { flex: 1 !important; min-width: 0 !important; }
+    }
+    
   </style>
 </head>
 
