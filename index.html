@@ -872,11 +872,9 @@
 
     const folderModal = $('folderModal');
     const folderForm = $('folderForm');
-    const btnCreateFolder = $('btnCreateFolder');
     const btnCloseFolderModal = $('btnCloseFolderModal');
     const btnCancelFolder = $('btnCancelFolder');
     const folderUploadInput = $('folderUploadInput');
-    const btnRootFolder = $('btnRootFolder');
 
     const timerSettingsModal = $('timerSettingsModal');
     const btnOpenTimerSettings = $('btnOpenTimerSettings');
@@ -2565,16 +2563,10 @@
     btnCloseAdminModal.addEventListener('click', closeAdminUsersModal);
     createUserForm.addEventListener('submit', handleCreateUser);
 
-    btnCreateFolder.addEventListener('click', openFolderModal);
     btnCloseFolderModal.addEventListener('click', () => closeModal(folderModal));
     btnCancelFolder.addEventListener('click', () => closeModal(folderModal));
     folderForm.addEventListener('submit', createFolder);
     folderUploadInput.addEventListener('change', (event) => uploadFolderFiles(event.target.files));
-    btnRootFolder.addEventListener('click', () => {
-      activeFolderId = null;
-      renderFolderList();
-      renderUI();
-    });
 
     btnOpenPostSnippet.addEventListener('click', openUploadChoiceModal);
     btnEmptyPostSnippet.addEventListener('click', openUploadChoiceModal);
