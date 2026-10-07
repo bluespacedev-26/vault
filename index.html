@@ -90,6 +90,211 @@
     .toast-enter { opacity: 0; transform: translateY(10px); }
     .toast-ready { opacity: 1; transform: translateY(0); }
     .toast-leave { opacity: 0; transform: translateY(10px); }
+
+
+    /* =============================
+       DevVault — clean UI refresh
+       ============================= */
+    body {
+      background:
+        radial-gradient(circle at 10% -10%, rgba(6,182,212,.08), transparent 28%),
+        radial-gradient(circle at 90% 0%, rgba(99,102,241,.06), transparent 24%),
+        #060913;
+    }
+
+    .cyber-grid { background-image: none; }
+
+    header {
+      background: rgba(8, 13, 26, .88) !important;
+      border-bottom-color: rgba(51, 75, 125, .38) !important;
+      box-shadow: 0 8px 30px rgba(0,0,0,.18) !important;
+    }
+
+    #mainSidebar {
+      width: 18rem;
+      gap: 0;
+    }
+
+    #mainSidebar > div {
+      background: transparent !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding-left: .25rem !important;
+      padding-right: .25rem !important;
+      position: relative;
+    }
+
+    #mainSidebar > div + div {
+      border-top: 1px solid rgba(51, 75, 125, .24) !important;
+      margin-top: .3rem;
+      padding-top: 1rem !important;
+    }
+
+    #mainSidebar h2,
+    #mainSidebar h3 {
+      letter-spacing: .14em;
+    }
+
+    #mainSidebar input,
+    #mainSidebar textarea,
+    #mainSidebar .scope-btn,
+    #languageFilterList button,
+    #mainSidebar .bg-cyber-950.rounded-xl,
+    #mainSidebar .bg-cyber-950.rounded-lg {
+      background: rgba(8, 13, 26, .7) !important;
+    }
+
+    #mainSidebar .scope-btn {
+      border-color: transparent !important;
+      border-radius: .7rem !important;
+      margin: .15rem 0;
+    }
+
+    #mainSidebar .scope-btn:hover {
+      background: rgba(24, 36, 64, .64) !important;
+    }
+
+    #mainSidebar .scope-btn[style] { box-shadow: none; }
+
+    #mainSidebar #teamScratchpad {
+      min-height: 120px;
+      border-color: rgba(51,75,125,.42) !important;
+      color: #9fe8f6;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.018);
+    }
+
+    #mainSidebar #statSnippetCount,
+    #mainSidebar #statUserCount {
+      font-size: 1.1rem;
+    }
+
+    #mainSidebar .grid.grid-cols-2 > div {
+      background: rgba(8,13,26,.48) !important;
+      border: 1px solid rgba(51,75,125,.25) !important;
+      border-radius: .75rem !important;
+    }
+
+    #mainSidebar .text-cyan-400 {
+      text-shadow: 0 0 16px rgba(6,182,212,.12);
+    }
+
+    main {
+      max-width: 88rem !important;
+      padding-top: 1.35rem !important;
+      padding-bottom: 2rem !important;
+      gap: 2.25rem !important;
+    }
+
+    main > section {
+      gap: 1rem !important;
+    }
+
+    #searchInput {
+      background: rgba(6,9,19,.85) !important;
+      border-color: rgba(51,75,125,.42) !important;
+      min-height: 42px;
+    }
+
+    main > section > div:first-child {
+      background: rgba(11,17,31,.82) !important;
+      border-color: rgba(51,75,125,.34) !important;
+      border-radius: .9rem !important;
+      padding: .45rem !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12) !important;
+    }
+
+    main > section > div:first-child select {
+      min-height: 42px;
+      background: rgba(6,9,19,.85) !important;
+      border-color: rgba(51,75,125,.42) !important;
+    }
+
+    #snippetsContainer {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem !important;
+    }
+
+    .dv-folder-group {
+      background: rgba(11,17,31,.72) !important;
+      border: 1px solid rgba(51,75,125,.30) !important;
+      border-radius: 1rem !important;
+      box-shadow: 0 8px 28px rgba(0,0,0,.10) !important;
+      overflow: hidden;
+    }
+
+    .dv-folder-header {
+      background: transparent !important;
+      padding: .75rem .9rem !important;
+    }
+
+    .dv-folder-header:hover {
+      background: rgba(24,36,64,.32) !important;
+    }
+
+    .dv-folder-icon {
+      width: 2.15rem !important;
+      height: 2.15rem !important;
+      border-radius: .7rem !important;
+      background: rgba(245,158,11,.08) !important;
+      border-color: rgba(245,158,11,.18) !important;
+    }
+
+    .dv-folder-items {
+      border-top-color: rgba(51,75,125,.24) !important;
+      background: rgba(6,9,19,.22);
+      padding: .35rem !important;
+    }
+
+    .dv-snippet-row {
+      background: transparent !important;
+      border-color: transparent !important;
+      border-radius: .72rem !important;
+      padding: .62rem .6rem !important;
+    }
+
+    .dv-snippet-row:hover {
+      background: rgba(24,36,64,.42) !important;
+      border-color: rgba(51,75,125,.20) !important;
+    }
+
+    .dv-snippet-file-icon {
+      width: 2rem !important;
+      height: 2rem !important;
+      border-radius: .65rem !important;
+      background: rgba(6,182,212,.06) !important;
+      border-color: rgba(51,75,125,.26) !important;
+    }
+
+    #emptyVaultState {
+      background: rgba(11,17,31,.55) !important;
+      border-color: rgba(51,75,125,.28) !important;
+      border-radius: 1rem !important;
+      padding: 4rem 1.5rem !important;
+    }
+
+    /* flatter modal chrome */
+    [role="dialog"] > div {
+      border-color: rgba(51,75,125,.42) !important;
+      box-shadow: 0 24px 80px rgba(0,0,0,.45) !important;
+    }
+
+    /* cleaner header buttons */
+    header button {
+      border-color: rgba(51,75,125,.32) !important;
+    }
+
+    #btnOpenPostSnippet {
+      box-shadow: 0 8px 20px rgba(6,182,212,.12) !important;
+    }
+
+    @media (max-width: 1023px) {
+      #mainSidebar { width: 100%; }
+      #mainSidebar > div { padding-left: 0 !important; padding-right: 0 !important; }
+      #mainSidebar > div + div { padding-top: .8rem !important; }
+    }
+
   </style>
 </head>
 
@@ -2343,9 +2548,9 @@
       const lineCount = String(snippet.code || '').split('\n').length;
       const status = snippet.status || 'READY';
 
-      return `<div class="bg-cyber-900 border border-cyber-700/70 hover:border-cyber-600 rounded-xl px-3.5 py-3 transition group">
+      return `<div class="dv-snippet-row bg-cyber-900 border border-cyber-700/70 hover:border-cyber-600 rounded-xl px-3.5 py-3 transition group">
         <div class="flex items-center gap-3 min-w-0">
-          <button onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" class="w-8 h-8 rounded-lg bg-cyber-950 border border-cyber-700/70 flex items-center justify-center text-cyan-400 flex-shrink-0 hover:border-cyan-500/40 transition" title="Open ${escapeHtml(path)}">
+          <button onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" class="dv-snippet-file-icon w-8 h-8 rounded-lg bg-cyber-950 border border-cyber-700/70 flex items-center justify-center text-cyan-400 flex-shrink-0 hover:border-cyan-500/40 transition" title="Open ${escapeHtml(path)}">
             <i class="fa-solid fa-file-code text-xs"></i>
           </button>
 
@@ -2384,14 +2589,14 @@
       const chevron = isExpanded ? 'fa-chevron-up' : 'fa-chevron-down';
       const isActive = activeFolderId === folder.id;
 
-      return `<section class="bg-cyber-900 border ${isExpanded ? 'border-amber-500/30' : 'border-cyber-700/70'} rounded-2xl overflow-hidden shadow-sm transition-colors">
+      return `<section class="dv-folder-group bg-cyber-900 border ${isExpanded ? 'border-amber-500/30' : 'border-cyber-700/70'} rounded-2xl overflow-hidden shadow-sm transition-colors">
         <button
           onclick="window._toggleFolderExpanded('${escapeHtml(folder.id)}',event)"
-          class="w-full text-left px-4 py-3 bg-cyber-950/45 hover:bg-cyber-950/70 flex items-center gap-3 transition"
+          class="dv-folder-header w-full text-left px-4 py-3 bg-cyber-950/45 hover:bg-cyber-950/70 flex items-center gap-3 transition"
           aria-expanded="${isExpanded ? 'true' : 'false'}"
           title="${isExpanded ? 'Collapse folder' : 'Open folder'}"
         >
-          <div class="w-9 h-9 rounded-xl ${isExpanded ? 'bg-amber-500/15 text-amber-300 border-amber-500/30' : 'bg-cyber-800 text-amber-400 border-cyber-700'} border flex items-center justify-center flex-shrink-0">
+          <div class="dv-folder-icon w-9 h-9 rounded-xl ${isExpanded ? 'bg-amber-500/15 text-amber-300 border-amber-500/30' : 'bg-cyber-800 text-amber-400 border-cyber-700'} border flex items-center justify-center flex-shrink-0">
             <i class="fa-solid ${folderIcon} text-sm"></i>
           </div>
 
@@ -2414,7 +2619,7 @@
           </div>
         </button>
 
-        ${isExpanded ? `<div class="border-t border-cyber-700/60 p-2.5 space-y-1.5">
+        ${isExpanded ? `<div class="dv-folder-items border-t border-cyber-700/60 p-2.5 space-y-1.5">
           ${items.map((snippet) => generateCompactSnippetHTML(snippet)).join('')}
         </div>` : ''}
       </section>`;
@@ -2569,19 +2774,19 @@
     btnCloseAdminModal.addEventListener('click', closeAdminUsersModal);
     createUserForm.addEventListener('submit', handleCreateUser);
 
-    btnCloseFolderModal.addEventListener('click', () => closeModal(folderModal));
-    btnCancelFolder.addEventListener('click', () => closeModal(folderModal));
-    folderForm.addEventListener('submit', createFolder);
+    btnCloseFolderModal?.addEventListener('click', () => closeModal(folderModal));
+    btnCancelFolder?.addEventListener('click', () => closeModal(folderModal));
+    folderForm?.addEventListener('submit', createFolder);
     if (folderUploadInput) {
       folderUploadInput.addEventListener('change', (event) => uploadFolderFiles(event.target.files));
     }
 
-    btnOpenPostSnippet.addEventListener('click', openUploadChoiceModal);
-    btnEmptyPostSnippet.addEventListener('click', openUploadChoiceModal);
-    btnCloseUploadChoice.addEventListener('click', closeUploadChoiceModal);
-    btnCancelUploadChoice.addEventListener('click', closeUploadChoiceModal);
-    btnChooseFileUpload.addEventListener('click', chooseFileUpload);
-    btnChooseFolderUpload.addEventListener('click', chooseFolderUpload);
+    btnOpenPostSnippet?.addEventListener('click', openUploadChoiceModal);
+    btnEmptyPostSnippet?.addEventListener('click', openUploadChoiceModal);
+    btnCloseUploadChoice?.addEventListener('click', closeUploadChoiceModal);
+    btnCancelUploadChoice?.addEventListener('click', closeUploadChoiceModal);
+    btnChooseFileUpload?.addEventListener('click', chooseFileUpload);
+    btnChooseFolderUpload?.addEventListener('click', chooseFolderUpload);
     btnCloseSnippetModal.addEventListener('click', closeSnippetModal);
     btnCancelSnippet.addEventListener('click', closeSnippetModal);
     snippetForm.addEventListener('submit', saveSnippet);
