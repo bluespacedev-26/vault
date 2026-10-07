@@ -359,7 +359,7 @@
     </aside>
 
     <section class="flex-1 flex flex-col space-y-4 min-w-0">
-      <div class="bg-cyber-900 border border-cyber-700/80 p-3 rounded-2xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="bg-cyber-900/90 border border-cyber-700/70 p-2.5 rounded-xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-2.5">
         <div class="relative w-full sm:flex-1">
           <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
           <input type="search" id="searchInput" placeholder="Search code by title, extension, tags, author..."
@@ -386,7 +386,7 @@
         </div>
       </div>
 
-      <div id="snippetsContainer" class="space-y-4"></div>
+      <div id="snippetsContainer" class="space-y-3"></div>
 
       <div id="emptyVaultState" class="hidden flex-col items-center justify-center p-12 text-center bg-cyber-900/60 rounded-2xl border border-cyber-700/50 border-dashed">
         <div class="w-12 h-12 rounded-xl bg-cyber-800 flex items-center justify-center text-slate-500 mb-3"><i class="fa-solid fa-code text-xl"></i></div>
@@ -2167,7 +2167,12 @@
       const emptyState = $('emptyVaultState');
 
       let filtered = snippets.filter((s) => {
-        if (activeScope === 'mine') return s.author && ((s.author.uid && s.author.uid === currentUser.uid) || (s.author.username && s.author.username.toLowerCase() === currentProfile.username.toLowerCase()));
+        if (activeScope === 'mine') {
+          return s.author && (
+            (s.author.uid && s.author.uid === currentUser.uid) ||
+            (s.author.username && s.author.username.toLowerCase() === currentProfile.username.toLowerCase())
+          );
+        }
         if (activeScope === 'starred') return !!s.starred;
         return true;
       });
@@ -2176,16 +2181,33 @@
       if (selectedLanguage) filtered = filtered.filter((s) => (s.language || 'text').toLowerCase() === selectedLanguage.toLowerCase());
       if (selectedCategory !== 'all') filtered = filtered.filter((s) => s.category === selectedCategory);
       if (selectedStatus !== 'all') filtered = filtered.filter((s) => (s.status || 'READY') === selectedStatus);
+
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         filtered = filtered.filter((s) => {
           const author = s.author || {};
-          return [s.title, s.description, s.fileExtension, author.username, author.fullName, s.code, ...(s.tags || [])].some((value) => String(value || '').toLowerCase().includes(q));
+          const folder = folders.find((f) => f.id === s.folderId);
+          return [
+            s.title,
+            s.description,
+            s.fileExtension,
+            s.originalFileName,
+            s.relativePath,
+            author.username,
+            author.fullName,
+            folder?.name,
+            s.code,
+            ...(s.tags || [])
+          ].some((value) => String(value || '').toLowerCase().includes(q));
         });
       }
 
-      const mineCount = snippets.filter((s) => s.author && ((s.author.uid && s.author.uid === currentUser.uid) || (s.author.username && s.author.username.toLowerCase() === currentProfile.username.toLowerCase()))).length;
+      const mineCount = snippets.filter((s) => s.author && (
+        (s.author.uid && s.author.uid === currentUser.uid) ||
+        (s.author.username && s.author.username.toLowerCase() === currentProfile.username.toLowerCase())
+      )).length;
       const starredCount = snippets.filter((s) => !!s.starred).length;
+
       $('statSnippetCount').textContent = snippets.length;
       $('badgeCountAll').textContent = snippets.length;
       $('badgeCountMine').textContent = mineCount;
@@ -2197,72 +2219,136 @@
         container.innerHTML = '';
         emptyState.classList.remove('hidden');
         emptyState.classList.add('flex');
-        $('emptyStateText').textContent = snippets.length ? 'No snippets match the current filters. Try clearing a filter or changing your search.' : 'Share your first function, API hook, or model handler so teammates do not re-write it.';
+        $('emptyStateText').textContent = snippets.length
+          ? 'No items match the current filters. Try clearing a filter or changing your search.'
+          : 'Share your first function, API hook, or model handler so teammates do not re-write it.';
         return;
       }
 
       emptyState.classList.add('hidden');
       emptyState.classList.remove('flex');
-      container.innerHTML = filtered.map(generateCardHTML).join('');
+
+      // Group folder-backed snippets together so a project/folder appears once
+      // instead of every file becoming a large standalone card.
+      const groups = new Map();
+      const rootSnippets = [];
+
+      filtered.forEach((snippet) => {
+        if (!snippet.folderId) {
+          rootSnippets.push(snippet);
+          return;
+        }
+        if (!groups.has(snippet.folderId)) groups.set(snippet.folderId, []);
+        groups.get(snippet.folderId).push(snippet);
+      });
+
+      const folderGroups = [...groups.entries()]
+        .map(([folderId, items]) => ({
+          folder: folders.find((f) => f.id === folderId) || { id: folderId, name: 'Unknown Folder' },
+          items: items.sort((a, b) => String(a.relativePath || a.originalFileName || a.title).localeCompare(String(b.relativePath || b.originalFileName || b.title)))
+        }))
+        .sort((a, b) => String(a.folder.name || '').localeCompare(String(b.folder.name || '')));
+
+      const folderHtml = folderGroups.map(({ folder, items }) => generateFolderGroupHTML(folder, items)).join('');
+      const rootHtml = rootSnippets
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+        .map(generateCompactSnippetHTML)
+        .join('');
+
+      container.innerHTML = folderHtml + (rootHtml ? `<div class="pt-1">
+        <div class="flex items-center gap-2 px-1 mb-2.5">
+          <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Root Snippets</span>
+          <div class="h-px flex-1 bg-cyber-700/50"></div>
+        </div>
+        <div class="space-y-2">${rootHtml}</div>
+      </div>` : '');
+
       if (window.Prism) Prism.highlightAllUnder(container);
     }
 
-    function generateCardHTML(snippet) {
-      const mine = snippet.author && ((snippet.author.uid && snippet.author.uid === currentUser.uid) || (snippet.author.username && snippet.author.username.toLowerCase() === currentProfile.username.toLowerCase()));
+    function getSnippetActionsHTML(snippet, compact = false) {
+      const mine = snippet.author && (
+        (snippet.author.uid && snippet.author.uid === currentUser.uid) ||
+        (snippet.author.username && snippet.author.username.toLowerCase() === currentProfile.username.toLowerCase())
+      );
       const admin = isAdmin();
-      const codeLines = String(snippet.code || '').split('\n');
-      const lineCount = codeLines.length;
-      const previewCode = codeLines.slice(0, 7).join('\n');
-      const langClass = languageForPrism(snippet.language);
-      const authorInitial = (snippet.author?.username || '??').substring(0, 2).toUpperCase();
-      const commentCount = getCommentsForSnippet(snippet).length;
       const filename = buildFileName(snippet);
-      const previewSuffix = lineCount > 7 ? `\n// ... click card to inspect full ${lineCount} lines` : '';
-      const preview = escapeHtml(previewCode + previewSuffix);
-      const codeClass = langClass === 'none' ? '' : `language-${escapeHtml(langClass)}`;
+      const actionClass = compact
+        ? 'p-1.5 text-[11px] text-slate-500 hover:text-cyan-300 hover:bg-cyber-800 rounded-lg transition'
+        : 'p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyber-800 rounded-lg transition text-xs';
 
-      return `<div class="bg-cyber-900 border border-cyber-700/80 hover:border-cyber-600 rounded-2xl overflow-hidden shadow-sm transition duration-150">
-        <div class="p-4 border-b border-cyber-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-          <div class="flex items-start gap-3 min-w-0">
-            <div class="w-8 h-8 rounded-lg bg-cyber-800 border border-cyber-600 flex items-center justify-center font-mono text-xs font-bold text-cyan-400 mt-0.5 flex-shrink-0">${escapeHtml(authorInitial)}</div>
-            <div class="min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <h3 onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" class="text-sm font-bold text-white hover:text-cyan-400 cursor-pointer transition">${escapeHtml(snippet.title || 'Untitled')}</h3>
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase ${getLangBadgeStyle(snippet.language)}">.${escapeHtml(normalizeExtension(snippet.fileExtension || EXTENSION_MAP[(snippet.language || 'text').toLowerCase()] || 'txt'))}</span>
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded font-bold ${getStatusBadgeStyle(snippet.status)}">${escapeHtml(snippet.status || 'READY')}</span>
-                ${snippet.starred ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-800 flex items-center gap-1"><i class="fa-solid fa-star text-[9px]"></i> Starred</span>' : ''}
-              </div>
-              <p class="text-xs text-slate-400 mt-0.5">by <span class="text-slate-200 font-semibold">${escapeHtml(snippet.author?.fullName || snippet.author?.username || 'Dev')}</span> <span class="text-cyan-400 font-mono text-[11px]">(${escapeHtml(snippet.author?.role || 'Team Member')})</span> • <span>${formatTimeAgo(snippet.createdAt || Date.now())}</span></p>
+      return `<div class="flex items-center gap-0.5 flex-shrink-0">
+        <button onclick="window._toggleStar('${escapeHtml(snippet.id)}',event)" title="${snippet.starred ? 'Unstar snippet' : 'Star snippet'}" class="${actionClass} ${snippet.starred ? 'text-amber-400 bg-amber-400/10' : ''}"><i class="fa-${snippet.starred ? 'solid' : 'regular'} fa-star"></i></button>
+        <button onclick="window._copySnippet('${escapeHtml(snippet.id)}',event)" title="Copy code" class="${actionClass}"><i class="fa-solid fa-copy"></i></button>
+        <button onclick="window._downloadSnippet('${escapeHtml(snippet.id)}',event)" title="Download ${escapeHtml(filename)}" class="${actionClass}"><i class="fa-solid fa-download"></i></button>
+        ${canEditSnippet(snippet) ? `<button onclick="window._editSnippet('${escapeHtml(snippet.id)}',event)" title="Edit" class="${actionClass}"><i class="fa-solid fa-pen"></i></button>` : ''}
+        <button onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" title="Inspect" class="${actionClass}"><i class="fa-solid fa-expand"></i></button>
+        ${((mine || admin) && canDeleteSnippet(snippet)) ? `<button onclick="window._deleteSnippet('${escapeHtml(snippet.id)}',event)" title="Delete" class="${actionClass} hover:text-rose-400"><i class="fa-solid fa-trash"></i></button>` : ''}
+      </div>`;
+    }
+
+    function generateCompactSnippetHTML(snippet) {
+      const authorName = snippet.author?.fullName || snippet.author?.username || 'Dev';
+      const lang = snippet.language || 'text';
+      const ext = normalizeExtension(snippet.fileExtension || EXTENSION_MAP[lang.toLowerCase()] || 'txt');
+      const path = sanitizeRelativePath(snippet.relativePath || snippet.originalFileName || buildFileName(snippet));
+      const commentCount = getCommentsForSnippet(snippet).length;
+      const lineCount = String(snippet.code || '').split('\n').length;
+      const status = snippet.status || 'READY';
+
+      return `<div class="bg-cyber-900 border border-cyber-700/70 hover:border-cyber-600 rounded-xl px-3.5 py-3 transition group">
+        <div class="flex items-center gap-3 min-w-0">
+          <button onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" class="w-8 h-8 rounded-lg bg-cyber-950 border border-cyber-700/70 flex items-center justify-center text-cyan-400 flex-shrink-0 hover:border-cyan-500/40 transition" title="Open ${escapeHtml(path)}">
+            <i class="fa-solid fa-file-code text-xs"></i>
+          </button>
+
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2 min-w-0">
+              <button onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" class="truncate text-left text-xs sm:text-sm font-bold text-slate-200 hover:text-cyan-300 transition">${escapeHtml(path || snippet.title || 'Untitled')}</button>
+              ${snippet.starred ? '<i class="fa-solid fa-star text-amber-400 text-[10px] flex-shrink-0"></i>' : ''}
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap mt-1">
+              <span class="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded ${getLangBadgeStyle(lang)}">.${escapeHtml(ext)}</span>
+              <span class="text-[9px] font-mono px-1.5 py-0.5 rounded ${getStatusBadgeStyle(status)}">${escapeHtml(status)}</span>
+              <span class="text-[10px] text-slate-500">${escapeHtml(authorName)} · ${lineCount} ${lineCount === 1 ? 'line' : 'lines'} · ${commentCount} ${commentCount === 1 ? 'note' : 'notes'}</span>
             </div>
           </div>
 
-          <div class="flex items-center gap-1 self-end sm:self-center">
-            <button onclick="window._toggleStar('${escapeHtml(snippet.id)}',event)" title="${snippet.starred ? 'Unstar snippet' : 'Star snippet'}" class="p-1.5 text-xs rounded-lg transition ${snippet.starred ? 'text-amber-400 bg-amber-400/10' : 'text-slate-400 hover:text-slate-200 hover:bg-cyber-800'}"><i class="fa-${snippet.starred ? 'solid' : 'regular'} fa-star"></i></button>
-            <button onclick="window._copySnippet('${escapeHtml(snippet.id)}',event)" title="Copy raw code" class="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-cyber-800 rounded-lg transition text-xs"><i class="fa-solid fa-copy"></i></button>
-            <button onclick="window._downloadSnippet('${escapeHtml(snippet.id)}',event)" title="Download ${escapeHtml(filename)}" class="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-cyber-800 rounded-lg transition text-xs"><i class="fa-solid fa-download"></i></button>
-            ${canEditSnippet(snippet) ? `<button onclick="window._editSnippet('${escapeHtml(snippet.id)}',event)" title="Edit snippet" class="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-cyber-800 rounded-lg transition text-xs"><i class="fa-solid fa-pen"></i></button>` : ''}
-            <button onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" title="Inspect & Discuss" class="p-1.5 text-slate-400 hover:text-white hover:bg-cyber-800 rounded-lg transition text-xs"><i class="fa-solid fa-expand"></i></button>
-            ${((mine || admin) && canDeleteSnippet(snippet)) ? `<button onclick="window._deleteSnippet('${escapeHtml(snippet.id)}',event)" title="Delete code" class="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-cyber-800 rounded-lg transition text-xs"><i class="fa-solid fa-trash"></i></button>` : ''}
-          </div>
-        </div>
-
-        ${snippet.description ? `<div class="px-4 pt-3 pb-1 text-xs text-slate-300">${escapeHtml(snippet.description)}</div>` : ''}
-
-        <div class="p-3">
-          <div onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" class="rounded-xl overflow-hidden border border-cyber-700/60 bg-cyber-950 cursor-pointer hover:border-cyan-500/50 transition">
-            <pre class="${codeClass}"><code class="${codeClass}">${preview}</code></pre>
-          </div>
-        </div>
-
-        <div class="px-4 py-2 bg-cyber-950/70 border-t border-cyber-700/50 flex items-center justify-between text-xs text-slate-400 gap-3">
-          <div class="flex items-center gap-1.5 flex-wrap min-w-0">
-            ${snippet.folderId ? `<span class="text-[10px] font-semibold bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/20"><i class="fa-solid fa-folder mr-1"></i>${escapeHtml(folders.find((f) => f.id === snippet.folderId)?.name || 'Folder')}</span>` : ''}
-            <span class="text-[10px] font-semibold bg-cyber-800 text-slate-300 px-2 py-0.5 rounded">${escapeHtml(snippet.category || 'General')}</span>
-            ${(snippet.tags || []).slice(0, 8).map((tag) => `<span class="text-[10px] text-slate-400 bg-cyber-900 px-2 py-0.5 rounded border border-cyber-700/50">#${escapeHtml(tag)}</span>`).join('')}
-          </div>
-          <div class="flex items-center gap-3 flex-shrink-0"><span class="text-[11px] font-mono text-slate-500">${lineCount} lines</span><button onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" class="flex items-center gap-1.5 hover:text-cyan-400 transition"><i class="fa-regular fa-comment text-xs"></i><span class="font-mono text-xs">${commentCount}</span></button></div>
+          ${getSnippetActionsHTML(snippet, true)}
         </div>
       </div>`;
+    }
+
+    function generateFolderGroupHTML(folder, items) {
+      const updated = Math.max(...items.map((s) => Number(s.updatedAt || s.createdAt || 0)));
+      const languages = [...new Set(items.map((s) => s.language || 'text'))].slice(0, 4);
+      const folderIcon = activeFolderId === folder.id ? 'fa-folder-open' : 'fa-folder';
+      const isActive = activeFolderId === folder.id;
+
+      return `<section class="bg-cyber-900 border ${isActive ? 'border-amber-500/35' : 'border-cyber-700/70'} rounded-2xl overflow-hidden shadow-sm">
+        <div class="px-4 py-3 bg-cyber-950/45 border-b border-cyber-700/60 flex items-center gap-3">
+          <button onclick="window._selectFolder('${escapeHtml(folder.id)}')" class="w-9 h-9 rounded-xl ${isActive ? 'bg-amber-500/15 text-amber-300 border-amber-500/30' : 'bg-cyber-800 text-amber-400 border-cyber-700'} border flex items-center justify-center flex-shrink-0 hover:bg-amber-500/10 transition" title="${isActive ? 'Show all snippets' : 'Open folder'}">
+            <i class="fa-solid ${folderIcon} text-sm"></i>
+          </button>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2 min-w-0">
+              <h3 class="text-sm font-bold text-white truncate">${escapeHtml(folder.name || 'Folder')}</h3>
+              <span class="text-[9px] font-mono px-1.5 py-0.5 rounded-full bg-cyber-800 text-slate-400 border border-cyber-700/70">${items.length} ${items.length === 1 ? 'file' : 'files'}</span>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap mt-1">
+              <span class="text-[10px] text-slate-500"><i class="fa-solid fa-clock mr-1"></i>${formatTimeAgo(updated || Date.now())}</span>
+              ${languages.map((lang) => `<span class="text-[9px] font-mono uppercase text-slate-400">${escapeHtml(lang)}</span>`).join('')}
+            </div>
+          </div>
+          <button onclick="window._selectFolder('${escapeHtml(folder.id)}')" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-semibold text-slate-400 hover:text-white bg-cyber-800/70 hover:bg-cyber-800 border border-cyber-700 rounded-lg transition">
+            <i class="fa-solid fa-filter"></i>${isActive ? 'Clear' : 'View Folder'}
+          </button>
+        </div>
+
+        <div class="p-2.5 space-y-1.5">
+          ${items.map((snippet) => generateCompactSnippetHTML(snippet)).join('')}
+        </div>
+      </section>`;
     }
 
     function getStatusBadgeStyle(status) {
