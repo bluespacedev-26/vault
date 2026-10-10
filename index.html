@@ -12,7 +12,2026 @@
     tailwind.config = {
       darkMode: 'class',
       theme: {
+        extend: {<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DevVault — a secure realtime team code hub for sharing snippets, project links and notes.">
+  <meta name="color-scheme" content="dark light">
+  <title>DevVault // Hackathon Team Code Hub</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
         extend: {
+          colors: {
+            editorial: {
+              50: '#FDFBF7',
+              100: '#F4F1E1',
+              200: '#E8E1C5',
+              300: '#D5C99E',
+              400: '#A39161',
+              500: '#7A6B44',
+              600: '#524729',
+              700: '#3D341D',
+              800: '#282212',
+              900: '#15130A',
+              950: '#0A0905',
+            },
+            accent: {
+              DEFAULT: '#FF4D00',
+              hover: '#CC3D00',
+              light: '#FFEDDF',
+            },
+            secondary: {
+              DEFAULT: '#0055FF',
+              light: '#E5F0FF',
+            },
+            tertiary: {
+              DEFAULT: '#00A859',
+              light: '#E0F5E9',
+            }
+          },
+          fontFamily: {
+            mono: ['"Fira Code"', '"JetBrains Mono"', 'monospace'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+          },
+          boxShadow: {
+            'editorial': '4px 4px 0px 0px rgba(21, 19, 10, 1)',
+            'editorial-sm': '2px 2px 0px 0px rgba(21, 19, 10, 1)',
+            'editorial-hover': '2px 2px 0px 0px rgba(21, 19, 10, 1)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg: #FDFBF7;
+      --surface: #FFFFFF;
+      --surface-hover: #FFEDDF;
+      --border: #E8E1C5;
+      --border-dark: #15130A;
+      --text: #15130A;
+      --text-muted: #524729;
+      --accent: #FF4D00;
+      --accent-hover: #CC3D00;
+      --danger: #E53E3E;
+      --grid-dot: #E8E1C5;
+      
+      --card-bg-1: #FFFFFF;
+      --card-bg-2: #F4F1E1;
+      --card-bg-3: #E5F0FF;
+      
+      --syn-comment: #6B7280;
+      --syn-punct: #111827;
+      --syn-prop: #b91c1c;
+      --syn-str: #15803d;
+      --syn-op: #b45309;
+      --syn-kw: #2563EB;
+      --syn-fn: #7e22ce;
+      --syn-var: #ea580c;
+    }
+
+    html.dark {
+      --bg: #0B0D10;
+      --surface: #101318;
+      --surface-hover: #1C222B;
+      --border: #282E38;
+      --border-dark: #737D8C;
+      --text: #F2F3F5;
+      --text-muted: #A0A7B4;
+      --accent: #FF4D00;
+      --accent-hover: #CC3D00;
+      --grid-dot: #151920;
+      
+      --card-bg-1: #101318;
+      --card-bg-2: #151920;
+      --card-bg-3: #1C222B;
+      
+      --syn-comment: #9CA3AF;
+      --syn-punct: #F3F4F6;
+      --syn-prop: #FCA5A5;
+      --syn-str: #86EFAC;
+      --syn-op: #FCD34D;
+      --syn-kw: #93C5FD;
+      --syn-fn: #D8B4FE;
+      --syn-var: #FDBA74;
+    }
+
+    html, body {
+      background: var(--bg) !important;
+      color: var(--text) !important;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    body {
+      background-image: radial-gradient(var(--grid-dot) 1.5px, transparent 1.5px);
+      background-size: 28px 28px;
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; border: 1px solid var(--border-dark); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    pre[class*="language-"] {
+      background: var(--surface-hover) !important;
+      margin: 0 !important;
+      padding: 1.25rem !important;
+      font-size: 0.85rem !important;
+      line-height: 1.6 !important;
+      border: 2px solid var(--border-dark) !important;
+      border-radius: 0 !important;
+      box-shadow: 2px 2px 0px 0px var(--border-dark) !important;
+      color: var(--text) !important;
+      text-shadow: none !important;
+    }
+
+    code[class*="language-"], pre[class*="language-"] span {
+      font-family: 'Fira Code', monospace !important;
+      color: var(--text) !important;
+      text-shadow: none !important;
+    }
+
+    .token.comment, .token.prolog, .token.doctype, .token.cdata { color: var(--syn-comment) !important; }
+    .token.punctuation { color: var(--syn-punct) !important; }
+    .token.namespace { opacity: .7 !important; }
+    .token.property, .token.tag, .token.boolean, .token.number, .token.constant, .token.symbol, .token.deleted { color: var(--syn-prop) !important; }
+    .token.selector, .token.attr-name, .token.string, .token.char, .token.builtin, .token.inserted { color: var(--syn-str) !important; }
+    .token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string { color: var(--syn-op) !important; background: transparent !important; }
+    .token.atrule, .token.attr-value, .token.keyword { color: var(--syn-kw) !important; }
+    .token.function, .token.class-name { color: var(--syn-fn) !important; }
+    .token.regex, .token.important, .token.variable { color: var(--syn-var) !important; }
+
+    .editor-textarea {
+      tab-size: 2;
+      -moz-tab-size: 2;
+      background: var(--surface) !important;
+      color: var(--text) !important;
+      border: 2px solid var(--border-dark) !important;
+      border-radius: 0 !important;
+      box-shadow: 4px 4px 0px 0px var(--border-dark) !important;
+      font-family: 'Fira Code', monospace !important;
+    }
+    
+    .editor-textarea:focus {
+      outline: none;
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px 0px var(--border-dark) !important;
+    }
+
+    .modal-open { overflow: hidden; }
+
+    .toast-enter { opacity: 0; transform: translateY(12px) scale(0.96); }
+    .toast-ready { opacity: 1; transform: translateY(0) scale(1); }
+    .toast-leave { opacity: 0; transform: translateY(12px) scale(0.96); }
+
+    header {
+      background: var(--surface) !important;
+      border-bottom: 2px solid var(--border-dark) !important;
+    }
+
+    main {
+      max-width: 1400px !important;
+      padding-top: 1.5rem !important;
+      padding-bottom: 3rem !important;
+      gap: 2rem !important;
+    }
+
+    #mainSidebar {
+      width: 310px !important;
+      gap: 1.25rem !important;
+    }
+
+    .editorial-card {
+      background: var(--surface) !important;
+      border: 2px solid var(--border-dark) !important;
+      border-radius: 0 !important;
+      box-shadow: 4px 4px 0px 0px var(--border-dark) !important;
+      padding: 1.25rem !important;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    
+    .editorial-input {
+      background: var(--surface) !important;
+      border: 2px solid var(--border-dark) !important;
+      color: var(--text) !important;
+      border-radius: 0 !important;
+      padding: 0.5rem 0.75rem !important;
+      font-family: 'Inter', sans-serif !important;
+      transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+    }
+    
+    .editorial-input:focus {
+      outline: none !important;
+      border-color: var(--accent) !important;
+      box-shadow: 2px 2px 0px 0px var(--accent) !important;
+      transform: translate(-1px, -1px);
+    }
+    
+    .editorial-btn {
+      background: var(--surface) !important;
+      border: 2px solid var(--border-dark) !important;
+      color: var(--text) !important;
+      font-weight: 600 !important;
+      font-family: 'Space Grotesk', sans-serif !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+      border-radius: 0 !important;
+      box-shadow: 4px 4px 0px 0px var(--border-dark) !important;
+      transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      cursor: pointer;
+    }
+    
+    .editorial-btn:hover:not(:disabled) {
+      transform: translate(-2px, -2px) !important;
+      box-shadow: 6px 6px 0px 0px var(--border-dark) !important;
+      background: var(--surface-hover) !important;
+    }
+    
+    .editorial-btn:active:not(:disabled) {
+      transform: translate(2px, 2px) !important;
+      box-shadow: 2px 2px 0px 0px var(--border-dark) !important;
+    }
+    
+    .editorial-btn:focus-visible {
+      outline: 2px solid var(--accent) !important;
+      outline-offset: 2px;
+    }
+    
+    .editorial-btn-primary {
+      background: var(--text) !important;
+      color: var(--surface) !important;
+    }
+    
+    .editorial-btn-primary:hover:not(:disabled) {
+      background: var(--border-dark) !important;
+    }
+
+    [role="dialog"] {
+      background: rgba(10, 9, 5, 0.55) !important;
+      backdrop-filter: blur(6px) !important;
+    }
+
+    [role="dialog"] > div {
+      background: var(--surface) !important;
+      border: 3px solid var(--border-dark) !important;
+      border-radius: 0 !important;
+      box-shadow: 10px 10px 0px 0px var(--border-dark) !important;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Space Grotesk', sans-serif !important;
+      font-weight: 700 !important;
+      color: var(--text) !important;
+      letter-spacing: -0.02em !important;
+    }
+
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body class="bg-[var(--bg)] text-[var(--text)] font-sans min-h-screen flex flex-col selection:bg-accent selection:text-[var(--bg)] antialiased overflow-x-hidden">
+
+  <!-- Authentication Overlay -->
+  <div id="loginPortal" class="fixed inset-0 z-[100] bg-[var(--bg)] flex flex-col items-center justify-center p-4">
+    <div class="relative w-full max-w-md editorial-card p-8">
+      <div class="flex items-center justify-between pb-4 mb-6 border-b-4 border-[var(--border-dark)] text-xs font-mono text-[var(--text-muted)] uppercase tracking-widest">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 border border-[var(--border-dark)] bg-[var(--surface)]"></span>
+          <span class="w-3 h-3 border border-[var(--border-dark)] bg-editorial-300"></span>
+          <span class="w-3 h-3 border border-[var(--border-dark)] bg-[var(--text)]"></span>
+          <span class="ml-2 font-bold text-[var(--text)]">DEVVAULT :: AUTH</span>
+        </div>
+        <div id="authConnectionText" class="flex items-center gap-2 text-[10px] text-[var(--text-muted)] font-mono font-bold">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+          <span>CONNECTING</span>
+        </div>
+      </div>
+
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 border-2 border-[var(--border-dark)] bg-[var(--surface)] shadow-[4px_4px_0px_0px_var(--border-dark)] mb-4 text-[var(--text)] text-2xl">
+          <i class="fa-solid fa-code-commit"></i>
+        </div>
+        <h1 class="text-3xl font-display font-bold tracking-tight text-[var(--text)] uppercase">Team Code Vault</h1>
+        <p class="text-sm text-[var(--text-muted)] mt-2 font-mono">Sign in to access synchronized workspace</p>
+      </div>
+
+      <form id="authPortalForm" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold font-mono text-editorial-700 uppercase tracking-wider mb-2">
+            <i class="fa-solid fa-user mr-2"></i> Username
+          </label>
+          <input type="text" id="loginUsername" required autocomplete="username" autocapitalize="none" spellcheck="false"
+            placeholder="Enter username"
+            class="w-full editorial-input text-sm">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold font-mono text-editorial-700 uppercase tracking-wider mb-2">
+            <i class="fa-solid fa-key mr-2"></i> Password
+          </label>
+          <div class="relative">
+            <input type="password" id="loginPassword" required autocomplete="current-password"
+              placeholder="Enter password"
+              class="w-full editorial-input text-sm pr-10">
+            <button type="button" id="btnTogglePw" aria-label="Show or hide password"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text)] focus:outline-none">
+              <i id="pwEyeIcon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="loginError" class="hidden text-xs p-3 border-2 border-[var(--danger)] bg-[var(--surface-hover)] text-[var(--danger)] font-mono"></div>
+
+        <button id="loginSubmitBtn" type="submit"
+          class="w-full editorial-btn editorial-btn-primary py-3 text-sm flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed mt-2">
+          <i id="loginBtnIcon" class="fa-solid fa-arrow-right-to-bracket"></i>
+          <span id="loginBtnText">Sign In to Vault</span>
+        </button>
+      </form>
+
+      <div class="mt-8 pt-6 border-t-2 border-[var(--border-dark)] text-[10px] text-[var(--text-muted)] font-mono leading-relaxed text-center uppercase tracking-wider">
+        Accounts provisioned by Lead / Super Admin.
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-[var(--surface)] border-b-4 border-[var(--border-dark)] shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <div class="w-12 h-12 border-2 border-[var(--border-dark)] flex items-center justify-center shadow-[2px_2px_0px_0px_var(--border-dark)] flex-shrink-0 bg-accent text-[var(--bg)]">
+          <i class="fa-solid fa-laptop-code text-2xl text-[var(--bg)]"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-baseline gap-3 flex-wrap">
+            <span class="font-display font-bold text-2xl tracking-tight text-[var(--text)] uppercase">DEVVAULT</span>
+            <span id="firebaseStatusBadge" class="text-[10px] font-mono uppercase bg-[var(--surface)] text-[var(--text)] px-2 py-0.5 border-2 border-[var(--border-dark)] font-bold flex items-center gap-1 shadow-[2px_2px_0px_0px_var(--border-dark)]">
+              <span class="w-2 h-2 bg-[var(--text)]"></span> OFFLINE
+            </span>
+          </div>
+          <div class="text-xs text-[var(--text-muted)] font-mono tracking-wide uppercase mt-0.5">Team Code Hub & Sync</div>
+        </div>
+      </div>
+
+      <!-- Sprint Timer Center -->
+      <div class="hidden md:flex items-center gap-3 bg-[var(--surface)] border-2 border-[var(--border-dark)] px-3 py-1 shadow-[2px_2px_0px_0px_var(--border-dark)] text-sm">
+        <span id="timerStatusDot" class="w-3 h-3 bg-editorial-300 border border-[var(--border-dark)]"></span>
+        <span id="hackCountdown" class="font-mono font-bold text-[var(--text)] text-base tracking-widest">00:00:00</span>
+        <button id="btnOpenTimerSettings" title="Configure Sprint Timer" disabled
+          class="p-1 text-[var(--text-muted)] hover:text-[var(--text)] transition flex items-center justify-center disabled:opacity-40">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+      </div>
+
+      <!-- Toolbar Actions -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button id="btnToggleTheme" title="Toggle Theme"
+          class="editorial-btn px-3 py-1.5 text-xs flex items-center justify-center">
+          <i id="themeIcon" class="fa-solid fa-moon"></i>
+        </button>
+
+        <button id="btnChangePassword" title="Change Password"
+          class="editorial-btn px-3 py-1.5 text-xs flex items-center gap-2">
+          <i class="fa-solid fa-key"></i>
+          <span class="hidden lg:inline">Password</span>
+        </button>
+
+        <button id="btnTogglePitchMode" title="Toggle Judge/Pitch Mode"
+          class="editorial-btn px-3 py-1.5 text-xs flex items-center gap-2">
+          <i class="fa-solid fa-tv"></i>
+          <span class="hidden sm:inline">Pitch</span>
+        </button>
+
+        <button id="btnExportZip" title="Download All Code as .ZIP Bundle"
+          class="editorial-btn px-3 py-1.5 text-xs flex items-center gap-2">
+          <i class="fa-solid fa-file-zipper"></i>
+          <span class="hidden sm:inline">Export</span>
+        </button>
+
+        <button id="adminManageBtn"
+          class="hidden editorial-btn px-3 py-1.5 text-xs items-center gap-2">
+          <i class="fa-solid fa-users-gear"></i>
+          <span class="hidden sm:inline">Members</span>
+        </button>
+
+        <button id="btnOpenPostSnippet" title="Post a file or folder"
+          class="editorial-btn editorial-btn-primary px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm flex items-center gap-2">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>Post</span>
+        </button>
+
+        <div class="flex items-center gap-3 pl-3 border-l-2 border-[var(--border-dark)]">
+          <div class="text-right hidden sm:block">
+            <div id="headerUserName" class="text-sm font-bold text-[var(--text)] font-display truncate max-w-[120px]">—</div>
+            <div id="headerUserRole" class="text-[10px] text-[var(--text-muted)] font-mono uppercase tracking-wider truncate max-w-[120px]">—</div>
+          </div>
+          <div id="headerUserAvatar" class="w-9 h-9 border-2 border-[var(--border-dark)] bg-[var(--surface)] flex items-center justify-center font-bold text-[var(--text)] font-display text-xs shadow-[2px_2px_0px_0px_var(--border-dark)]">--</div>
+          <button id="btnLogout" title="Sign Out" class="p-1.5 text-[var(--text-muted)] hover:text-[var(--danger)] transition">
+            <i class="fa-solid fa-arrow-right-from-bracket text-base"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6">
+    <aside id="mainSidebar" class="w-full lg:w-[310px] flex-shrink-0 space-y-6">
+      
+      <!-- Deliverables Sync -->
+      <div class="editorial-card space-y-4 bg-[var(--card-bg-2)]">
+        <div class="flex items-center justify-between pb-3 border-b-4 border-[var(--border-dark)]">
+          <h2 class="text-xs font-bold font-mono uppercase tracking-widest text-[var(--text)] flex items-center gap-2">
+            <i class="fa-solid fa-flag-checkered"></i> Deliverables
+          </h2>
+          <span class="text-[10px] text-[var(--text-muted)] font-mono font-bold uppercase tracking-wider">LINKS</span>
+        </div>
+        <div class="grid grid-cols-1 gap-2.5">
+          <input type="url" id="repoUrlInput" placeholder="Repository URL (GitHub/GitLab)" class="editorial-input text-xs">
+          <input type="url" id="liveDemoUrlInput" placeholder="Live Demo / Deployment URL" class="editorial-input text-xs">
+        </div>
+        <div class="flex items-center justify-between pt-1">
+          <button id="btnSaveLinks" class="editorial-btn px-3 py-1.5 text-[10px] flex items-center gap-1.5">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Sync Links
+          </button>
+          <div class="flex gap-3">
+            <a id="btnOpenRepo" href="#" target="_blank" rel="noopener noreferrer" class="text-[var(--text-muted)] hover:text-[var(--text)] transition"><i class="fa-brands fa-github text-lg"></i></a>
+            <a id="btnOpenLiveDemo" href="#" target="_blank" rel="noopener noreferrer" class="text-[var(--text-muted)] hover:text-[var(--text)] transition"><i class="fa-solid fa-rocket text-lg"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Realtime Stats -->
+      <div class="editorial-card">
+        <div class="flex items-center justify-between pb-4 border-b-4 border-[var(--border-dark)] mb-4">
+          <div>
+            <h2 class="text-[10px] font-bold font-mono uppercase tracking-widest text-[var(--text-muted)]">Realtime Vault</h2>
+            <div class="text-sm font-bold text-[var(--text)] font-display uppercase tracking-wide mt-1">Firebase Sync</div>
+          </div>
+          <span id="onlineStateLabel" class="px-2 py-1 bg-[var(--surface)] border-2 border-[var(--border-dark)] text-[10px] font-mono font-bold text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]">CONNECTING</span>
+        </div>
+        <div class="grid grid-cols-2 gap-3 text-center">
+          <div class="bg-[var(--bg)] border-2 border-[var(--border-dark)] p-3 shadow-[2px_2px_0px_0px_var(--border-dark)]">
+            <div id="statSnippetCount" class="text-2xl font-bold font-mono text-[var(--text)]">0</div>
+            <div class="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest mt-1">Snippets</div>
+          </div>
+          <div class="bg-[var(--bg)] border-2 border-[var(--border-dark)] p-3 shadow-[2px_2px_0px_0px_var(--border-dark)]">
+            <div id="statUserCount" class="text-2xl font-bold font-mono text-[var(--text)]">0</div>
+            <div class="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest mt-1">Members</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scope Filter -->
+      <div class="editorial-card space-y-2">
+        <h3 class="text-[10px] font-bold font-mono uppercase tracking-widest text-[var(--text-muted)] mb-3">View Scope</h3>
+        <button id="scopeBtn-all" class="scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-accent text-[var(--bg)] border-2 border-[var(--border-dark)] shadow-[2px_2px_0px_0px_var(--border-dark)] transition">
+          <span class="flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> All Snippets</span>
+          <span id="badgeCountAll" class="text-[10px] bg-[var(--surface)] text-[var(--text)] px-2 py-0.5 border border-[var(--border-dark)]">0</span>
+        </button>
+        <button id="scopeBtn-mine" class="scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-[var(--surface)] text-[var(--text-muted)] border-2 border-transparent hover:border-[var(--border-dark)] hover:text-[var(--text)] transition">
+          <span class="flex items-center gap-2"><i class="fa-solid fa-code"></i> My Snippets</span>
+          <span id="badgeCountMine" class="text-[10px] bg-[var(--surface-hover)] text-[var(--text-muted)] px-2 py-0.5 border border-[var(--border)]">0</span>
+        </button>
+        <button id="scopeBtn-starred" class="scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-[var(--surface)] text-[var(--text-muted)] border-2 border-transparent hover:border-[var(--border-dark)] hover:text-[var(--text)] transition">
+          <span class="flex items-center gap-2"><i class="fa-solid fa-star"></i> Critical</span>
+          <span id="badgeCountStarred" class="text-[10px] bg-[var(--surface-hover)] text-[var(--text-muted)] px-2 py-0.5 border border-[var(--border)]">0</span>
+        </button>
+      </div>
+
+      <!-- Folders Directory -->
+      <div class="editorial-card">
+        <div class="flex items-center justify-between pb-3 border-b-4 border-[var(--border-dark)] mb-3">
+          <h3 class="text-[10px] font-bold font-mono uppercase tracking-widest text-[var(--text-muted)] flex items-center gap-1.5">
+            <i class="fa-solid fa-folder-tree"></i> Folders
+          </h3>
+          <div class="flex items-center gap-1.5">
+            <button id="btnSidebarNewFolder" title="Create Folder" class="editorial-btn px-2 py-0.5 text-[10px]">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+            <button id="btnClearFolderFilter" title="Show All Folders" class="text-[10px] font-bold font-mono text-[var(--text)] uppercase hover:underline">Clear</button>
+          </div>
+        </div>
+        <div id="folderList" class="space-y-1.5 max-h-52 overflow-y-auto pr-1"></div>
+      </div>
+
+      <!-- Language Filter -->
+      <div class="editorial-card">
+        <div class="flex items-center justify-between pb-3 border-b-4 border-[var(--border-dark)] mb-3">
+          <h3 class="text-[10px] font-bold font-mono uppercase tracking-widest text-[var(--text-muted)]">Languages</h3>
+          <button id="btnClearLanguageFilter" class="text-[10px] font-bold font-mono text-[var(--text)] uppercase hover:underline">Clear</button>
+        </div>
+        <div id="languageFilterList" class="space-y-1 max-h-48 overflow-y-auto pr-1"></div>
+      </div>
+
+      <!-- Shared Scratchpad -->
+      <div class="editorial-card flex flex-col bg-[var(--card-bg-3)]">
+        <div class="flex items-center justify-between pb-3 border-b-4 border-[var(--border-dark)] mb-3">
+          <h3 class="text-[10px] font-bold font-mono uppercase tracking-widest text-[var(--text)] flex items-center gap-2">
+            <i class="fa-solid fa-clipboard-check"></i> Shared Notes
+          </h3>
+          <span id="scratchpadSyncState" class="text-[10px] text-[var(--text-muted)] font-mono tracking-wider uppercase">Synced</span>
+        </div>
+        <p class="text-[10px] text-[var(--text-muted)] mb-3 font-mono leading-relaxed">Live clipboard for quick coordination. Do not paste keys or secrets.</p>
+        <textarea id="teamScratchpad" rows="6" placeholder="Quick team scratchpad notes..."
+          class="w-full editorial-input font-mono text-xs resize-y shadow-[2px_2px_0px_0px_var(--border-dark)]"></textarea>
+        <div class="mt-3 pt-3 border-t-2 border-[var(--border-dark)] flex justify-between items-center">
+          <button id="btnCopyScratchpad" class="editorial-btn px-2.5 py-1 text-[10px] flex items-center gap-1.5">
+            <i class="fa-solid fa-copy"></i> Copy
+          </button>
+          <button id="btnClearScratchpad" class="text-[10px] font-bold font-mono text-[var(--danger)] uppercase hover:underline">Clear</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Stream -->
+    <section class="flex-1 flex flex-col space-y-5 min-w-0">
+      
+      <!-- Search & Filters Toolbar -->
+      <div class="editorial-card p-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="relative w-full sm:flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-xs"></i>
+          <input type="search" id="searchInput" placeholder="Search title, filename, tag, user, or code content..."
+            class="w-full editorial-input pl-9 py-2 text-xs">
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <select id="statusFilter" class="editorial-input text-xs py-2 flex-1 sm:flex-initial">
+            <option value="all">All Statuses</option>
+            <option value="READY">Ready</option>
+            <option value="WIP">WIP</option>
+            <option value="DEPRECATED">Deprecated</option>
+          </select>
+          <select id="categoryFilter" class="editorial-input text-xs py-2 flex-1 sm:flex-initial">
+            <option value="all">All Domains</option>
+            <option value="API / Endpoints">API & Endpoints</option>
+            <option value="Authentication">Auth & Security</option>
+            <option value="AI / Prompts">AI & LLM</option>
+            <option value="UI Components">UI Components</option>
+            <option value="Database / ORM">Database & ORM</option>
+            <option value="Algorithms">Algorithms & Logic</option>
+            <option value="Utils / Helpers">Utils & Helpers</option>
+            <option value="DevOps / Config">DevOps & Config</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Feed Container -->
+      <div id="snippetsContainer" class="space-y-4"></div>
+
+      <!-- Empty State -->
+      <div id="emptyVaultState" class="hidden flex-col items-center justify-center p-16 text-center border-2 border-dashed border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0px_0px_var(--border-dark)]">
+        <div class="w-16 h-16 border-2 border-[var(--border-dark)] flex items-center justify-center text-[var(--bg)] mb-4 bg-accent shadow-[2px_2px_0px_0px_var(--border-dark)]">
+          <i class="fa-solid fa-code text-2xl"></i>
+        </div>
+        <h4 class="text-xl font-display font-bold text-[var(--text)] uppercase tracking-tight">No snippets found</h4>
+        <p id="emptyStateText" class="text-sm text-[var(--text-muted)] max-w-sm mt-2 mb-6 font-mono leading-relaxed">Share your first function, hook, or configuration file.</p>
+        <button id="btnEmptyPostSnippet" class="editorial-btn editorial-btn-primary px-6 py-3 text-sm">
+          <i class="fa-solid fa-plus mr-2"></i> Post New Snippet
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Create/Edit Snippet Modal -->
+  <div id="snippetModal" role="dialog" aria-modal="true" aria-labelledby="modalHeaderTitle" class="fixed inset-0 z-50 bg-editorial-950/20 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-3xl shadow-[4px_4px_0px_0px_var(--border-dark)] flex flex-col max-h-[92vh] overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--bg)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]"><i class="fa-solid fa-code"></i></div>
+          <div>
+            <h2 id="modalHeaderTitle" class="text-xl font-bold font-display uppercase tracking-tight text-[var(--text)]">Save Snippet</h2>
+            <p id="modalHeaderSubtitle" class="text-[10px] text-[var(--text-muted)] font-mono tracking-widest uppercase">Retain exact extensions</p>
+          </div>
+        </div>
+        <button id="btnCloseSnippetModal" aria-label="Close" class="editorial-btn px-2 py-1.5"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <form id="snippetForm" class="flex-1 overflow-y-auto p-6 space-y-5 bg-[var(--bg)]">
+        <input type="hidden" id="editSnippetId" value="">
+        <input type="hidden" id="snippetOriginalFileName" value="">
+
+        <div class="editorial-card">
+          <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-[var(--text)] mb-2 flex items-center gap-2"><i class="fa-solid fa-file-arrow-up"></i> Upload From File</label>
+          <input type="file" id="snippetFileInput"
+            class="w-full text-xs text-[var(--text-muted)] file:mr-4 file:py-1.5 file:px-3 file:border-2 file:border-[var(--border-dark)] file:text-[10px] file:font-bold file:font-mono file:uppercase file:bg-[var(--surface)] file:text-[var(--text)] hover:file:bg-[var(--surface-hover)] bg-[var(--surface)] border-2 border-[var(--border-dark)] p-1 cursor-pointer shadow-[2px_2px_0px_0px_var(--border-dark)]">
+          <p id="uploadedFileLabel" class="mt-2 text-[10px] text-[var(--text-muted)] font-mono tracking-wider">No file selected</p>
+        </div>
+
+        <input id="folderUploadInput" type="file" webkitdirectory directory multiple class="hidden"
+          accept=".txt,.py,.js,.ts,.jsx,.tsx,.java,.c,.cpp,.h,.hpp,.cs,.go,.rs,.php,.rb,.html,.css,.scss,.sass,.json,.yaml,.yml,.xml,.sql,.sh,.bash,.md,.dockerfile,.env,.toml,.ini,.conf">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="md:col-span-2">
+            <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1.5">Title *</label>
+            <input type="text" id="snippetTitleInput" required maxlength="120" placeholder="e.g. JWT Auth Middleware"
+              class="w-full editorial-input text-sm">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1.5">Extension</label>
+            <input type="text" id="snippetExtensionInput" maxlength="16" placeholder="e.g. js, py, ts"
+              class="w-full editorial-input text-sm font-mono">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1.5">Folder</label>
+            <select id="snippetFolderSelect" class="w-full editorial-input text-sm">
+              <option value="">Root / No Folder</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1.5">Language</label>
+            <select id="snippetLangSelect" class="w-full editorial-input text-sm">
+              <option value="python">Python (.py)</option>
+              <option value="javascript">JavaScript (.js)</option>
+              <option value="typescript">TypeScript (.ts)</option>
+              <option value="cpp">C++ (.cpp)</option>
+              <option value="rust">Rust (.rs)</option>
+              <option value="go">Go (.go)</option>
+              <option value="html">HTML / CSS</option>
+              <option value="css">CSS (.css)</option>
+              <option value="sql">SQL / Postgres</option>
+              <option value="shell">Shell / Bash (.sh)</option>
+              <option value="json">JSON</option>
+              <option value="yaml">YAML</option>
+              <option value="java">Java (.java)</option>
+              <option value="kotlin">Kotlin (.kt)</option>
+              <option value="php">PHP (.php)</option>
+              <option value="markdown">Markdown (.md)</option>
+              <option value="dockerfile">Dockerfile</option>
+              <option value="text">Plain Text</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1.5">Status</label>
+            <select id="snippetStatusSelect" class="w-full editorial-input text-sm">
+              <option value="READY">Ready</option>
+              <option value="WIP">Work in Progress</option>
+              <option value="DEPRECATED">Deprecated</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1.5">Category</label>
+            <select id="snippetCategorySelect" class="w-full editorial-input text-sm">
+              <option value="API / Endpoints">API & Endpoints</option>
+              <option value="Authentication">Auth & Security</option>
+              <option value="AI / Prompts">AI & LLM</option>
+              <option value="UI Components">UI Components</option>
+              <option value="Database / ORM">Database & Queries</option>
+              <option value="Algorithms">Algorithms & Logic</option>
+              <option value="Utils / Helpers">Utils & Helpers</option>
+              <option value="DevOps / Config">DevOps & Config</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1.5">Tags (comma-separated)</label>
+            <input type="text" id="snippetTagsInput" maxlength="300" placeholder="e.g. auth, redis, jwt"
+              class="w-full editorial-input text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1.5">Integration Instructions</label>
+          <input type="text" id="snippetDescInput" maxlength="300" placeholder="How teammates should import or invoke this"
+            class="w-full editorial-input text-sm">
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700">Code *</label>
+            <div class="flex items-center gap-3 text-[10px] text-[var(--text-muted)] font-mono">
+              <span id="editorStats">0 lines • 0 chars</span>
+              <span>[Tab] indents • [Ctrl+S] saves</span>
+            </div>
+          </div>
+          <textarea id="snippetCodeInput" required rows="11" maxlength="100000" placeholder="Paste your code..."
+            class="w-full editorial-input editor-textarea" spellcheck="false"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between pt-5 border-t-2 border-[var(--border-dark)] mt-5">
+          <label class="flex items-center gap-2.5 text-xs font-bold font-mono uppercase tracking-widest text-[var(--text)] cursor-pointer">
+            <input type="checkbox" id="snippetStarredCheck" class="w-4 h-4 border-2 border-[var(--border-dark)] text-[var(--text)] focus:ring-0 rounded-none bg-[var(--surface)] checked:bg-[var(--text)]">
+            <span>Mark as Critical</span>
+          </label>
+          <div class="flex items-center gap-3">
+            <button type="button" id="btnCancelSnippet" class="editorial-btn px-4 py-2 text-xs">Cancel</button>
+            <button type="submit" id="saveSnippetBtn" class="editorial-btn editorial-btn-primary px-6 py-2 text-xs">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Inspect Modal -->
+  <div id="inspectModal" role="dialog" aria-modal="true" aria-labelledby="inspectTitle" class="fixed inset-0 z-50 bg-editorial-950/20 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-4xl shadow-[4px_4px_0px_0px_var(--border-dark)] flex flex-col max-h-[90vh] overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)] gap-4">
+        <div class="flex items-center gap-4 min-w-0">
+          <span id="inspectLangBadge" class="px-2 py-0.5 border-2 border-[var(--border-dark)] text-xs font-mono font-bold uppercase bg-[var(--bg)] text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]">PY</span>
+          <span id="inspectStatusBadge" class="px-2 py-0.5 border-2 border-[var(--border-dark)] text-xs font-mono font-bold uppercase bg-[var(--surface)] text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]">READY</span>
+          <div class="min-w-0">
+            <h3 id="inspectTitle" class="text-xl font-bold font-display text-[var(--text)] tracking-tight truncate uppercase">Snippet Title</h3>
+            <p id="inspectMeta" class="text-xs text-[var(--text-muted)] font-mono tracking-wider mt-0.5 truncate">By user • Role • Just now</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <button id="inspectCopyFetchBtn" title="Copy Fetch boilerplate" class="hidden sm:flex editorial-btn px-3 py-1.5 text-xs items-center gap-2"><i class="fa-solid fa-terminal"></i><span>Fetch</span></button>
+          <button id="inspectCopyBtn" title="Copy code" class="editorial-btn px-3 py-1.5 text-xs flex items-center gap-2"><i class="fa-solid fa-copy"></i><span class="hidden sm:inline">Copy</span></button>
+          <button id="inspectDownloadBtn" title="Download file" class="editorial-btn editorial-btn-primary px-3 py-1.5 text-xs flex items-center gap-2"><i class="fa-solid fa-download"></i><span class="hidden sm:inline">Download</span></button>
+          <button id="btnCloseInspectModal" aria-label="Close" class="editorial-btn px-2 py-1.5 text-sm"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-[var(--bg)]">
+        <div class="editorial-card">
+          <p id="inspectDesc" class="text-sm text-editorial-700 leading-relaxed font-mono">Instructions...</p>
+          <div id="inspectTags" class="flex flex-wrap gap-2 mt-4"></div>
+        </div>
+
+        <div class="border-2 border-[var(--border-dark)] bg-[var(--surface)] shadow-[4px_4px_0px_0px_var(--border-dark)]">
+          <div class="bg-[var(--surface-hover)] px-4 py-2 border-b-2 border-[var(--border-dark)] flex items-center justify-between text-xs font-mono">
+            <span id="inspectFilename" class="font-bold text-[var(--text)]">snippet.py</span>
+            <span id="inspectLineCount" class="text-[var(--text-muted)] font-bold">0 lines</span>
+          </div>
+          <pre class="overflow-x-auto"><code id="inspectCodeBlock" class="language-python"></code></pre>
+        </div>
+
+        <div class="editorial-card mt-6">
+          <h4 class="text-sm font-bold font-display uppercase tracking-widest text-[var(--text)] mb-4 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Notes (<span id="inspectCommentCount">0</span>)</h4>
+          <div id="inspectCommentsList" class="space-y-3 mb-4"></div>
+          <form id="inspectCommentForm" class="flex gap-3 border-t-2 border-[var(--border-dark)] pt-4">
+            <input type="text" id="inspectCommentInput" maxlength="500" required placeholder="Add a teammate note or integration hint..."
+              class="flex-1 editorial-input text-sm">
+            <button type="submit" class="editorial-btn editorial-btn-primary px-4 py-2 text-sm">Post Note</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Modal -->
+  <div id="adminUserModal" role="dialog" aria-modal="true" aria-labelledby="adminModalTitle" class="fixed inset-0 z-50 bg-editorial-950/20 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-2xl shadow-[4px_4px_0px_0px_var(--border-dark)] flex flex-col max-h-[90vh] overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--bg)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]"><i class="fa-solid fa-users-gear"></i></div>
+          <div>
+            <h2 id="adminModalTitle" class="text-xl font-bold font-display uppercase tracking-tight text-[var(--text)]">Member Provisioning</h2>
+            <p class="text-[10px] text-[var(--text-muted)] font-mono tracking-widest uppercase">Lead Privileges</p>
+          </div>
+        </div>
+        <button id="btnCloseAdminModal" aria-label="Close" class="editorial-btn px-2 py-1.5"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-6 bg-[var(--bg)]">
+        <div class="editorial-card">
+          <h3 class="text-sm font-bold font-display uppercase tracking-widest text-[var(--text)] mb-3 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Add Teammate</h3>
+          <form id="createUserForm" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1">Username *</label>
+                <input type="text" id="newUsername" required minlength="3" maxlength="32" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,31}" autocapitalize="none" spellcheck="false" placeholder="e.g. dev_alex"
+                  class="w-full editorial-input text-xs">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1">Temporary Password *</label>
+                <input type="password" id="newPassword" required minlength="8" maxlength="128" placeholder="At least 8 chars"
+                  class="w-full editorial-input text-xs">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1">Full Name</label>
+                <input type="text" id="newFullName" maxlength="80" placeholder="Alex Chen"
+                  class="w-full editorial-input text-xs">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1">Role</label>
+                <select id="newRole" class="w-full editorial-input text-xs">
+                  <option value="Lead">Lead Engineer</option>
+                  <option value="Frontend">Frontend / UI</option>
+                  <option value="Backend">Backend / API</option>
+                  <option value="Designer">Product Designer</option>
+                  <option value="DevOps">DevOps & Cloud</option>
+                </select>
+              </div>
+            </div>
+            <button id="createUserBtn" type="submit" class="editorial-btn editorial-btn-primary w-full py-2.5 text-xs"><i class="fa-solid fa-plus mr-2"></i> Register Member</button>
+          </form>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold font-display uppercase tracking-widest text-[var(--text)]">Team Members (<span id="adminUserCountLabel">0</span>)</h3>
+          </div>
+          <div class="border-2 border-[var(--border-dark)] overflow-hidden bg-[var(--surface)] shadow-[4px_4px_0px_0px_var(--border-dark)]">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs min-w-[500px]">
+                <thead class="bg-[var(--surface-hover)] text-[var(--text)] font-mono text-[10px] uppercase tracking-widest border-b-2 border-[var(--border-dark)]">
+                  <tr><th class="p-3 border-r-2 border-[var(--border-dark)]">User</th><th class="p-3 border-r-2 border-[var(--border-dark)]">Role</th><th class="p-3 border-r-2 border-[var(--border-dark)]">Status</th><th class="p-3 text-right">Action</th></tr>
+                </thead>
+                <tbody id="adminUserTableBody" class="divide-y-2 divide-[var(--border)]"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post Choice Modal -->
+  <div id="uploadChoiceModal" role="dialog" aria-modal="true" aria-labelledby="uploadChoiceTitle" class="fixed inset-0 z-[60] bg-editorial-950/20 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-md shadow-[4px_4px_0px_0px_var(--border-dark)] overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--bg)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+          <div>
+            <h2 id="uploadChoiceTitle" class="text-xl font-bold font-display uppercase tracking-tight text-[var(--text)]">Post Code</h2>
+            <p class="text-[10px] text-[var(--text-muted)] font-mono uppercase tracking-widest">Select action</p>
+          </div>
+        </div>
+        <button id="btnCloseUploadChoice" aria-label="Close" class="editorial-btn px-2 py-1.5">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-6 bg-[var(--bg)] space-y-3">
+        <button id="btnChooseFileUpload" type="button"
+          class="w-full text-left editorial-card p-4 hover:bg-[var(--surface)] flex items-center gap-4">
+          <div class="w-12 h-12 border-2 border-[var(--border-dark)] bg-[var(--surface-hover)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)] flex-shrink-0">
+            <i class="fa-solid fa-file-code text-xl"></i>
+          </div>
+          <div>
+            <div class="text-sm font-bold font-display uppercase tracking-tight text-[var(--text)]">Single Snippet / File</div>
+            <div class="text-[10px] text-[var(--text-muted)] font-mono mt-0.5">Post one code file, hook, or script.</div>
+          </div>
+        </button>
+
+        <button id="btnChooseFolderUpload" type="button"
+          class="w-full text-left editorial-card p-4 hover:bg-[var(--surface)] flex items-center gap-4">
+          <div class="w-12 h-12 border-2 border-[var(--border-dark)] bg-[var(--surface-hover)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)] flex-shrink-0">
+            <i class="fa-solid fa-folder-open text-xl"></i>
+          </div>
+          <div>
+            <div class="text-sm font-bold font-display uppercase tracking-tight text-[var(--text)]">Import Entire Directory</div>
+            <div class="text-[10px] text-[var(--text-muted)] font-mono mt-0.5">Import directory tree preserving relative paths.</div>
+          </div>
+        </button>
+      </div>
+
+      <div class="px-6 py-4 border-t-2 border-[var(--border-dark)] bg-[var(--surface)] flex justify-end">
+        <button id="btnCancelUploadChoice" type="button" class="editorial-btn px-4 py-2 text-xs">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Folder Modal -->
+  <div id="folderModal" role="dialog" aria-modal="true" aria-labelledby="folderModalTitle" class="fixed inset-0 z-50 bg-editorial-950/20 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-md shadow-[4px_4px_0px_0px_var(--border-dark)] overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--bg)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]"><i class="fa-solid fa-folder-plus"></i></div>
+          <div>
+            <h2 id="folderModalTitle" class="text-xl font-bold font-display uppercase tracking-tight text-[var(--text)]">Create Folder</h2>
+            <p class="text-[10px] text-[var(--text-muted)] font-mono tracking-widest uppercase">Group related files</p>
+          </div>
+        </div>
+        <button id="btnCloseFolderModal" aria-label="Close" class="editorial-btn px-2 py-1.5"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form id="folderForm" class="p-6 space-y-5 bg-[var(--bg)]">
+        <div>
+          <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-2">Folder Name</label>
+          <input id="folderNameInput" type="text" required maxlength="80" placeholder="e.g. backend-api or auth-services"
+            class="w-full editorial-input text-sm">
+        </div>
+        <div class="flex justify-end gap-3 pt-4 border-t-2 border-[var(--border-dark)]">
+          <button type="button" id="btnCancelFolder" class="editorial-btn px-4 py-2 text-xs">Cancel</button>
+          <button type="submit" class="editorial-btn editorial-btn-primary px-6 py-2 text-xs"><i class="fa-solid fa-folder-plus mr-2"></i>Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sprint Timer Controls Modal -->
+  <div id="timerSettingsModal" role="dialog" aria-modal="true" aria-labelledby="timerModalTitle" class="fixed inset-0 z-50 bg-editorial-950/20 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-md shadow-[4px_4px_0px_0px_var(--border-dark)] flex flex-col overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--bg)] flex items-center justify-center text-[var(--text)] font-bold shadow-[2px_2px_0px_0px_var(--border-dark)]"><i class="fa-solid fa-stopwatch"></i></div>
+          <div><h2 id="timerModalTitle" class="text-xl font-bold font-display uppercase tracking-tight text-[var(--text)]">Timer Controls</h2><p class="text-[10px] text-[var(--text-muted)] font-mono tracking-widest uppercase">Admin-only</p></div>
+        </div>
+        <button id="btnCloseTimerSettings" aria-label="Close" class="editorial-btn px-2 py-1.5"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="p-6 space-y-6 bg-[var(--bg)]">
+        <div class="editorial-card flex items-center justify-between">
+          <div>
+            <div class="text-[10px] uppercase font-mono tracking-widest text-[var(--text-muted)]">Remaining Time</div>
+            <div id="modalTimerDisplay" class="text-2xl font-bold font-mono text-[var(--text)] mt-1 tracking-widest">00:00:00</div>
+            <div id="modalTimerStateText" class="text-[10px] font-bold font-mono uppercase tracking-widest mt-1 text-[var(--text-muted)]">Not configured</div>
+          </div>
+          <button id="toggleTimerPauseBtn" disabled class="editorial-btn px-4 py-2 text-xs flex items-center gap-2 disabled:opacity-40"><i id="pausePlayIcon" class="fa-solid fa-pause"></i><span id="pausePlayText">Pause</span></button>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-3">Quick Presets</label>
+          <div class="grid grid-cols-3 gap-2.5">
+            <button class="preset-timer-btn editorial-btn px-2 py-2 text-[10px]" data-hours="0.5">30 Mins</button>
+            <button class="preset-timer-btn editorial-btn px-2 py-2 text-[10px]" data-hours="1">1 Hour</button>
+            <button class="preset-timer-btn editorial-btn px-2 py-2 text-[10px]" data-hours="12">12 Hours</button>
+            <button class="preset-timer-btn editorial-btn px-2 py-2 text-[10px]" data-hours="24">24 Hours</button>
+            <button class="preset-timer-btn editorial-btn px-2 py-2 text-[10px]" data-hours="36">36 Hours</button>
+            <button class="preset-timer-btn editorial-btn px-2 py-2 text-[10px]" data-hours="48">48 Hours</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div id="passwordModal" role="dialog" aria-modal="true" aria-labelledby="passwordModalTitle" class="fixed inset-0 z-50 bg-editorial-950/20 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-md shadow-[4px_4px_0px_0px_var(--border-dark)] overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)]">
+        <div class="flex items-center gap-3"><div class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--bg)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]"><i class="fa-solid fa-key"></i></div><div><h2 id="passwordModalTitle" class="text-xl font-bold font-display uppercase tracking-tight text-[var(--text)]">Change Password</h2><p class="text-[10px] text-[var(--text-muted)] font-mono tracking-widest uppercase">Security update</p></div></div>
+        <button id="btnClosePasswordModal" aria-label="Close" class="editorial-btn px-2 py-1.5"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form id="changePasswordForm" class="p-6 space-y-4 bg-[var(--bg)]">
+        <div><label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1.5">Current Password</label><input type="password" id="currentPasswordInput" required autocomplete="current-password" class="w-full editorial-input text-sm"></div>
+        <div><label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1.5">New Password</label><input type="password" id="newPasswordInput" required minlength="8" maxlength="128" autocomplete="new-password" class="w-full editorial-input text-sm"></div>
+        <div><label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-1.5">Confirm Password</label><input type="password" id="confirmPasswordInput" required minlength="8" maxlength="128" autocomplete="new-password" class="w-full editorial-input text-sm"></div>
+        <div id="passwordError" class="hidden text-xs p-3 border-2 border-[var(--danger)] bg-[var(--surface-hover)] text-[var(--danger)] font-mono"></div>
+        <div class="flex justify-end gap-3 pt-4 border-t-2 border-[var(--border-dark)]"><button type="button" id="btnCancelPassword" class="editorial-btn px-4 py-2 text-xs">Cancel</button><button type="submit" id="changePasswordBtn" class="editorial-btn editorial-btn-primary px-6 py-2 text-xs">Update</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Anchor -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-[120] flex flex-col gap-2.5 pointer-events-none max-w-[min(92vw,420px)]"></div>
+
+  <!-- Application Logic -->
+  <script type="module">
+    import { initializeApp, deleteApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+    import { getAnalytics } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js';
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signInWithEmailAndPassword,
+      signOut,
+      createUserWithEmailAndPassword,
+      deleteUser,
+      updatePassword,
+      reauthenticateWithCredential,
+      EmailAuthProvider,
+      setPersistence,
+      browserLocalPersistence,
+      inMemoryPersistence
+    } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+    import {
+      getDatabase,
+      ref,
+      get,
+      set,
+      update,
+      push,
+      remove,
+      onValue
+    } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyA4Hxj1BVv1bScRyUa-Vs9Wuv4N8b5RmpE',
+      authDomain: 'devvault-114f3.firebaseapp.com',
+      databaseURL: 'https://devvault-114f3-default-rtdb.firebaseio.com',
+      projectId: 'devvault-114f3',
+      storageBucket: 'devvault-114f3.firebasestorage.app',
+      messagingSenderId: '250493999462',
+      appId: '1:250493999462:web:54ae3e3bf343e1bdb890a7',
+      measurementId: 'G-1XEBVM1JKY'
+    };
+
+    const ADMIN_EMAIL = 'admin@devvault.local';
+
+    const EXTENSION_MAP = {
+      python: 'py', javascript: 'js', typescript: 'ts', cpp: 'cpp', c: 'c', csharp: 'cs',
+      rust: 'rs', go: 'go', html: 'html', css: 'css', sql: 'sql', shell: 'sh', bash: 'sh',
+      json: 'json', yaml: 'yaml', yml: 'yml', java: 'java', kotlin: 'kt', swift: 'swift',
+      php: 'php', ruby: 'rb', dockerfile: 'dockerfile', markdown: 'md', text: 'txt'
+    };
+
+    const REV_EXTENSION_MAP = {
+      py: 'python', js: 'javascript', ts: 'typescript', jsx: 'javascript', tsx: 'typescript',
+      cpp: 'cpp', c: 'c', cs: 'csharp', rs: 'rust', go: 'go', html: 'html', htm: 'html',
+      css: 'css', sql: 'sql', sh: 'shell', bash: 'shell', json: 'json', yaml: 'yaml', yml: 'yaml',
+      java: 'java', kt: 'kotlin', php: 'php', rb: 'ruby', md: 'markdown', txt: 'text', dockerfile: 'dockerfile'
+    };
+
+    const LANGUAGE_PRISM_MAP = {
+      html: 'markup', css: 'css', shell: 'bash', json: 'json', yaml: 'yaml', dockerfile: 'docker', markdown: 'markdown', text: 'none'
+    };
+
+    let app, auth, db, analytics = null;
+    let currentUser = null;
+    let currentProfile = null;
+    let users = [];
+    let snippets = [];
+    let folders = [];
+    let commentsBySnippet = {};
+    let dataUnsubscribers = [];
+    let activeScope = 'all';
+    let selectedLanguage = null;
+    let selectedCategory = 'all';
+    let selectedStatus = 'all';
+    let searchQuery = '';
+    let inspectingSnippetId = null;
+    let sprintEndTime = null;
+    let isTimerPaused = false;
+    let pausedRemainingMs = 0;
+    let timerInterval = null;
+    let relativeTimeInterval = null;
+    let pitchMode = false;
+    let scratchpadDebounce = null;
+    let firebaseReady = false;
+    let activeFolderId = null;
+    const expandedFolderIds = new Set();
+
+    const $ = (id) => document.getElementById(id);
+
+    const loginPortal = $('loginPortal');
+    const authPortalForm = $('authPortalForm');
+    const loginUsername = $('loginUsername');
+    const loginPassword = $('loginPassword');
+    const loginError = $('loginError');
+    const loginSubmitBtn = $('loginSubmitBtn');
+    const loginBtnIcon = $('loginBtnIcon');
+    const loginBtnText = $('loginBtnText');
+    const authConnectionText = $('authConnectionText');
+    const firebaseStatusBadge = $('firebaseStatusBadge');
+    const onlineStateLabel = $('onlineStateLabel');
+
+    const headerUserName = $('headerUserName');
+    const headerUserRole = $('headerUserRole');
+    const headerUserAvatar = $('headerUserAvatar');
+    const adminManageBtn = $('adminManageBtn');
+    const btnLogout = $('btnLogout');
+
+    const snippetModal = $('snippetModal');
+    const snippetForm = $('snippetForm');
+    const snippetFileInput = $('snippetFileInput');
+    const uploadedFileLabel = $('uploadedFileLabel');
+    const btnOpenPostSnippet = $('btnOpenPostSnippet');
+    const btnEmptyPostSnippet = $('btnEmptyPostSnippet');
+    const btnCloseSnippetModal = $('btnCloseSnippetModal');
+    const btnCancelSnippet = $('btnCancelSnippet');
+    const saveSnippetBtn = $('saveSnippetBtn');
+
+    const adminUserModal = $('adminUserModal');
+    const btnCloseAdminModal = $('btnCloseAdminModal');
+    const createUserForm = $('createUserForm');
+    const createUserBtn = $('createUserBtn');
+
+    const uploadChoiceModal = $('uploadChoiceModal');
+    const btnCloseUploadChoice = $('btnCloseUploadChoice');
+    const btnCancelUploadChoice = $('btnCancelUploadChoice');
+    const btnChooseFileUpload = $('btnChooseFileUpload');
+    const btnChooseFolderUpload = $('btnChooseFolderUpload');
+
+    const folderModal = $('folderModal');
+    const folderForm = $('folderForm');
+    const btnCloseFolderModal = $('btnCloseFolderModal');
+    const btnCancelFolder = $('btnCancelFolder');
+    const folderUploadInput = $('folderUploadInput');
+    const btnSidebarNewFolder = $('btnSidebarNewFolder');
+    const btnClearFolderFilter = $('btnClearFolderFilter');
+
+    const timerSettingsModal = $('timerSettingsModal');
+    const btnOpenTimerSettings = $('btnOpenTimerSettings');
+    const btnCloseTimerSettings = $('btnCloseTimerSettings');
+    const toggleTimerPauseBtn = $('toggleTimerPauseBtn');
+    
+    const btnToggleTheme = $('btnToggleTheme');
+    const themeIcon = $('themeIcon');
+
+    const inspectModal = $('inspectModal');
+    const btnCloseInspectModal = $('btnCloseInspectModal');
+    const inspectCopyBtn = $('inspectCopyBtn');
+    const inspectDownloadBtn = $('inspectDownloadBtn');
+    const inspectCopyFetchBtn = $('inspectCopyFetchBtn');
+    const inspectCommentForm = $('inspectCommentForm');
+
+    const passwordModal = $('passwordModal');
+    const btnChangePassword = $('btnChangePassword');
+    const btnClosePasswordModal = $('btnClosePasswordModal');
+    const btnCancelPassword = $('btnCancelPassword');
+    const changePasswordForm = $('changePasswordForm');
+
+    const teamScratchpad = $('teamScratchpad');
+    const btnCopyScratchpad = $('btnCopyScratchpad');
+    const btnClearScratchpad = $('btnClearScratchpad');
+    const btnClearLanguageFilter = $('btnClearLanguageFilter');
+
+    const searchInput = $('searchInput');
+    const categoryFilter = $('categoryFilter');
+    const statusFilter = $('statusFilter');
+
+    const btnTogglePitchMode = $('btnTogglePitchMode');
+    const btnExportZip = $('btnExportZip');
+    const repoUrlInput = $('repoUrlInput');
+    const liveDemoUrlInput = $('liveDemoUrlInput');
+    const btnSaveLinks = $('btnSaveLinks');
+
+    function isAdmin() {
+      return !!currentUser && (currentUser.email || '').toLowerCase() === ADMIN_EMAIL;
+    }
+
+    function usernameToEmail(username) {
+      return `${username.trim().toLowerCase()}@devvault.local`;
+    }
+
+    function setLoginState(loading, text = 'Sign In to Vault') {
+      loginSubmitBtn.disabled = loading || !firebaseReady;
+      loginBtnText.textContent = loading ? 'Signing In...' : text;
+      loginBtnIcon.className = loading ? 'fa-solid fa-circle-notch fa-spin' : 'fa-solid fa-arrow-right-to-bracket';
+    }
+
+    function setFirebaseStatus(state, detail = '') {
+      const states = {
+        live: { text: 'LIVE SYNC', cls: 'bg-[var(--bg)] text-[var(--text)] border-[var(--border-dark)]', dot: 'bg-accent' },
+        offline: { text: 'OFFLINE', cls: 'bg-[var(--surface)] text-[var(--text-muted)] border-[var(--border)]', dot: 'bg-editorial-300' },
+        error: { text: 'ERROR', cls: 'bg-[var(--surface-hover)] text-[var(--danger)] border-[var(--danger)]', dot: 'bg-red-600' }
+      };
+      const s = states[state] || states.offline;
+      firebaseStatusBadge.className = `text-[10px] font-mono uppercase px-2 py-0.5 border-2 font-bold flex items-center gap-1 shadow-[2px_2px_0px_0px_var(--border-dark)] ${s.cls}`;
+      firebaseStatusBadge.innerHTML = `<span class="w-2 h-2 ${s.dot} border border-[var(--border-dark)]"></span> ${s.text}`;
+      if (state === 'live') {
+        onlineStateLabel.textContent = 'ONLINE';
+        onlineStateLabel.className = 'px-2 py-1 bg-[var(--surface)] text-[var(--text)] border-2 border-[var(--border-dark)] text-[10px] font-mono font-bold shadow-[2px_2px_0px_0px_var(--border-dark)]';
+        authConnectionText.innerHTML = '<i class="fa-solid fa-lock text-xs"></i><span>AUTH READY</span>';
+        authConnectionText.className = 'flex items-center gap-2 text-[10px] font-bold font-mono text-[var(--text)]';
+      } else if (state === 'error') {
+        onlineStateLabel.textContent = detail || 'ERROR';
+        onlineStateLabel.className = 'px-2 py-1 bg-[var(--surface-hover)] text-[var(--danger)] border-2 border-[var(--danger)] text-[10px] font-mono font-bold shadow-[2px_2px_0px_0px_var(--border-dark)]';
+        authConnectionText.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-xs"></i><span>CONFIG ERROR</span>';
+        authConnectionText.className = 'flex items-center gap-2 text-[10px] font-bold font-mono text-[var(--danger)]';
+      } else {
+        onlineStateLabel.textContent = 'DISCONNECTED';
+        onlineStateLabel.className = 'px-2 py-1 bg-[var(--surface)] text-[var(--text-muted)] border-2 border-[var(--border)] text-[10px] font-mono font-bold shadow-[2px_2px_0px_0px_var(--border-dark)]';
+        authConnectionText.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i><span>CONNECTING</span>';
+        authConnectionText.className = 'flex items-center gap-2 text-[10px] font-bold font-mono text-[var(--text-muted)]';
+      }
+    }
+
+    async function initFirebase() {
+      try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getDatabase(app);
+        try { analytics = getAnalytics(app); } catch (e) { /* analytics optional */ }
+        await setPersistence(auth, browserLocalPersistence);
+        firebaseReady = true;
+
+        // Listen for internal connection state
+        onValue(ref(db, '.info/connected'), (snap) => {
+          if (snap.val() === true) {
+            setFirebaseStatus('live');
+          } else {
+            setFirebaseStatus('offline');
+          }
+        });
+
+        setLoginState(false);
+        onAuthStateChanged(auth, handleAuthStateChange);
+      } catch (error) {
+        console.error(error);
+        firebaseReady = false;
+        setFirebaseStatus('error', 'CONFIG ERR');
+        loginError.classList.remove('hidden');
+        loginError.textContent = `Firebase init failed: ${error.message}`;
+        setLoginState(false);
+      }
+    }
+
+    async function handleAuthStateChange(user) {
+      stopDataSync();
+      currentUser = user;
+      currentProfile = null;
+      commentsBySnippet = {};
+      snippets = [];
+      users = [];
+      folders = [];
+      inspectingSnippetId = null;
+      updateHeaderUser();
+      renderUI();
+
+      if (!user) {
+        loginPortal.classList.remove('hidden');
+        document.body.classList.remove('modal-open');
+        setLoginState(false);
+        return;
+      }
+
+      try {
+        await ensureUserProfile(user);
+        loginPortal.classList.add('hidden');
+        loginPassword.value = '';
+        loginError.classList.add('hidden');
+        updateHeaderUser();
+        startDataSync();
+        renderUI();
+      } catch (error) {
+        console.error(error);
+        showToast(error.message || 'Unable to load your profile.', 'error');
+        await signOut(auth);
+      }
+    }
+
+    async function ensureUserProfile(user) {
+      const profileRef = ref(db, `team_members/${user.uid}`);
+      const snapshot = await get(profileRef);
+      const admin = (user.email || '').toLowerCase() === ADMIN_EMAIL;
+
+      if (!snapshot.exists()) {
+        if (!admin) {
+          throw new Error('Your account is not registered yet. Contact the Super Admin.');
+        }
+        const profile = {
+          username: 'admin',
+          fullName: 'Super Admin',
+          role: 'Super Admin',
+          isAdmin: true,
+          active: true,
+          createdAt: Date.now()
+        };
+        await set(profileRef, profile);
+        currentProfile = profile;
+        return;
+      }
+
+      const profile = snapshot.val();
+      if (profile.active === false) throw new Error('Your account access has been revoked.');
+      if (!profile.username) throw new Error('Incomplete account profile.');
+      currentProfile = profile;
+    }
+
+    function startDataSync() {
+      if (!db || !currentUser) return;
+      stopDataSync();
+
+      dataUnsubscribers.push(onValue(ref(db, 'team_members'), (snapshot) => {
+        const data = snapshot.val() || {};
+        users = Object.entries(data).map(([uid, profile]) => ({ uid, ...profile }));
+        users.sort((a, b) => (a.username || '').localeCompare(b.username || ''));
+
+        const me = users.find((u) => u.uid === currentUser.uid);
+        if (me && me.active === false) {
+          showToast('Access revoked by Admin.', 'error');
+          signOut(auth);
+          return;
+        }
+        if (me) currentProfile = me;
+
+        updateHeaderUser();
+        renderAdminUsersTable();
+        renderUI();
+      }, (error) => handleDataError('members', error)));
+
+      dataUnsubscribers.push(onValue(ref(db, 'snippets'), (snapshot) => {
+        const data = snapshot.val() || {};
+        snippets = Object.entries(data).map(([id, value]) => ({
+          id,
+          ...value,
+          comments: Array.isArray(value?.comments) ? value.comments : (value?.comments ? Object.values(value.comments) : [])
+        }));
+        snippets.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        renderUI();
+        if (inspectingSnippetId) {
+          const updated = snippets.find((s) => s.id === inspectingSnippetId);
+          if (updated) renderInspect(updated);
+        }
+      }, (error) => handleDataError('snippets', error)));
+
+      dataUnsubscribers.push(onValue(ref(db, 'folders'), (snapshot) => {
+        const data = snapshot.val() || {};
+        folders = Object.entries(data).map(([id, value]) => ({ id, ...value }));
+        folders.sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
+        renderFolderList();
+        populateFolderSelect();
+        renderUI();
+      }, (error) => handleDataError('folders', error)));
+
+      dataUnsubscribers.push(onValue(ref(db, 'comments'), (snapshot) => {
+        commentsBySnippet = snapshot.val() || {};
+        renderUI();
+        if (inspectingSnippetId) {
+          const updated = snippets.find((s) => s.id === inspectingSnippetId);
+          if (updated) renderInspectComments(updated);
+        }
+      }, (error) => handleDataError('comments', error)));
+
+      dataUnsubscribers.push(onValue(ref(db, 'scratchpad'), (snapshot) => {
+        const data = snapshot.val();
+        if (data && typeof data.content === 'string' && document.activeElement !== teamScratchpad) {
+          teamScratchpad.value = data.content;
+        }
+        $('scratchpadSyncState').textContent = data ? `Saved ${formatTimeAgo(data.updatedAt || Date.now())}` : 'Empty';
+      }, (error) => handleDataError('scratchpad', error)));
+
+      dataUnsubscribers.push(onValue(ref(db, 'sprint_timer'), (snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+          sprintEndTime = null;
+          isTimerPaused = false;
+          pausedRemainingMs = 0;
+          if (isAdmin()) {
+            set(ref(db, 'sprint_timer'), {
+              endTime: Date.now() + 24 * 60 * 60 * 1000,
+              isPaused: false,
+              pausedRemainingMs: 0,
+              updatedAt: Date.now(),
+              updatedBy: currentUser.uid
+            }).catch(console.warn);
+          }
+        } else {
+          sprintEndTime = Number(data.endTime) || null;
+          isTimerPaused = !!data.isPaused;
+          pausedRemainingMs = Number(data.pausedRemainingMs) || 0;
+        }
+        updateTimerControls();
+        updateTimerDisplay();
+      }, (error) => handleDataError('timer', error)));
+
+      dataUnsubscribers.push(onValue(ref(db, 'project_links'), (snapshot) => {
+        const data = snapshot.val() || {};
+        repoUrlInput.value = data.repo || '';
+        liveDemoUrlInput.value = data.live || '';
+        updateLinkButtons(data.repo, data.live);
+      }, (error) => handleDataError('links', error)));
+    }
+
+    function stopDataSync() {
+      dataUnsubscribers.forEach((unsub) => { try { unsub(); } catch {} });
+      dataUnsubscribers = [];
+    }
+
+    function handleDataError(area, error) {
+      console.error(`${area} sync failed:`, error);
+      if (error?.code === 'PERMISSION_DENIED') {
+        showToast(`Permission denied for ${area}. Review RTDB rules.`, 'error');
+      }
+    }
+
+    function updateHeaderUser() {
+      const profile = currentProfile || {};
+      const admin = isAdmin();
+      headerUserName.textContent = profile.fullName || profile.username || currentUser?.email || '—';
+      headerUserRole.textContent = profile.role || (admin ? 'Super Admin' : 'Team Member');
+      headerUserAvatar.textContent = (profile.username || '??').substring(0, 2).toUpperCase();
+      if (admin) {
+        adminManageBtn.classList.remove('hidden');
+        adminManageBtn.classList.add('flex');
+        btnOpenTimerSettings.disabled = false;
+        toggleTimerPauseBtn.disabled = false;
+      } else {
+        adminManageBtn.classList.remove('flex');
+        adminManageBtn.classList.add('hidden');
+        btnOpenTimerSettings.disabled = true;
+        toggleTimerPauseBtn.disabled = true;
+      }
+    }
+
+    function getProfileForCurrentUser() {
+      return currentProfile || { username: currentUser?.email?.split('@')[0] || 'user', fullName: 'Team Member', role: 'Team Member' };
+    }
+
+    function showLoginError(message) {
+      loginError.textContent = message;
+      loginError.classList.remove('hidden');
+    }
+
+    function mapFirebaseAuthError(error) {
+      const code = error?.code || '';
+      const map = {
+        'auth/invalid-credential': 'Invalid username or password.',
+        'auth/user-not-found': 'Account not found.',
+        'auth/wrong-password': 'Incorrect password.',
+        'auth/too-many-requests': 'Too many attempts. Please wait.',
+        'auth/network-request-failed': 'Network connection failed.',
+        'auth/user-disabled': 'This account has been disabled.',
+        'auth/email-already-in-use': 'Username is already taken.',
+        'auth/weak-password': 'Password must be at least 8 characters.'
+      };
+      return map[code] || error?.message || 'Authentication error.';
+    }
+
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+      if (!firebaseReady) return showLoginError('Firebase is not ready yet.');
+      const username = loginUsername.value.trim();
+      const password = loginPassword.value;
+      if (!/^[A-Za-z0-9][A-Za-z0-9._-]{2,31}$/.test(username)) {
+        return showLoginError('Username must be 3–32 characters (letters, numbers, dot, underscore, dash).');
+      }
+      if (!password) return showLoginError('Enter your password.');
+
+      loginError.classList.add('hidden');
+      setLoginState(true);
+      try {
+        await signInWithEmailAndPassword(auth, usernameToEmail(username), password);
+      } catch (error) {
+        console.error(error);
+        setLoginState(false);
+        showLoginError(mapFirebaseAuthError(error));
+      }
+    }
+
+    async function logoutPortal() {
+      try { await signOut(auth); } catch (error) { showToast('Sign out failed.', 'error'); }
+    }
+
+    function togglePasswordVisibility() {
+      const isPw = loginPassword.type === 'password';
+      loginPassword.type = isPw ? 'text' : 'password';
+      $('pwEyeIcon').className = isPw ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+    }
+
+    function openModal(modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeModal(modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      const anyOpen = [snippetModal, inspectModal, adminUserModal, timerSettingsModal, passwordModal, uploadChoiceModal, folderModal].some(m => !m.classList.contains('hidden'));
+      if (!anyOpen) document.body.classList.remove('modal-open');
+    }
+
+    function openSnippetModal(snippet = null) {
+      if (!currentUser) return showToast('Please sign in first.', 'error');
+      snippetForm.reset();
+      $('editSnippetId').value = snippet?.id || '';
+      $('snippetOriginalFileName').value = snippet?.originalFileName || '';
+      uploadedFileLabel.textContent = snippet?.originalFileName ? `File: ${snippet.originalFileName}` : 'No file selected';
+      $('modalHeaderTitle').textContent = snippet ? 'Edit Snippet' : 'Save Snippet';
+      $('modalHeaderSubtitle').textContent = snippet ? 'Updates sync automatically to teammates' : 'Preserves original syntax and language';
+      saveSnippetBtn.textContent = snippet ? 'Update Snippet' : 'Save to Squad';
+      
+      populateFolderSelect();
+
+      if (snippet) {
+        $('snippetTitleInput').value = snippet.title || '';
+        $('snippetExtensionInput').value = snippet.fileExtension || '';
+        $('snippetLangSelect').value = snippet.language || 'text';
+        $('snippetStatusSelect').value = snippet.status || 'READY';
+        $('snippetCategorySelect').value = snippet.category || 'Utils / Helpers';
+        $('snippetTagsInput').value = (snippet.tags || []).join(', ');
+        $('snippetDescInput').value = snippet.description || '';
+        $('snippetCodeInput').value = snippet.code || '';
+        $('snippetStarredCheck').checked = !!snippet.starred;
+        if (snippet.folderId) $('snippetFolderSelect').value = snippet.folderId;
+      } else if (activeFolderId) {
+        $('snippetFolderSelect').value = activeFolderId;
+      }
+      
+      updateEditorStats();
+      openModal(snippetModal);
+      setTimeout(() => $('snippetTitleInput').focus(), 60);
+    }
+
+    function closeSnippetModal() { closeModal(snippetModal); }
+
+    function normalizeExtension(value) {
+      return String(value || '').trim().replace(/^\.+/, '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 16) || 'txt';
+    }
+
+    function sanitizeFileBase(value) {
+      return String(value || 'snippet').trim().replace(/\.[^.\s]+$/i, '').replace(/[^a-zA-Z0-9._-]+/g, '_').replace(/^\.+|\.+$/g, '') || 'snippet';
+    }
+
+    function buildFileName(snippet) {
+      const baseName = sanitizeFileBase(snippet.title || 'snippet');
+      const ext = normalizeExtension(snippet.fileExtension || EXTENSION_MAP[(snippet.language || 'text').toLowerCase()] || 'txt');
+      return `${baseName}.${ext}`;
+    }
+
+    function languageForPrism(language) {
+      const key = (language || 'text').toLowerCase();
+      return LANGUAGE_PRISM_MAP[key] || key;
+    }
+
+    async function saveSnippet(event) {
+      if (event) event.preventDefault();
+      if (!currentUser || !db) return;
+
+      const title = \$('snippetTitleInput').value.trim();
+      const language = \$('snippetLangSelect').value;
+      const status = \$('snippetStatusSelect').value;
+      const category = \$('snippetCategorySelect').value;
+      const rawTags = \$('snippetTagsInput').value.trim();
+      const description = \$('snippetDescInput').value.trim();
+      const code = \$('snippetCodeInput').value;
+      const starred = \$('snippetStarredCheck').checked;
+      const explicitExt = normalizeExtension(\$('snippetExtensionInput').value);
+      const finalExtension = explicitExt || EXTENSION_MAP[language.toLowerCase()] || 'txt';
+      const tags = rawTags ? [...new Set(rawTags.split(',').map(t => t.trim()).filter(Boolean).slice(0, 20))] : [language, category.toLowerCase()];
+      const editId = \$('editSnippetId').value.trim();
+      const selectedFolderId = \$('snippetFolderSelect').value.trim() || null;
+
+      if (!title) return showToast('Snippet title is required.', 'error');
+      if (!code.trim()) return showToast('Code cannot be empty.', 'error');
+
+      const generatedName = buildFileName({ title, language, fileExtension: finalExtension });
+      const originalFileName = \$('snippetOriginalFileName').value.trim() || generatedName;
+
+      const baseData = {
+        title,
+        language,
+        status,
+        fileExtension: finalExtension,
+        originalFileName,
+        relativePath: originalFileName,
+        folderId: selectedFolderId,
+        category,
+        tags,
+        description,
+        code,
+        starred,
+        updatedAt: Date.now()
+      };
+
+      saveSnippetBtn.disabled = true;
+      try {
+        if (editId) {
+          const existing = snippets.find((s) => s.id === editId);
+          if (!existing) throw new Error('Snippet not found.');
+          if (!canEditSnippet(existing)) throw new Error('You may only modify your own snippets.');
+          await update(ref(db, `snippets/${editId}`), baseData);
+          showToast('Snippet updated.', 'success');
+        } else {
+          const newRef = push(ref(db, 'snippets'));
+          const profile = getProfileForCurrentUser();
+          const snippetData = {
+            ...baseData,
+            author: {
+              uid: currentUser.uid,
+              username: profile.username,
+              fullName: profile.fullName || profile.username,
+              role: profile.role || 'Team Member'
+            },
+            createdAt: Date.now()
+          };
+          await set(newRef, snippetData);
+          showToast('Snippet saved to team vault.', 'success');
+        }
+        closeSnippetModal();
+      } catch (error) {
+        console.error(error);
+        showToast(`Save failed: ${error.message}`, 'error');
+      } finally {
+        saveSnippetBtn.disabled = false;
+      }
+    }
+
+    function handleFileUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      if (file.size > 1024 * 1024) {
+        showToast('Source uploads are capped at 1 MB.', 'error');
+        event.target.value = '';
+        return;
+      }
+      \$('snippetOriginalFileName').value = file.name;
+      uploadedFileLabel.textContent = `File: ${file.name} (${formatBytes(file.size)})`;
+      const lastDot = file.name.lastIndexOf('.');
+      const ext = lastDot > 0 ? file.name.slice(lastDot + 1).toLowerCase() : (file.name.toLowerCase() === 'dockerfile' ? 'dockerfile' : '');
+      const base = lastDot > 0 ? file.name.slice(0, lastDot) : file.name;
+      $('snippetTitleInput').value =$('snippetTitleInput').value.trim() || base;
+      \$('snippetExtensionInput').value = ext;
+      if (ext && REV_EXTENSION_MAP[ext]) \$('snippetLangSelect').value = REV_EXTENSION_MAP[ext];
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        \$('snippetCodeInput').value = String(reader.result || '');
+        updateEditorStats();
+      };
+      reader.onerror = () => showToast('Could not read file.', 'error');
+      reader.readAsText(file);
+    }
+
+    function updateEditorStats() {
+      const val = \$('snippetCodeInput').value || '';
+      const lines = val ? val.split('\n').length : 0;
+      const chars = val.length;
+      \$('editorStats').textContent = `${lines} ${lines === 1 ? 'line' : 'lines'} • ${chars} chars`;
+    }
+
+    function canEditSnippet(snippet) {
+      if (!currentUser || !snippet) return false;
+      return isAdmin() || snippet.author?.uid === currentUser.uid || (snippet.author?.username && snippet.author.username.toLowerCase() === getProfileForCurrentUser().username.toLowerCase());
+    }
+
+    function canDeleteSnippet(snippet) { return canEditSnippet(snippet); }
+
+    window._toggleStar = async function(id, event) {
+      event?.stopPropagation();
+      const snip = snippets.find((s) => s.id === id);
+      if (!snip || !db || !currentUser) return;
+      try {
+        await update(ref(db, `snippets/${id}`), { starred: !snip.starred, updatedAt: Date.now() });
+      } catch (error) { showToast(`Star update failed: ${error.message}`, 'error'); }
+    };
+
+    window._deleteSnippet = async function(id, event) {
+      event?.stopPropagation();
+      const snip = snippets.find((s) => s.id === id);
+      if (!snip || !db || !canDeleteSnippet(snip)) return showToast('Permission denied.', 'error');
+      if (!confirm(`Delete “${snip.title}”? This action cannot be undone.`)) return;
+      try {
+        await remove(ref(db, `snippets/${id}`));
+        await remove(ref(db, `comments/${id}`)).catch(() => {});
+        if (inspectingSnippetId === id) closeInspectModal();
+        showToast('Snippet deleted.', 'info');
+      } catch (error) { showToast(`Delete failed: ${error.message}`, 'error'); }
+    };
+
+    window._copySnippet = async function(id, event) {
+      event?.stopPropagation();
+      const snip = snippets.find((s) => s.id === id);
+      if (!snip) return;
+      try {
+        await executeCopy(snip.code || '');
+        showToast(`Copied ${snip.title} to clipboard.`, 'success');
+      } catch (error) {
+        showToast('Clipboard copy failed.', 'error');
+      }
+    };
+
+    window._downloadSnippet = function(id, event) {
+      event?.preventDefault();
+      event?.stopPropagation();
+      const snip = snippets.find((s) => s.id === id);
+      if (!snip) return showToast('Snippet not found.', 'error');
+      const filename = buildFileName(snip);
+      const blob = new Blob([snip.code || ''], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 500);
+      showToast(`Downloaded ${filename}.`, 'info');
+    };
+
+    window._editSnippet = function(id, event) {
+      event?.stopPropagation();
+      const snip = snippets.find((s) => s.id === id);
+      if (!snip) return;
+      if (!canEditSnippet(snip)) return showToast('You may only edit your own snippets.', 'error');
+      openSnippetModal(snip);
+    };
+
+    window._inspectSnippet = function(id) {
+      const snip = snippets.find((s) => s.id === id);
+      if (!snip) return;
+      inspectingSnippetId = id;
+      renderInspect(snip);
+      openModal(inspectModal);
+    };
+
+    function renderInspect(snip) {
+      $('inspectTitle').textContent = snip.title \vert{}\vert{} 'Untitled';$('inspectLangBadge').textContent = (snip.language || 'text').toUpperCase();
+      const statusBadge = \$('inspectStatusBadge');
+      statusBadge.textContent = snip.status || 'READY';
+      statusBadge.className = `px-2 py-0.5 border-2 text-xs font-mono font-bold ${getStatusBadgeStyle(snip.status)}`;
+      const author = snip.author || {};
+      \$('inspectMeta').textContent = `By ${author.fullName || author.username || 'Dev'} • ${author.role || 'Member'} • ${formatTimeAgo(snip.createdAt || Date.now())}`;
+      $('inspectDesc').textContent = snip.description \vert{}\vert{} 'No integration notes provided.';$('inspectFilename').textContent = getSnippetDisplayPath(snip);
+      const lines = String(snip.code || '').split('\n').length;
+      \$('inspectLineCount').textContent = `${lines} ${lines === 1 ? 'line' : 'lines'}`;
+      \$('inspectTags').innerHTML = (snip.tags || []).map((t) => `<span class="text-xs border-2 border-[var(--border-dark)] bg-[var(--surface)] text-[var(--text)] px-2 py-0.5 font-mono shadow-[2px_2px_0px_0px_var(--border-dark)] uppercase">#${escapeHtml(t)}</span>`).join('');
+
+      const codeBlock = \$('inspectCodeBlock');
+      const prismLang = languageForPrism(snip.language);
+      codeBlock.className = prismLang === 'none' ? '' : `language-${prismLang}`;
+      codeBlock.textContent = snip.code || '';
+      if (prismLang !== 'none') Prism.highlightElement(codeBlock);
+      renderInspectComments(snip);
+    }
+
+    function closeInspectModal() {
+      closeModal(inspectModal);
+      inspectingSnippetId = null;
+    }
+
+    function getCommentsForSnippet(snip) {
+      const modern = Object.entries(commentsBySnippet?.[snip.id] || {}).map(([id, value]) => ({ id, ...value }));
+      const legacy = Array.isArray(snip.comments) ? snip.comments.map((value, index) => ({ id: `legacy-${index}`, ...value, legacy: true })) : [];
+      return [...legacy, ...modern].sort((a, b) => (a.time || 0) - (b.time || 0));
+    }
+
+    function renderInspectComments(snip) {
+      const list = \$('inspectCommentsList');
+      const comments = getCommentsForSnippet(snip);
+      \$('inspectCommentCount').textContent = comments.length;
+      if (!comments.length) {
+        list.innerHTML = '<p class="text-xs text-[var(--text-muted)] font-mono italic">No notes posted yet.</p>';
+        return;
+      }
+
+      list.innerHTML = comments.map((c) => {
+        const authorName = c.fullName || c.username || 'Hacker';
+        const rawUsername = c.username || 'user';
+        const initials = rawUsername.substring(0, 2).toUpperCase();
+        const canDelete = !c.legacy && (isAdmin() || c.uid === currentUser?.uid || c.username?.toLowerCase() === getProfileForCurrentUser().username.toLowerCase());
+        return `<div class="border-2 border-[var(--border-dark)] p-3 bg-[var(--surface)] shadow-[2px_2px_0px_0px_var(--border-dark)] flex items-start gap-3">
+          <div class="w-8 h-8 border-2 border-[var(--border-dark)] bg-[var(--bg)] text-[var(--text)] font-display flex items-center justify-center font-bold text-xs flex-shrink-0">${escapeHtml(initials)}</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2 border-b-2 border-[var(--border-dark)] pb-1 mb-1.5">
+              <span class="text-xs font-bold font-display uppercase tracking-wider text-[var(--text)] truncate">${escapeHtml(authorName)} <span class="text-[10px] text-[var(--text-muted)] font-mono font-normal">(@${escapeHtml(rawUsername)})</span></span>
+              <div class="flex items-center gap-3 flex-shrink-0"><span class="text-[10px] font-mono font-bold uppercase text-[var(--text-muted)]">${formatTimeAgo(c.time || Date.now())}</span>${canDelete ? `<button title="Delete note" onclick="window._deleteComment('${escapeHtml(snip.id)}','${escapeHtml(c.id)}',event)" class="text-[var(--text-muted)] hover:text-[var(--danger)]"><i class="fa-solid fa-trash text-xs"></i></button>` : ''}</div>
+            </div>
+            <p class="text-xs font-mono text-editorial-700 leading-relaxed break-words">${escapeHtml(c.text)}</p>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    async function addCommentToCurrentInspect(event) {
+      event.preventDefault();
+      if (!currentUser || !db || !inspectingSnippetId) return showToast('Sign in to leave a note.', 'error');
+      const input = \$('inspectCommentInput');
+      const text = input.value.trim();
+      if (!text) return;
+      const profile = getProfileForCurrentUser();
+      try {
+        const commentRef = push(ref(db, `comments/${inspectingSnippetId}`));
+        await set(commentRef, {
+          uid: currentUser.uid,
+          username: profile.username,
+          fullName: profile.fullName || profile.username,
+          role: profile.role || 'Team Member',
+          text,
+          time: Date.now()
+        });
+        input.value = '';
+        showToast('Note posted.', 'success');
+      } catch (error) { showToast(`Failed: ${error.message}`, 'error'); }
+    }
+
+    window._deleteComment = async function(snippetId, commentId, event) {
+      event?.stopPropagation();
+      if (!db || commentId.startsWith('legacy-')) return;
+      try {
+        const node = commentsBySnippet?.[snippetId]?.[commentId];
+        if (!node) return;
+        const allowed = isAdmin() || node.uid === currentUser?.uid || node.username?.toLowerCase() === getProfileForCurrentUser().username.toLowerCase();
+        if (!allowed) return showToast('Permission denied.', 'error');
+        await remove(ref(db, `comments/${snippetId}/${commentId}`));
+        showToast('Note removed.', 'info');
+      } catch (error) { showToast(`Delete failed: ${error.message}`, 'error'); }
+    };
+
+    async function copyCurrentInspectCode() {
+      const snip = snippets.find((s) => s.id === inspectingSnippetId);
+      if (!snip) return;
+      try { await executeCopy(snip.code || ''); showToast('Code copied.', 'success'); } catch { showToast('Copy failed.', 'error'); }
+    }
+
+    function downloadCurrentInspectCode() {
+      if (!inspectingSnippetId) return;
+      window._downloadSnippet(inspectingSnippetId);
+    }
+
+    async function copyCurrentInspectFetch() {
+      const snip = snippets.find((s) => s.id === inspectingSnippetId);
+      if (!snip) return;
+      const template = `// DevVault Fetch Blueprint: ${snip.title}\nconst response = await fetch("https://api.your-service.com/v1/run", {\n  method: "POST",\n  headers: { "Content-Type": "application/json" },\n  body: JSON.stringify({\n    target: ${JSON.stringify(snip.title)},\n    runtime: ${JSON.stringify(snip.language || 'text')}\n  })\n});\n\nconst data = await response.json();\nconsole.log(data);`;
+      try { await executeCopy(template); showToast('Fetch blueprint copied.', 'success'); } catch { showToast('Copy failed.', 'error'); }
+    }
+
+    function renderAdminUsersTable() {
+      const tbody = \$('adminUserTableBody');
+      const activeUsers = users.filter((u) => u.active !== false);
+      \$('adminUserCountLabel').textContent = activeUsers.length;
+      \$('statUserCount').textContent = activeUsers.length;
+      if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-[var(--text-muted)] font-mono">No team members registered.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = users.map((u) => {
+        const superAdmin = u.uid === currentUser?.uid && isAdmin();
+        const active = u.active !== false;
+        return `<tr class="hover:bg-[var(--bg)] transition border-b-2 border-[var(--border)]">
+          <td class="p-3 border-r-2 border-[var(--border-dark)]"><div class="font-bold font-display uppercase tracking-tight text-[var(--text)]">${escapeHtml(u.username || '—')}</div><div class="text-[10px] text-[var(--text-muted)] font-mono">${escapeHtml(u.fullName || '-')}</div></td>
+          <td class="p-3 border-r-2 border-[var(--border-dark)]"><span class="px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase border-2 ${superAdmin ? 'bg-[var(--text)] text-[var(--bg)] border-[var(--border-dark)]' : 'bg-[var(--surface)] text-[var(--text)] border-[var(--border-dark)] shadow-[2px_2px_0px_0px_var(--border-dark)]'}">${escapeHtml(u.role || 'Member')}</span></td>
+          <td class="p-3 border-r-2 border-[var(--border-dark)]"><span class="px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase border-2 ${active ? 'bg-[var(--surface)] text-[var(--text)] border-[var(--border-dark)]' : 'bg-[var(--surface-hover)] text-[var(--danger)] border-[var(--danger)]'}">${active ? 'ACTIVE' : 'REVOKED'}</span></td>
+          <td class="p-3 text-right">${superAdmin ? '<span class="text-[10px] text-[var(--text-muted)] font-mono uppercase tracking-widest">Protected</span>' : `<button onclick="window._toggleUserActive('\${escapeHtml(u.uid)}',event)" class="editorial-btn px-2 py-1 text-xs" title="\${active ? 'Revoke access' : 'Restore access'}"><i class="fa-solid \${active ? 'fa-user-slash text-[var(--danger)]' : 'fa-user-check'}"></i></button>`}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function openAdminUsersModal() {
+      if (!isAdmin()) return showToast('Admin only.', 'error');
+      renderAdminUsersTable();
+      openModal(adminUserModal);
+    }
+
+    function closeAdminUsersModal() { closeModal(adminUserModal); }
+
+    window._toggleUserActive = async function(uid, event) {
+      event?.stopPropagation();
+      if (!isAdmin() || !db || uid === currentUser.uid) return;
+      const user = users.find((u) => u.uid === uid);
+      if (!user) return;
+      const nextActive = user.active === false;
+      try {
+        await update(ref(db, `team_members/${uid}`), { active: nextActive, updatedAt: Date.now() });
+        showToast(`${user.username} status updated.`, 'info');
+      } catch (error) { showToast(`Update failed: ${error.message}`, 'error'); }
+    };
+
+    async function handleCreateUser(event) {
+      event.preventDefault();
+      if (!isAdmin()) return showToast('Admin only.', 'error');
+      const username = \$('newUsername').value.trim().toLowerCase();
+      const password = \$('newPassword').value;
+      const fullName = \$('newFullName').value.trim() || username;
+      const role = \$('newRole').value;
+
+      if (!/^[a-z0-9][a-z0-9._-]{2,31}\$/.test(username)) return showToast('Invalid username format.', 'error');
+      if (password.length < 8) return showToast('Password must be at least 8 characters.', 'error');
+
+      createUserBtn.disabled = true;
+      createUserBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Provisioning...';
+      let secondaryApp = null;
+      let createdSecondaryUser = null;
+      try {
+        secondaryApp = initializeApp(firebaseConfig, `DevVaultProvision-${Date.now()}`);
+        const secondaryAuth = getAuth(secondaryApp);
+        await setPersistence(secondaryAuth, inMemoryPersistence);
+        const credential = await createUserWithEmailAndPassword(secondaryAuth, usernameToEmail(username), password);
+        createdSecondaryUser = credential.user;
+        const profile = {
+          username,
+          fullName,
+          role,
+          isAdmin: false,
+          active: true,
+          createdAt: Date.now()
+        };
+        await set(ref(db, `team_members/${credential.user.uid}`), profile);
+        await signOut(secondaryAuth);
+        createUserForm.reset();
+        showToast(`Teammate @${username} created.`, 'success');
+      } catch (error) {
+        console.error(error);
+        if (createdSecondaryUser && secondaryApp) {
+          try { await deleteUser(createdSecondaryUser); } catch (e) {}
+        }
+        showToast(mapFirebaseAuthError(error), 'error');
+      } finally {
+        createUserBtn.disabled = false;
+        createUserBtn.innerHTML = '<i class="fa-solid fa-plus mr-2"></i> Register Member';
+        if (secondaryApp) {
+          try { await deleteApp(secondaryApp); } catch {}
+        }
+      }
+    }
+
+    function populateFolderSelect() {
+      const select = \$('snippetFolderSelect');
+      if (!select) return;
+      const current = select.value;
+      select.innerHTML = '<option value="">Root / No Folder</option>' + folders
+        .map((folder) => `<option value="${escapeHtml(folder.id)}">${escapeHtml(folder.name)}</option>`)
+        .join('');
+      const preferred = current || activeFolderId || '';
+      if ([...select.options].some((option) => option.value === preferred)) select.value = preferred;
+    }
+
+    function renderFolderList() {
+      const container = \$('folderList');
+      if (!container) return;
+      if (!folders.length) {
+        container.innerHTML = '<div class="text-[10px] text-[var(--text-muted)] font-mono tracking-wider px-2 py-1 uppercase">No folders created.</div>';
+        return;
+      }
+
+      container.innerHTML = folders.map((folder) => {
+        const count = snippets.filter((s) => s.folderId === folder.id).length;
+        const active = activeFolderId === folder.id;
+        return `<div class="flex items-center gap-1.5 mb-1.5">
+          <button onclick="window._selectFolder('${escapeHtml(folder.id)}')" class="flex-1 text-left px-2.5 py-1.5 text-xs flex items-center justify-between transition border-2 ${active ? 'bg-[var(--text)] text-[var(--bg)] border-[var(--border-dark)] shadow-[2px_2px_0px_0px_var(--border-dark)]' : 'bg-[var(--surface)] text-[var(--text-muted)] border-transparent hover:border-[var(--border-dark)] hover:text-[var(--text)]'}">
+            <span class="flex items-center gap-2 min-w-0 font-bold font-mono uppercase tracking-wider"><i class="fa-solid fa-folder ${active ? 'text-[var(--bg)]' : 'text-accent'}"></i><span class="truncate">${escapeHtml(folder.name)}</span></span>
+            <span class="font-mono text-[10px] ${active ? 'text-editorial-300' : 'text-[var(--text-muted)]'}">${count}</span>
+          </button>
+          ${isAdmin() ? `<button onclick="window._deleteFolder('\${escapeHtml(folder.id)}',event)" title="Delete folder" class="editorial-btn px-2 py-1 hover:text-[var(--danger)] hover:border-[var(--danger)]"><i class="fa-solid fa-trash text-[10px]"></i></button>` : ''}
+        </div>`;
+      }).join('');
+    }
+
+    window._selectFolder = function(folderId) {
+      activeFolderId = activeFolderId === folderId ? null : folderId;
+      renderFolderList();
+      renderUI();
+    };
+
+    function openUploadChoiceModal() {
+      if (!currentUser || !db) return showToast('Sign in first.', 'error');
+      openModal(uploadChoiceModal);
+    }
+
+    function closeUploadChoiceModal() { closeModal(uploadChoiceModal); }
+
+    function chooseFileUpload() {
+      closeUploadChoiceModal();
+      openSnippetModal();
+    }
+
+    function chooseFolderUpload() {
+      closeUploadChoiceModal();
+      if (!currentUser) return showToast('Sign in first.', 'error');
+      folderUploadInput.click();
+    }
+
+    function openFolderModal() {
+      if (!currentUser || !db) return showToast('Sign in first.', 'error');
+      folderForm.reset();
+      openModal(folderModal);
+      setTimeout(() => \$('folderNameInput').focus(), 50);
+    }
+
+    async function createFolder(event) {
+      event.preventDefault();
+      if (!currentUser || !db) return;
+      const name = \$('folderNameInput').value.trim();
+      if (!name) return;
+      if (folders.some((f) => String(f.name || '').trim().toLowerCase() === name.toLowerCase())) {
+        return showToast('Folder with this name already exists.', 'error');
+      }
+
+      try {
+        const newRef = push(ref(db, 'folders'));
+        await set(newRef, {
+          name,
+          createdBy: currentUser.uid,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        });
+        activeFolderId = newRef.key;
+        closeModal(folderModal);
+        showToast(`Folder "${name}" created.`, 'success');
+      } catch (error) {
+        showToast(`Failed: ${error.message}`, 'error');
+      }
+    }
+
+    window._deleteFolder = async function(folderId, event) {
+      event?.stopPropagation();
+      if (!isAdmin() || !db) return showToast('Admin only.', 'error');
+      const folder = folders.find((f) => f.id === folderId);
+      if (!folder) return;
+      const files = snippets.filter((s) => s.folderId === folderId);
+      if (!confirm(`Delete folder "${folder.name}"? ${files.length} contained snippet(s) will be retained in Root.`)) return;
+
+      try {
+        if (files.length) {
+          const updates = {};
+          files.forEach((file) => { updates[`snippets/${file.id}/folderId`] = null; });
+          await update(ref(db), updates);
+        }
+        await remove(ref(db, `folders/${folderId}`));
+        if (activeFolderId === folderId) activeFolderId = null;
           colors: {
             editorial: {
               50: '#FDFBF7',  /* Warm cream */
