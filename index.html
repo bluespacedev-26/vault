@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Devvault</title>
+<title>DevVault</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -99,7 +99,7 @@ dialog::backdrop{background:rgba(8,6,20,.65);backdrop-filter:blur(3px)}
 </defs></svg>
 
 <header class="top">
-  <div class="logo"><b><svg class="i"><use href="#i-code"/></svg></b>Devvault</div>
+  <div class="logo"><b><svg class="i"><use href="#i-code"/></svg></b>DevVault</div>
   <span id="me" class="hidden" style="display:flex;gap:6px;align-items:center"><span class="av" id="av"></span>
     <button class="ib" id="logout" title="Log out" aria-label="Log out"><svg class="i"><path d="M9 4.5H6A1.5 1.5 0 004.5 6v12A1.5 1.5 0 006 19.5h3M14 8l4 4-4 4M18 12H9"/></svg></button></span>
   <button class="ib" id="theme" title="Switch theme" aria-label="Switch theme">
@@ -117,18 +117,19 @@ dialog::backdrop{background:rgba(8,6,20,.65);backdrop-filter:blur(3px)}
   <div class="form"><form id="authForm">
     <h2 id="aTitle">Welcome back</h2><p class="sub" id="aSub">Log in to see what your group shared.</p>
     <div class="tabs"><button type="button" id="tLogin" class="on">Log in</button><button type="button" id="tReg">Register</button></div>
-    <input id="email" type="email" placeholder="Email" autocomplete="email" required>
+    <input id="email" placeholder="Username" autocomplete="username" autocapitalize="none" required>
     <input id="password" type="password" placeholder="Password (6+ characters)" autocomplete="current-password" minlength="6" required>
     <button class="btn" id="aBtn">Log in</button>
-    <p class="note hidden" id="aNote">After registering, verify your email. The owner then adds you to the approved list.</p>
+    <p class="note hidden" id="aNote">After registering, you'll get an ID to send to the owner, who approves your account.</p>
   </form></div>
 </section>
 
 <section id="verify" class="auth hidden" style="grid-template-columns:1fr">
   <div class="form"><div>
-    <h2>Check your email</h2><p class="sub">Click the verification link we sent you, then continue. The owner also needs to add your email to the approved list.</p>
-    <button class="btn" id="reloadBtn">I've verified my email</button>
-    <button class="btn sec" id="resend">Send the link again</button>
+    <h2>Waiting for approval</h2><p class="sub">Send this ID to the owner. Once they approve it, you can come in.</p>
+    <input id="myId" readonly onclick="this.select()">
+    <button class="btn" id="resend">Copy my ID</button>
+    <button class="btn sec" id="reloadBtn">Check again</button>
   </div></div>
 </section>
 
@@ -170,7 +171,7 @@ dialog::backdrop{background:rgba(8,6,20,.65);backdrop-filter:blur(3px)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { getDatabase, ref, set, push, get, remove, query, orderByChild, limitToLast, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
 // ====== PASTE YOUR FIREBASE CONFIG HERE ======
@@ -207,6 +208,8 @@ $("theme").onclick = () => setTheme(document.documentElement.dataset.theme === "
 
 // auth
 let mode = "login", unsub = null, ITEMS = [], flt = "all", qry = "";
+const toEmail = x => x.includes("@") ? x : x.toLowerCase() + "@devvault.local";
+const ready = () => !$("app").classList.contains("hidden");
 const setMode = m => {
   mode = m; $("tLogin").classList.toggle("on", m === "login"); $("tReg").classList.toggle("on", m === "reg");
   $("aTitle").textContent = m === "login" ? "Welcome back" : "Join the vault";
@@ -215,15 +218,15 @@ const setMode = m => {
 };
 $("tLogin").onclick = () => setMode("login"); $("tReg").onclick = () => setMode("reg");
 $("authForm").onsubmit = async e => {
-  e.preventDefault(); const em = $("email").value.trim(), pw = $("password").value;
+  e.preventDefault(); const em = toEmail($("email").value.trim()), pw = $("password").value;
   try {
     if (mode === "login") await signInWithEmailAndPassword(auth, em, pw);
-    else { const c = await createUserWithEmailAndPassword(auth, em, pw); await sendEmailVerification(c.user); toast("Account created. Check your email.") }
+    else { await createUserWithEmailAndPassword(auth, em, pw); toast("Account created.") }
   } catch (x) { fail(x) }
 };
 $("logout").onclick = () => signOut(auth);
-$("resend").onclick = () => sendEmailVerification(auth.currentUser).then(() => toast("Link sent."), fail);
-$("reloadBtn").onclick = async () => { await auth.currentUser.reload(); await auth.currentUser.getIdToken(true); location.reload() };
+$("resend").onclick = () => navigator.clipboard.writeText(auth.currentUser.uid).then(() => toast("ID copied"));
+$("reloadBtn").onclick = () => location.reload();
 const show = v => ["auth", "verify", "app"].forEach(n => $(n).classList.toggle("hidden", n !== v));
 
 onAuthStateChanged(auth, u => {
@@ -231,11 +234,10 @@ onAuthStateChanged(auth, u => {
   $("me").classList.toggle("hidden", !u);
   if (!u) return show("auth");
   $("av").textContent = u.email[0].toUpperCase(); $("av").style.background = hue(u.email); $("me").title = u.email;
-  if (!u.emailVerified) return show("verify");
-  show("app");
+  $("myId").value = u.uid; show("");
   unsub = onValue(query(ref(db, "items"), orderByChild("created"), limitToLast(200)), s => {
-    const a = []; s.forEach(c => { a.push({ id: c.key, ...c.val() }) }); ITEMS = a.reverse(); render();
-  }, e => toast("Can't read items. Ask the owner to add your email to the approved list.", 1));
+    const a = []; s.forEach(c => { a.push({ id: c.key, ...c.val() }) }); ITEMS = a.reverse(); show("app"); render();
+  }, () => show("verify"));
 });
 
 // feed
@@ -352,18 +354,18 @@ async function walk(en, base, out) {
   if (en.isFile) out.push({ file: await entryFile(en), path: base + en.name });
   else { const r = en.createReader(); let b; do { b = await new Promise((res, rej) => r.readEntries(res, rej)); for (const c of b) await walk(c, base + en.name + "/", out) } while (b.length) }
 }
-addEventListener("dragover", e => { e.preventDefault(); if (auth.currentUser?.emailVerified) $("drop").classList.add("on") });
+addEventListener("dragover", e => { e.preventDefault(); if (ready()) $("drop").classList.add("on") });
 $("drop").addEventListener("dragleave", () => $("drop").classList.remove("on"));
 addEventListener("drop", async e => {
   e.preventDefault(); $("drop").classList.remove("on");
-  if (!auth.currentUser?.emailVerified) return;
+  if (!ready()) return;
   const ens = [...e.dataTransfer.items].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
   for (const en of ens) { if (en.isFile) enqueue(await entryFile(en), en.name, "file"); else { const out = []; await walk(en, "", out); await shareFolder(out, en.name) } }
 });
 
 // paste anywhere
 addEventListener("paste", e => {
-  if (!auth.currentUser?.emailVerified || e.target.matches("input,textarea")) return;
+  if (!ready() || e.target.matches("input,textarea")) return;
   const fs = [...(e.clipboardData.files || [])];
   if (fs.length) { e.preventDefault(); fs.forEach(f => enqueue(f, f.name === "image.png" ? "pasted-" + Date.now() + ".png" : f.name, "file")); return }
   const txt = e.clipboardData.getData("text");
