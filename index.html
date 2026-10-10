@@ -1,264 +1,374 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CodeShare</title>
+<title>Devvault</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#0f1115; --card:#181b22; --line:#2a2f3a; --fg:#e6e8ee; --muted:#8b93a7; --accent:#6ea8fe; }
-  * { box-sizing: border-box; }
-  body { margin:0; font:15px/1.5 system-ui,sans-serif; background:var(--bg); color:var(--fg); }
-  header { display:flex; justify-content:space-between; align-items:center; padding:12px 20px; border-bottom:1px solid var(--line); font-weight:700; }
-  main { max-width:900px; margin:24px auto; padding:0 16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:16px; }
-  h2 { margin:0 0 10px; font-size:16px; }
-  input, select, textarea, button { font:inherit; color:var(--fg); background:#0f1115; border:1px solid var(--line); border-radius:6px; padding:8px 10px; }
-  input[type=file] { width:100%; }
-  textarea { width:100%; min-height:160px; font-family:ui-monospace,Menlo,Consolas,monospace; }
-  button { cursor:pointer; background:var(--accent); color:#0b1020; border:0; font-weight:600; }
-  button.ghost { background:transparent; color:var(--muted); border:1px solid var(--line); }
-  .row { display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
-  .row > * { flex:1; min-width:140px; }
-  .item { display:flex; align-items:center; gap:12px; padding:10px 0; border-top:1px solid var(--line); }
-  .item:first-child { border-top:0; }
-  .item .name { flex:1; word-break:break-all; }
-  .meta { color:var(--muted); font-size:13px; }
-  .tag { font-size:12px; padding:2px 8px; border-radius:99px; border:1px solid var(--line); color:var(--muted); }
-  .item img { width:48px; height:48px; object-fit:cover; border-radius:6px; }
-  a { color:var(--accent); cursor:pointer; }
-  pre { background:#0b0d11; border:1px solid var(--line); border-radius:8px; padding:14px; overflow:auto; max-height:60vh; }
-  dialog { background:var(--card); color:var(--fg); border:1px solid var(--line); border-radius:10px; width:min(800px,92vw); }
-  dialog::backdrop { background:rgba(0,0,0,.6); }
-  .narrow { max-width:380px; margin:60px auto; }
-  .narrow input { width:100%; margin-bottom:10px; }
-  #status { color:var(--muted); font-size:13px; min-height:20px; margin-bottom:12px; }
-  .hidden { display:none !important; }
+*{box-sizing:border-box}
+:root{--bg:#14121f;--s1:#1d1a2e;--s2:#2a2547;--line:#352f55;--fg:#efecfa;--mut:#a29cc2;--ac:#8b7cff;--ac2:#ffb86b;--ok:#5cc8ff;--pk:#ff7eb6;--danger:#ff6b7d;--sh:0 12px 32px rgba(0,0,0,.35);--tk-k:#c4a7ff;--tk-s:#9be3b0;--tk-n:#ffb86b;--tk-c:#7d77a0;--tk-t:#7cc7ff}
+:root[data-theme=light]{--bg:#f5f3fb;--s1:#fff;--s2:#eeeaf8;--line:#ddd8ee;--fg:#1d1a2e;--mut:#6a6488;--ac:#6b58f0;--ac2:#c46a0a;--ok:#0a86c4;--pk:#d6407f;--danger:#d23a4e;--sh:0 10px 26px rgba(40,30,90,.12);--tk-k:#7b3fe4;--tk-s:#14803c;--tk-n:#b45309;--tk-c:#8d88aa;--tk-t:#0369a1}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 "Bricolage Grotesque",system-ui,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.hidden{display:none!important}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:12px 24px;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:21px;letter-spacing:-.02em;margin-right:auto}
+.logo b{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--ac);color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border:0;border-radius:10px;background:var(--ac);color:#fff;font-weight:700}
+.btn.sec{background:var(--s2);color:var(--fg)}
+.ib{display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:9px;background:transparent;color:var(--mut)}
+.ib:hover{background:var(--s2);color:var(--fg)}.ib.del:hover{color:var(--danger)}
+#theme .moon,[data-theme=light] #theme .sun{display:none}[data-theme=light] #theme .moon{display:block}
+input,select,textarea{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+textarea{min-height:190px;resize:vertical;font:13px/1.6 "JetBrains Mono",monospace}
+.av{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;color:#fff;font-size:11px;font-weight:700;flex:none}
+/* auth */
+.auth{min-height:calc(100vh - 59px);display:grid;grid-template-columns:1.1fr 1fr}
+.brand{background:var(--ac);color:#fff;padding:6vw;display:flex;flex-direction:column;justify-content:center;gap:16px}
+.brand h1{margin:0;font-size:clamp(34px,4.6vw,60px);line-height:1.02;letter-spacing:-.03em;font-weight:800;max-width:11em}
+.brand p{margin:0;font-size:18px;max-width:26em;opacity:.9}
+.mock{margin-top:14px;max-width:380px;background:#171428;color:#efecfa;border-radius:16px;padding:16px;transform:rotate(-2deg);box-shadow:0 22px 44px rgba(0,0,0,.3);font:13px/1.6 "JetBrains Mono",monospace;white-space:pre}
+.mock span{color:#c4a7ff}.mock em{color:#9be3b0;font-style:normal}
+.form{display:grid;place-content:center;padding:40px 24px}.form>div{width:min(340px,86vw)}
+.form h2{margin:0 0 6px;font-size:28px;letter-spacing:-.02em}.form .sub{color:var(--mut);margin:0 0 18px}
+.form input{margin-bottom:10px}.form .btn{width:100%;margin-top:6px}
+.tabs{display:flex;gap:4px;padding:4px;background:var(--s2);border-radius:12px;margin-bottom:14px}
+.tabs button{flex:1;padding:8px;border:0;border-radius:9px;background:transparent;color:var(--mut);font-weight:600}
+.tabs button.on{background:var(--s1);color:var(--fg);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.note{color:var(--mut);font-size:13px;margin:12px 0 0}
+/* app */
+.wrap{max-width:1180px;margin:0 auto;padding:24px;display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start}
+.comp{position:sticky;top:84px;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--sh)}
+.comp .btn{width:100%}.comp input,.comp select{margin-bottom:10px}
+.dz{display:grid;justify-items:center;gap:4px;text-align:center;padding:34px 16px;border:2px dashed var(--line);border-radius:16px;color:var(--mut);cursor:pointer;margin-bottom:12px}
+.dz:hover{border-color:var(--ac);color:var(--fg)}.dz strong{color:var(--fg);font-size:18px}.dz .i{width:30px;height:30px;color:var(--ac)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.srch{position:relative;flex:1 1 100%}.srch .i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--mut)}.srch input{padding-left:40px;border-radius:99px}
+.chip{padding:7px 14px;border:1px solid var(--line);border-radius:99px;background:transparent;color:var(--mut);font-weight:600}
+.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.card{display:grid;grid-template-columns:48px 1fr auto;gap:14px;align-items:start;padding:14px;background:var(--s1);border:1px solid var(--line);border-radius:16px;margin-bottom:10px}
+.card.k-code{cursor:pointer}.card:hover{border-color:color-mix(in srgb,var(--c) 55%,var(--line))}
+.k-code{--c:var(--ac)}.k-file{--c:var(--ok)}.k-folder{--c:var(--ac2)}.k-image{--c:var(--pk)}
+.tile{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c)}
+.card h3{margin:0;font-size:16px;font-weight:700;word-break:break-all}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;color:var(--mut);font-size:13px;margin-top:3px}
+.who{display:inline-flex;align-items:center;gap:6px}
+.lang{padding:1px 9px;border-radius:99px;background:var(--s2);color:var(--fg);font-size:12px}
+.pv{margin:10px 0 0;padding:10px 12px;border-radius:10px;background:var(--bg);font:12.5px/1.55 "JetBrains Mono",monospace;color:var(--mut);overflow:hidden;max-height:6.2em;-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+.acts{display:flex;gap:2px}
+.empty{padding:48px 16px;text-align:center;color:var(--mut);border:2px dashed var(--line);border-radius:16px}.empty strong{display:block;color:var(--fg);font-size:18px;margin-bottom:4px}
+/* viewer */
+dialog{width:min(860px,94vw);padding:0;border:1px solid var(--line);border-radius:18px;background:var(--s1);color:var(--fg);box-shadow:var(--sh)}
+dialog[open]{animation:pop .18s ease-out}@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}}
+dialog::backdrop{background:rgba(8,6,20,.65);backdrop-filter:blur(3px)}
+.dh{display:flex;align-items:center;gap:10px;padding:12px 14px 12px 18px;border-bottom:1px solid var(--line)}.dh h2{flex:1;margin:0;font-size:17px;word-break:break-all}
+.code{display:flex;max-height:70vh;overflow:auto;background:var(--bg);font:13px/1.65 "JetBrains Mono",monospace}
+.gut{padding:14px 10px 14px 16px;text-align:right;color:var(--mut);opacity:.6;user-select:none;white-space:pre}
+.code pre{margin:0;padding:14px 16px 14px 6px}
+#vImg{display:block;max-width:100%;max-height:70vh;margin:16px auto}
+.hljs-keyword,.hljs-built_in,.hljs-literal{color:var(--tk-k)}.hljs-string,.hljs-regexp{color:var(--tk-s)}.hljs-number,.hljs-attr,.hljs-symbol{color:var(--tk-n)}.hljs-comment,.hljs-quote{color:var(--tk-c);font-style:italic}.hljs-title,.hljs-name,.hljs-tag{color:var(--tk-t)}
+/* feedback */
+#toasts{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);display:grid;gap:8px;z-index:20}
+.toast{padding:11px 18px;border-radius:12px;background:var(--fg);color:var(--bg);font-weight:600;box-shadow:var(--sh);animation:pop .2s}.toast.err{background:var(--danger);color:#fff}
+#tray{position:fixed;right:20px;bottom:20px;display:grid;gap:8px;width:260px;z-index:20}
+.up{padding:10px 12px;border-radius:12px;background:var(--s1);border:1px solid var(--line);font-size:13px;box-shadow:var(--sh);word-break:break-all}
+.pb{height:5px;border-radius:9px;background:var(--s2);margin-top:6px;overflow:hidden}.pb i{display:block;height:100%;width:0;background:var(--ac);transition:width .2s}
+#drop{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:color-mix(in srgb,var(--ac) 88%,transparent);color:#fff;font-size:32px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .15s}#drop.on{opacity:1;pointer-events:auto}
+@media(max-width:900px){.wrap{grid-template-columns:1fr;padding:16px}.comp{position:static}.auth{grid-template-columns:1fr}.brand{padding:36px 24px}.top{padding:12px 16px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<header><span>&lt;/&gt; CodeShare</span><span id="userbox" class="hidden"><span class="meta" id="who"></span> <button class="ghost" id="logout">Log out</button></span></header>
-<main>
-  <div id="status"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-code" viewBox="0 0 24 24"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 6l-3 12"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4"/></symbol>
+<symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 014.5 5H9l2 2h8.5A1.5 1.5 0 0121 8.5v9a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 17.5z"/></symbol>
+<symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 17l5-4.5 4 3.5 3-2.5 4 3.5"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 11L12 15.5 16.5 11M5 20h14"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V5M7.5 9L12 4.5 16.5 9M5 20h14"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4.5h4V7M7 7l1 13h8l1-13"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5V6A1.5 1.5 0 0014 4.5H6A1.5 1.5 0 004.5 6v8A1.5 1.5 0 006 15.5h2.5"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+</defs></svg>
 
-  <!-- login / register -->
-  <div id="authView" class="card narrow hidden">
-    <h2>Log in</h2>
-    <input id="email" type="email" placeholder="Email" autocomplete="email">
-    <input id="password" type="password" placeholder="Password (6+ chars)" autocomplete="current-password">
-    <div class="row"><button id="loginBtn">Log in</button><button id="registerBtn" class="ghost">Register</button></div>
+<header class="top">
+  <div class="logo"><b><svg class="i"><use href="#i-code"/></svg></b>Devvault</div>
+  <span id="me" class="hidden" style="display:flex;gap:6px;align-items:center"><span class="av" id="av"></span>
+    <button class="ib" id="logout" title="Log out" aria-label="Log out"><svg class="i"><path d="M9 4.5H6A1.5 1.5 0 004.5 6v12A1.5 1.5 0 006 19.5h3M14 8l4 4-4 4M18 12H9"/></svg></button></span>
+  <button class="ib" id="theme" title="Switch theme" aria-label="Switch theme">
+    <svg class="i sun"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>
+    <svg class="i moon"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></svg></button>
+</header>
+
+<section id="auth" class="auth hidden">
+  <div class="brand">
+    <h1>A private vault for your group's code.</h1>
+    <p>Paste a snippet, drop a zip or a whole folder. Only people you approve can see it.</p>
+    <div class="mock"><span>def</span> share(friend):
+    <span>return</span> vault.drop(friend, <em>"main.py"</em>)</div>
   </div>
+  <div class="form"><form id="authForm">
+    <h2 id="aTitle">Welcome back</h2><p class="sub" id="aSub">Log in to see what your group shared.</p>
+    <div class="tabs"><button type="button" id="tLogin" class="on">Log in</button><button type="button" id="tReg">Register</button></div>
+    <input id="email" type="email" placeholder="Email" autocomplete="email" required>
+    <input id="password" type="password" placeholder="Password (6+ characters)" autocomplete="current-password" minlength="6" required>
+    <button class="btn" id="aBtn">Log in</button>
+    <p class="note hidden" id="aNote">After registering, verify your email. The owner then adds you to the approved list.</p>
+  </form></div>
+</section>
 
-  <!-- logged in but not verified -->
-  <div id="verifyView" class="card narrow hidden">
-    <h2>Verify your email</h2>
-    <p class="meta">We sent a link to your email. Click it, then press the button below. Also, ask the owner to add your email to the allowlist.</p>
-    <button id="reloadBtn">I verified, continue</button>
-  </div>
+<section id="verify" class="auth hidden" style="grid-template-columns:1fr">
+  <div class="form"><div>
+    <h2>Check your email</h2><p class="sub">Click the verification link we sent you, then continue. The owner also needs to add your email to the approved list.</p>
+    <button class="btn" id="reloadBtn">I've verified my email</button>
+    <button class="btn sec" id="resend">Send the link again</button>
+  </div></div>
+</section>
 
-  <!-- app -->
-  <div id="appView" class="hidden">
-    <div class="card">
-      <h2>Paste code</h2>
-      <div class="row">
-        <input id="pTitle" placeholder="Title (e.g. utils.py)">
-        <select id="pLang"><option>python</option><option>java</option><option>javascript</option><option>html</option><option>css</option><option>c/c++</option><option>sql</option><option>bash</option><option>other</option></select>
-      </div>
-      <textarea id="pCode" placeholder="Paste your code here..."></textarea>
-      <p><button id="pasteBtn">Share paste</button></p>
+<main id="app" class="wrap hidden">
+  <aside class="comp">
+    <div class="tabs"><button id="tCode" class="on">Paste code</button><button id="tFiles">Files and folders</button></div>
+    <div id="pCodeBox">
+      <input id="pTitle" placeholder="File name, e.g. utils.py">
+      <select id="pLang"><option value="auto">Detect language</option><option>python</option><option>java</option><option>javascript</option><option>typescript</option><option>html</option><option>css</option><option>c/c++</option><option>sql</option><option>bash</option><option>json</option></select>
+      <textarea id="pCode" placeholder="Paste your code here" spellcheck="false"></textarea>
+      <button class="btn" id="pasteBtn" style="margin-top:10px">Share code</button>
     </div>
-
-    <div class="card">
-      <h2>Upload files (zip, png, .py, .java, anything)</h2>
-      <div class="row"><input type="file" id="fileInput" multiple></div>
-      <button id="fileBtn">Upload</button>
+    <div id="pFilesBox" class="hidden">
+      <div class="dz" id="dz" tabindex="0"><svg class="i"><use href="#i-upload"/></svg><strong>Drop files or a folder</strong><span>zip, png, source files. Up to 10 MB each.</span></div>
+      <div class="two"><button class="btn sec" id="pickFiles">Choose files</button><button class="btn sec" id="pickFolder">Choose folder</button></div>
+      <input type="file" id="fileInput" multiple class="hidden"><input type="file" id="folderInput" webkitdirectory multiple class="hidden">
     </div>
-
-    <div class="card">
-      <h2>Upload a folder (zipped in your browser first)</h2>
-      <div class="row"><input type="file" id="folderInput" webkitdirectory directory multiple></div>
-      <button id="folderBtn">Upload folder</button>
+    <p class="note">Press Ctrl+V anywhere on the page to paste code or a screenshot.</p>
+  </aside>
+  <section>
+    <div class="tools">
+      <div class="srch"><svg class="i"><use href="#i-search"/></svg><input id="q" type="search" placeholder="Search names, people and code"></div>
+      <button class="chip on" data-f="all">All</button><button class="chip" data-f="code">Code</button><button class="chip" data-f="file">Files</button><button class="chip" data-f="folder">Folders</button><button class="chip" data-f="image">Images</button>
     </div>
-
-    <div class="card">
-      <h2>Shared items</h2>
-      <div id="list"></div>
-    </div>
-  </div>
+    <div id="list"></div>
+  </section>
 </main>
 
 <dialog id="viewer">
-  <h2 id="vTitle"></h2>
-  <pre id="vCode"></pre>
-  <div class="row">
-    <button id="vCopy">Copy</button>
-    <button class="ghost" id="vClose">Close</button>
-  </div>
+  <div class="dh"><h2 id="vTitle"></h2><span class="lang" id="vLang"></span>
+    <button class="ib" id="vCopy" title="Copy code" aria-label="Copy code"><svg class="i"><use href="#i-copy"/></svg></button>
+    <button class="ib" id="vClose" title="Close" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <img id="vImg" class="hidden" alt="">
+  <div class="code" id="vBox"><div class="gut" id="vGut"></div><pre><code id="vCode"></code></pre></div>
 </dialog>
+<div id="drop">Drop to share</div><div id="tray"></div><div id="toasts"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-         sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject }
-  from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getDatabase, ref, set, push, get, remove, query, orderByChild, limitToLast, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
-// ====== 1) PASTE YOUR FIREBASE CONFIG HERE (Project settings > Your apps > Web app) ======
+// ====== PASTE YOUR FIREBASE CONFIG HERE ======
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.firebasestorage.app",
-  messagingSenderId: "...",
-  appId: "..."
+  authDomain: "devvault-114f3.firebaseapp.com",
+  databaseURL: "https://devvault-114f3-default-rtdb.firebaseio.com",
+  projectId: "devvault-114f3",
+  appId: "YOUR_APP_ID"
 };
-// (This config is not a secret. Security comes from firestore.rules and storage.rules.)
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app), db = getFirestore(app), storage = getStorage(app);
+const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getDatabase(app);
 const $ = id => document.getElementById(id);
-const IMG = /\.(png|jpe?g|gif|webp)$/i;
-const SAFE_URL = /^https:\/\/(firebasestorage\.googleapis\.com|[\w-]+\.firebasestorage\.app)\//;
-let unsub = null;
+const h = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e };
+const ICON = n => { const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("class", "i"); s.innerHTML = '<use href="#i-' + n + '"/>'; return s };
+const MAX = 10 * 1048576, CHUNK = 240000, IMG = /\.(png|jpe?g|gif|webp)$/i, JUNK = /(^|\/)(node_modules|\.git|__pycache__|\.venv)\//;
+const MIME = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif", webp: "image/webp", zip: "application/zip" };
+const EXT = { py: "python", java: "java", js: "javascript", ts: "typescript", html: "html", css: "css", c: "c/c++", cpp: "c/c++", h: "c/c++", sql: "sql", sh: "bash", json: "json" };
+const HL = { "c/c++": "cpp", html: "xml" };
+const mimeFor = n => MIME[n.split(".").pop().toLowerCase()] || "application/octet-stream";
+const clean = n => n.replace(/[^\w.\-]+/g, "_").slice(0, 120) || "file";
+const fmt = s => s < 1024 ? s + " B" : s < 1048576 ? (s / 1024).toFixed(0) + " KB" : (s / 1048576).toFixed(1) + " MB";
+const hue = u => "hsl(" + ([...u].reduce((a, c) => a + c.charCodeAt(0), 0) * 47 % 360) + " 55% 46%)";
+const ago = t => { const s = (Date.now() - t) / 1000; return s < 60 ? "just now" : s < 3600 ? Math.floor(s / 60) + " min ago" : s < 86400 ? Math.floor(s / 3600) + " h ago" : new Date(t).toLocaleDateString() };
+const ERR = { "auth/invalid-credential": "Wrong email or password.", "auth/email-already-in-use": "That email already has an account. Log in instead.", "auth/weak-password": "Use at least 6 characters.", "auth/invalid-email": "That email address doesn't look right.", "PERMISSION_DENIED": "Access denied. Ask the owner to add your email to the approved list." };
+const toast = (m, err) => { const t = h("div", "toast" + (err ? " err" : ""), m); $("toasts").append(t); setTimeout(() => t.remove(), err ? 6000 : 3000) };
+const fail = e => toast(ERR[e.code] || ERR[(e.message || "").match(/PERMISSION_DENIED/)?.[0]] || e.message || String(e), 1);
+const tray = label => { const r = h("div", "up", label), w = h("div", "pb"), b = h("i"); w.append(b); r.append(w); $("tray").append(r); return { set: p => b.style.width = p + "%", end: () => setTimeout(() => r.remove(), 700) } };
 
-const status = (msg, err) => { $("status").textContent = msg || ""; $("status").style.color = err ? "#ff8a8a" : ""; };
-const show = name => ["authView","verifyView","appView"].forEach(v => $(v).classList.toggle("hidden", v !== name));
-const fail = e => status((e && e.message) || String(e), true);
+// theme
+const setTheme = t => { document.documentElement.dataset.theme = t; try { localStorage.theme = t } catch {} };
+setTheme((() => { try { return localStorage.theme } catch {} })() || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"));
+$("theme").onclick = () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
 
-// ---------- auth ----------
-$("loginBtn").onclick = () => signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value).catch(fail);
-$("registerBtn").onclick = async () => {
+// auth
+let mode = "login", unsub = null, ITEMS = [], flt = "all", qry = "";
+const setMode = m => {
+  mode = m; $("tLogin").classList.toggle("on", m === "login"); $("tReg").classList.toggle("on", m === "reg");
+  $("aTitle").textContent = m === "login" ? "Welcome back" : "Join the vault";
+  $("aSub").textContent = m === "login" ? "Log in to see what your group shared." : "Create your account to start sharing.";
+  $("aBtn").textContent = m === "login" ? "Log in" : "Create account"; $("aNote").classList.toggle("hidden", m === "login");
+};
+$("tLogin").onclick = () => setMode("login"); $("tReg").onclick = () => setMode("reg");
+$("authForm").onsubmit = async e => {
+  e.preventDefault(); const em = $("email").value.trim(), pw = $("password").value;
   try {
-    const c = await createUserWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
-    await sendEmailVerification(c.user);
-    status("Account created. Check your email for the verification link.");
-  } catch (e) { fail(e); }
+    if (mode === "login") await signInWithEmailAndPassword(auth, em, pw);
+    else { const c = await createUserWithEmailAndPassword(auth, em, pw); await sendEmailVerification(c.user); toast("Account created. Check your email.") }
+  } catch (x) { fail(x) }
 };
 $("logout").onclick = () => signOut(auth);
-$("reloadBtn").onclick = async () => { await auth.currentUser.reload(); await auth.currentUser.getIdToken(true); location.reload(); };
+$("resend").onclick = () => sendEmailVerification(auth.currentUser).then(() => toast("Link sent."), fail);
+$("reloadBtn").onclick = async () => { await auth.currentUser.reload(); await auth.currentUser.getIdToken(true); location.reload() };
+const show = v => ["auth", "verify", "app"].forEach(n => $(n).classList.toggle("hidden", n !== v));
 
-onAuthStateChanged(auth, user => {
-  if (unsub) { unsub(); unsub = null; }
-  $("userbox").classList.toggle("hidden", !user);
-  if (!user) return show("authView");
-  $("who").textContent = user.email;
-  if (!user.emailVerified) return show("verifyView");
-  show("appView");
-  status("");
-  const q = query(collection(db, "items"), orderBy("created", "desc"));
-  unsub = onSnapshot(q, snap => render(snap.docs), e => fail(new Error("Can't read items. Is your email on the allowlist? (" + e.code + ")")));
+onAuthStateChanged(auth, u => {
+  if (unsub) { unsub(); unsub = null }
+  $("me").classList.toggle("hidden", !u);
+  if (!u) return show("auth");
+  $("av").textContent = u.email[0].toUpperCase(); $("av").style.background = hue(u.email); $("me").title = u.email;
+  if (!u.emailVerified) return show("verify");
+  show("app");
+  unsub = onValue(query(ref(db, "items"), orderByChild("created"), limitToLast(200)), s => {
+    const a = []; s.forEach(c => { a.push({ id: c.key, ...c.val() }) }); ITEMS = a.reverse(); render();
+  }, e => toast("Can't read items. Ask the owner to add your email to the approved list.", 1));
 });
 
-// ---------- list ----------
-function render(docs) {
-  const list = $("list");
-  list.replaceChildren();
-  if (!docs.length) { list.innerHTML = '<p class="meta">Nothing shared yet.</p>'; return; }
-  for (const d of docs) {
-    const it = d.data(), row = document.createElement("div");
-    row.className = "item";
-
-    if (it.kind === "file" && IMG.test(it.name) && SAFE_URL.test(it.url || "")) {
-      const img = document.createElement("img"); img.src = it.url; img.alt = ""; row.append(img);
-    }
-
-    const nameBox = document.createElement("div"); nameBox.className = "name";
-    const title = document.createElement(it.kind === "paste" ? "a" : "span");
-    title.textContent = it.name;
-    if (it.kind === "paste") title.onclick = () => openPaste(it);
-    const meta = document.createElement("div"); meta.className = "meta";
-    const when = it.created ? it.created.toDate().toLocaleString() : "just now";
-    meta.textContent = `${it.user} · ${when}`;
-    nameBox.append(title, meta);
-
-    const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = it.kind;
-    row.append(nameBox, tag);
-
-    if (it.kind === "paste") {
-      const a = document.createElement("a"); a.textContent = "Open"; a.onclick = () => openPaste(it); row.append(a);
-    } else if (SAFE_URL.test(it.url || "")) {
-      const a = document.createElement("a"); a.textContent = it.kind === "folder" ? "Download .zip" : "Download";
-      a.href = it.url; a.target = "_blank"; a.rel = "noopener"; row.append(a);
-    }
-
-    if (it.uid === auth.currentUser.uid) {
-      const del = document.createElement("button"); del.className = "ghost"; del.textContent = "Delete";
-      del.onclick = async () => {
-        if (!confirm("Delete this?")) return;
-        try {
-          if (it.path) await deleteObject(ref(storage, it.path)).catch(() => {});
-          await deleteDoc(doc(db, "items", d.id));
-        } catch (e) { fail(e); }
-      };
-      row.append(del);
-    }
-    list.append(row);
+// feed
+const kindOf = i => i.kind === "paste" ? "code" : i.kind === "folder" ? "folder" : IMG.test(i.name) ? "image" : "file";
+const act = (ic, label, fn, cls) => { const b = h("button", "ib " + (cls || "")); b.append(ICON(ic)); b.title = label; b.setAttribute("aria-label", label); b.onclick = e => { e.stopPropagation(); fn() }; return b };
+function render() {
+  const L = $("list"); L.replaceChildren();
+  const rows = ITEMS.filter(i => (flt === "all" || kindOf(i) === flt) && (!qry || (i.name + " " + i.user + " " + (i.content || "")).toLowerCase().includes(qry)));
+  if (!rows.length) { const e = h("div", "empty"); e.append(h("strong", "", ITEMS.length ? "No matches" : "Nothing shared yet"), document.createTextNode(ITEMS.length ? "Try a different search or filter." : "Drop a file or folder, or press Ctrl+V to paste code.")); L.append(e); return }
+  for (const it of rows) {
+    const k = kindOf(it), c = h("article", "card k-" + k), t = h("div", "tile"), b = h("div"), m = h("div", "meta"), who = h("span", "who"), av = h("span", "av", it.user[0].toUpperCase());
+    t.append(ICON(k)); av.style.background = hue(it.user); who.append(av, it.user);
+    m.append(who, h("span", "", ago(it.created)));
+    if (it.size != null) m.append(h("span", "", fmt(it.size)));
+    if (k === "code" && it.language && it.language !== "auto") m.append(h("span", "lang", it.language));
+    b.append(h("h3", "", it.name), m);
+    if (k === "code") { b.append(h("pre", "pv", it.content.split("\n").slice(0, 4).join("\n"))); c.onclick = () => openCode(it) }
+    const a = h("div", "acts");
+    if (k === "code") a.append(act("copy", "Copy code", () => navigator.clipboard.writeText(it.content).then(() => toast("Copied"))));
+    else { if (k === "image") a.append(act("eye", "Preview", () => previewImage(it))); a.append(act("download", k === "folder" ? "Download .zip" : "Download", () => download(it))) }
+    if (it.uid === auth.currentUser.uid) a.append(act("trash", "Delete", async () => {
+      if (!confirm("Delete this?")) return;
+      try { if (k !== "code") await remove(ref(db, `filedata/${it.uid}/${it.id}`)); await remove(ref(db, "items/" + it.id)) } catch (x) { fail(x) }
+    }, "del"));
+    c.append(t, b, a); L.append(c);
   }
 }
+$("q").oninput = e => { qry = e.target.value.trim().toLowerCase(); render() };
+document.querySelectorAll(".chip").forEach(b => b.onclick = () => { flt = b.dataset.f; document.querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x === b)); render() });
 
-function openPaste(it) {
-  $("vTitle").textContent = `${it.name} (${it.language || "text"})`;
-  $("vCode").textContent = it.content;
-  $("vCopy").textContent = "Copy";
+// viewer
+function highlight(code, lang) {
+  const esc = s => s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  try {
+    let l = HL[lang] || lang;
+    if (!window.hljs.getLanguage(l)) l = window.hljs.highlightAuto(code.slice(0, 4000)).language || "plaintext";
+    return window.hljs.highlight(code, { language: l, ignoreIllegals: true }).value;
+  } catch { return esc(code) }
+}
+function openCode(it) {
+  $("vImg").classList.add("hidden"); $("vBox").classList.remove("hidden"); $("vCopy").classList.remove("hidden");
+  $("vTitle").textContent = it.name; $("vLang").textContent = it.language || ""; $("vLang").classList.toggle("hidden", !it.language || it.language === "auto");
+  $("vCode").innerHTML = highlight(it.content, it.language);
+  $("vGut").textContent = it.content.split("\n").map((_, i) => i + 1).join("\n");
+  $("vCopy").onclick = () => navigator.clipboard.writeText(it.content).then(() => toast("Copied"));
   $("viewer").showModal();
 }
-$("vCopy").onclick = () => navigator.clipboard.writeText($("vCode").textContent).then(() => $("vCopy").textContent = "Copied!");
+async function previewImage(it) {
+  try {
+    const url = URL.createObjectURL(await fetchBlob(it));
+    $("vImg").src = url; $("vImg").classList.remove("hidden"); $("vBox").classList.add("hidden"); $("vCopy").classList.add("hidden"); $("vLang").classList.add("hidden");
+    $("vTitle").textContent = it.name; $("viewer").showModal();
+  } catch (e) { fail(e) }
+}
 $("vClose").onclick = () => $("viewer").close();
+$("viewer").addEventListener("click", e => { if (e.target === $("viewer")) $("viewer").close() });
 
-// ---------- paste ----------
+// sharing code
+$("pTitle").oninput = e => { if ($("pLang").value === "auto") { const l = EXT[e.target.value.split(".").pop().toLowerCase()]; if (l) $("pLang").value = l } };
 $("pasteBtn").onclick = async () => {
   const code = $("pCode").value;
-  if (!code.trim()) return status("Nothing to paste.", true);
-  if (code.length > 400000) return status("Paste is too big (max ~400k characters). Upload it as a file instead.", true);
+  if (!code.trim()) return toast("Paste some code first.", 1);
+  if (code.length > 400000) return toast("That's too long for a paste. Upload it as a file instead.", 1);
   try {
-    await addDoc(collection(db, "items"), {
-      kind: "paste", name: $("pTitle").value.trim().slice(0, 100) || "untitled",
-      language: $("pLang").value, content: code,
-      uid: auth.currentUser.uid, user: auth.currentUser.email.split("@")[0], created: serverTimestamp()
-    });
-    $("pCode").value = ""; $("pTitle").value = ""; status("Shared!");
-  } catch (e) { fail(e); }
+    const u = auth.currentUser;
+    await set(push(ref(db, "items")), { kind: "paste", name: $("pTitle").value.trim().slice(0, 100) || "untitled", language: $("pLang").value, content: code, uid: u.uid, user: u.email.split("@")[0], created: serverTimestamp() });
+    $("pCode").value = ""; $("pTitle").value = ""; $("pLang").value = "auto"; toast("Code shared");
+  } catch (e) { fail(e) }
 };
+const tab = f => { $("tCode").classList.toggle("on", !f); $("tFiles").classList.toggle("on", f); $("pCodeBox").classList.toggle("hidden", f); $("pFilesBox").classList.toggle("hidden", !f) };
+$("tCode").onclick = () => tab(false); $("tFiles").onclick = () => tab(true);
 
-// ---------- upload ----------
-const clean = n => n.replace(/[^\w.\-]+/g, "_").slice(0, 120) || "file";
-
+// files (stored as base64 chunks in the database)
+const b64 = blob => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(",")[1] || ""); r.onerror = () => rej(r.error); r.readAsDataURL(blob) });
 async function uploadBlob(blob, name, kind) {
-  const path = `files/${auth.currentUser.uid}/${crypto.randomUUID().slice(0, 8)}_${clean(name)}`;
-  const task = uploadBytesResumable(ref(storage, path), blob);
-  await new Promise((res, rej) => task.on("state_changed",
-    s => status(`Uploading ${name}: ${Math.round(100 * s.bytesTransferred / s.totalBytes)}%`), rej, res));
-  const url = await getDownloadURL(task.snapshot.ref);
-  await addDoc(collection(db, "items"), {
-    kind, name, path, url, size: blob.size,
-    uid: auth.currentUser.uid, user: auth.currentUser.email.split("@")[0], created: serverTimestamp()
-  });
+  if (blob.size > MAX) throw new Error(name + " is " + fmt(blob.size) + ". The limit is 10 MB.");
+  const u = auth.currentUser, id = push(ref(db, "items")).key, t = tray(name);
+  try {
+    const b = await b64(blob), n = Math.ceil(b.length / CHUNK);
+    for (let i = 0; i < n; i++) { await set(ref(db, `filedata/${u.uid}/${id}/c${String(i).padStart(3, "0")}`), b.slice(i * CHUNK, (i + 1) * CHUNK)); t.set(100 * (i + 1) / n) }
+    await set(ref(db, "items/" + id), { kind, name, size: blob.size, chunks: n, uid: u.uid, user: u.email.split("@")[0], created: serverTimestamp() });
+    toast("Shared " + name);
+  } catch (e) { await remove(ref(db, `filedata/${u.uid}/${id}`)).catch(() => {}); throw e } finally { t.end() }
 }
-
-$("fileBtn").onclick = async () => {
-  const files = [...$("fileInput").files];
-  if (!files.length) return status("No file selected.", true);
+let q = Promise.resolve();
+const enqueue = (blob, name, kind) => { q = q.then(() => uploadBlob(blob, name, kind)).catch(fail) };
+async function shareFolder(list, root) {
+  const z = new JSZip(); let n = 0;
+  for (const x of list) { if (JUNK.test(x.path)) continue; z.file(x.path, x.file); n++ }
+  if (!n) return toast("Nothing to upload in that folder.", 1);
+  enqueue(await z.generateAsync({ type: "blob", compression: "DEFLATE" }), root + ".zip", "folder");
+}
+async function fetchBlob(it) {
+  const v = (await get(ref(db, `filedata/${it.uid}/${it.id}`))).val() || {};
+  const parts = Object.keys(v).sort().map(k => { const s = atob(v[k]), u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u });
+  return new Blob(parts, { type: mimeFor(it.name) });
+}
+async function download(it) {
   try {
-    for (const f of files) await uploadBlob(f, f.name, "file");
-    $("fileInput").value = ""; status(`Uploaded ${files.length} file(s).`);
-  } catch (e) { fail(e); }
+    const url = URL.createObjectURL(await fetchBlob(it)), a = h("a"); a.href = url; a.download = clean(it.name);
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 10000);
+  } catch (e) { fail(e) }
+}
+$("pickFiles").onclick = () => $("fileInput").click(); $("dz").onclick = () => $("fileInput").click(); $("pickFolder").onclick = () => $("folderInput").click();
+$("fileInput").onchange = e => { [...e.target.files].forEach(f => enqueue(f, f.name, "file")); e.target.value = "" };
+$("folderInput").onchange = e => {
+  const fs = [...e.target.files]; if (!fs.length) return;
+  shareFolder(fs.map(f => ({ file: f, path: f.webkitRelativePath || f.name })), (fs[0].webkitRelativePath || "folder").split("/")[0]); e.target.value = "";
 };
 
-$("folderBtn").onclick = async () => {
-  const files = [...$("folderInput").files];
-  if (!files.length) return status("No folder selected.", true);
-  try {
-    status("Zipping folder...");
-    const zip = new JSZip();
-    for (const f of files) zip.file(f.webkitRelativePath || f.name, f);
-    const blob = await zip.generateAsync({ type: "blob", compression: "DEFLATE" });
-    const root = (files[0].webkitRelativePath || "folder").split("/")[0];
-    await uploadBlob(blob, root + ".zip", "folder");
-    $("folderInput").value = ""; status(`Uploaded folder '${root}'.`);
-  } catch (e) { fail(e); }
-};
+// drag and drop (files and whole folders)
+const entryFile = e => new Promise((res, rej) => e.file(res, rej));
+async function walk(en, base, out) {
+  if (en.isFile) out.push({ file: await entryFile(en), path: base + en.name });
+  else { const r = en.createReader(); let b; do { b = await new Promise((res, rej) => r.readEntries(res, rej)); for (const c of b) await walk(c, base + en.name + "/", out) } while (b.length) }
+}
+addEventListener("dragover", e => { e.preventDefault(); if (auth.currentUser?.emailVerified) $("drop").classList.add("on") });
+$("drop").addEventListener("dragleave", () => $("drop").classList.remove("on"));
+addEventListener("drop", async e => {
+  e.preventDefault(); $("drop").classList.remove("on");
+  if (!auth.currentUser?.emailVerified) return;
+  const ens = [...e.dataTransfer.items].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
+  for (const en of ens) { if (en.isFile) enqueue(await entryFile(en), en.name, "file"); else { const out = []; await walk(en, "", out); await shareFolder(out, en.name) } }
+});
+
+// paste anywhere
+addEventListener("paste", e => {
+  if (!auth.currentUser?.emailVerified || e.target.matches("input,textarea")) return;
+  const fs = [...(e.clipboardData.files || [])];
+  if (fs.length) { e.preventDefault(); fs.forEach(f => enqueue(f, f.name === "image.png" ? "pasted-" + Date.now() + ".png" : f.name, "file")); return }
+  const txt = e.clipboardData.getData("text");
+  if (txt) { e.preventDefault(); tab(false); $("pCode").value = txt; $("pCode").focus() }
+});
 </script>
 </body>
 </html>
