@@ -2519,7 +2519,7 @@
               </div>
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest"><i class="fa-solid fa-clock mr-1"></i>${formatTimeAgo(updated || Date.now())}</span>
-                ${languages.map((lang) => `<span class="text-[9px] font-mono uppercase font-bold text-[var(--text)] border border-[var(--border-dark)] px-1">\${escapeHtml(lang)}</span>`).join('')}
+                ${languages.map((lang) => `<span class="text-[9px] font-mono uppercase font-bold text-[var(--text)] border border-[var(--border-dark)] px-1">${escapeHtml(lang)}</span>`).join('')}
               </div>
             </div>
           </div>
@@ -2531,7 +2531,7 @@
         </button>
 
         ${isExpanded ? `<div class="bg-[var(--bg)] p-3 space-y-2">
-          \${items.map((snippet) => generateCompactSnippetHTML(snippet)).join('')}
+          ${items.map((snippet) => generateCompactSnippetHTML(snippet)).join('')}
         </div>` : ''}
       </section>`;
     }
@@ -2545,7 +2545,7 @@
     }
 
     function setupTabIndentation() {
-      const textarea = \$('snippetCodeInput');
+      const textarea = $('snippetCodeInput');
       textarea.addEventListener('keydown', (event) => {
         // Tab key indentation support
         if (event.key === 'Tab') {
@@ -2593,7 +2593,7 @@
     }
 
     function showToast(message, type = 'info') {
-      const container = \$('toastContainer');
+      const container = $('toastContainer');
       const toast = document.createElement('div');
       const styles = {
         success: { icon: 'fa-circle-check', border: 'border-[var(--border-dark)] bg-[var(--surface)] text-[var(--text)]' },
@@ -2645,22 +2645,22 @@
     async function openChangePasswordModal() {
       if (!currentUser) return;
       changePasswordForm.reset();
-      \$('passwordError').classList.add('hidden');
+      $('passwordError').classList.add('hidden');
       openModal(passwordModal);
-      setTimeout(() => \$('currentPasswordInput').focus(), 50);
+      setTimeout(() => $('currentPasswordInput').focus(), 50);
     }
 
     async function handleChangePassword(event) {
       event.preventDefault();
       if (!currentUser) return;
-      const currentPassword = \$('currentPasswordInput').value;
-      const newPassword = \$('newPasswordInput').value;
-      const confirmPassword = \$('confirmPasswordInput').value;
-      \$('passwordError').classList.add('hidden');
+      const currentPassword = $('currentPasswordInput').value;
+      const newPassword = $('newPasswordInput').value;
+      const confirmPassword = $('confirmPasswordInput').value;
+      $('passwordError').classList.add('hidden');
       if (newPassword.length < 8) return showPasswordError('New password must be at least 8 characters.');
       if (newPassword !== confirmPassword) return showPasswordError('New passwords do not match.');
 
-      \$('changePasswordBtn').disabled = true;
+      $('changePasswordBtn').disabled = true;
       try {
         const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
         await reauthenticateWithCredential(currentUser, credential);
@@ -2672,13 +2672,13 @@
         console.error(error);
         showPasswordError(mapFirebaseAuthError(error));
       } finally {
-        \$('changePasswordBtn').disabled = false;
+        $('changePasswordBtn').disabled = false;
       }
     }
 
     function showPasswordError(message) {
-      \$('passwordError').textContent = message;
-      \$('passwordError').classList.remove('hidden');
+      $('passwordError').textContent = message;
+      $('passwordError').classList.remove('hidden');
     }
 
     function initTheme() {
@@ -2705,7 +2705,7 @@
 
     // Bind Event Listeners
     btnToggleTheme?.addEventListener('click', toggleTheme);
-    \$('btnTogglePw').addEventListener('click', togglePasswordVisibility);
+    $('btnTogglePw').addEventListener('click', togglePasswordVisibility);
     authPortalForm.addEventListener('submit', handleLoginSubmit);
     btnLogout.addEventListener('click', logoutPortal);
 
@@ -2754,7 +2754,7 @@
     teamScratchpad.addEventListener('input', (event) => syncScratchpad(event.target.value));
 
     btnClearLanguageFilter.addEventListener('click', () => { selectedLanguage = null; renderUI(); });
-    ['all', 'mine', 'starred'].forEach((scope) => \$(`scopeBtn-${scope}`).addEventListener('click', () => setScope(scope)));
+    ['all', 'mine', 'starred'].forEach((scope) => $(`scopeBtn-${scope}`).addEventListener('click', () => setScope(scope)));
 
     searchInput.addEventListener('input', (event) => { searchQuery = event.target.value.trim(); renderUI(); });
     categoryFilter.addEventListener('change', (event) => { selectedCategory = event.target.value; renderUI(); });
