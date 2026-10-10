@@ -81,6 +81,24 @@ dialog::backdrop{background:rgba(8,6,20,.65);backdrop-filter:blur(3px)}
 #drop{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:color-mix(in srgb,var(--ac) 88%,transparent);color:#fff;font-size:32px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .15s}#drop.on{opacity:1;pointer-events:auto}
 @media(max-width:900px){.wrap{grid-template-columns:1fr;padding:16px}.comp{position:static}.auth{grid-template-columns:1fr}.brand{padding:36px 24px}.top{padding:12px 16px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{background-image:radial-gradient(color-mix(in srgb,var(--fg) 9%,transparent) 1px,transparent 1px);background-size:22px 22px}
+.un{font-weight:600;font-size:14px;margin:0 4px 0 2px}
+.hero{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 28px;border-radius:22px;background:var(--ac);color:#fff;overflow:hidden}
+.hero h2{margin:0;font-size:clamp(28px,3.6vw,42px);line-height:1.05;letter-spacing:-.03em;font-weight:800}
+.hero p{margin:8px 0 0;max-width:36em;opacity:.9;font-size:16px}
+.vault{width:96px;flex:none;--v1:rgba(255,255,255,.16);--v2:rgba(255,255,255,.55);--v3:#171428;--v4:#fff;--v5:#ffb86b}
+.empty .vault{width:84px;margin:0 auto 14px;--v1:var(--s2);--v2:var(--line);--v3:var(--s1);--v4:var(--ac);--v5:var(--ac2)}
+.vault svg{display:block;width:100%}
+.v-door{fill:var(--v1);stroke:var(--v2);stroke-width:4}.v-ring{fill:none;stroke:var(--v4);stroke-width:2;opacity:.45}.v-bolt{fill:var(--v5)}.v-dial{fill:var(--v3);stroke:var(--v4);stroke-width:3}.v-spoke{stroke:var(--v4);stroke-width:4;stroke-linecap:round}.v-hub{fill:var(--v5)}
+.hero .dial{transform-origin:60px 60px;animation:spin 1.6s cubic-bezier(.2,.8,.2,1) .15s both}@keyframes spin{from{transform:rotate(-220deg)}}
+.editor{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--bg);margin-bottom:10px}
+.eh{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--s2);border-bottom:1px solid var(--line)}
+.dots{display:flex;gap:6px}.dots i{width:10px;height:10px;border-radius:50%;background:#ff6b7d}.dots i:nth-child(2){background:#ffb86b}.dots i:nth-child(3){background:#5fd68a}
+.eh input,.eh select{margin:0!important;border:0;background:transparent;padding:4px 6px;font-size:13px}
+.eh input{flex:1;min-width:0}.eh select{width:auto;color:var(--mut)}
+.editor textarea{border:0;border-radius:0;margin:0!important;min-height:210px;background:transparent}
+.card{box-shadow:inset 3px 0 0 var(--c)}
+@media(max-width:900px){.vault{width:64px}.un{display:none}.hero{padding:18px}}
 </style>
 </head>
 <body>
@@ -100,7 +118,7 @@ dialog::backdrop{background:rgba(8,6,20,.65);backdrop-filter:blur(3px)}
 
 <header class="top">
   <div class="logo"><b><svg class="i"><use href="#i-code"/></svg></b>DevVault</div>
-  <span id="me" class="hidden" style="display:flex;gap:6px;align-items:center"><span class="av" id="av"></span>
+  <span id="me" class="hidden" style="display:flex;gap:6px;align-items:center"><span class="av" id="av"></span><span id="un" class="un"></span>
     <button class="ib" id="logout" title="Log out" aria-label="Log out"><svg class="i"><path d="M9 4.5H6A1.5 1.5 0 004.5 6v12A1.5 1.5 0 006 19.5h3M14 8l4 4-4 4M18 12H9"/></svg></button></span>
   <button class="ib" id="theme" title="Switch theme" aria-label="Switch theme">
     <svg class="i sun"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>
@@ -134,12 +152,13 @@ dialog::backdrop{background:rgba(8,6,20,.65);backdrop-filter:blur(3px)}
 </section>
 
 <main id="app" class="wrap hidden">
+  <div class="hero"><div><h2 id="hello"></h2><p id="hstat"></p></div><div class="vault" id="vaultArt"></div></div>
   <aside class="comp">
     <div class="tabs"><button id="tCode" class="on">Paste code</button><button id="tFiles">Files and folders</button></div>
     <div id="pCodeBox">
-      <input id="pTitle" placeholder="File name, e.g. utils.py">
+      <div class="editor"><div class="eh"><span class="dots"><i></i><i></i><i></i></span><input id="pTitle" placeholder="File name, e.g. utils.py">
       <select id="pLang"><option value="auto">Detect language</option><option>python</option><option>java</option><option>javascript</option><option>typescript</option><option>html</option><option>css</option><option>c/c++</option><option>sql</option><option>bash</option><option>json</option></select>
-      <textarea id="pCode" placeholder="Paste your code here" spellcheck="false"></textarea>
+      </div><textarea id="pCode" placeholder="Paste your code here" spellcheck="false"></textarea></div>
       <button class="btn" id="pasteBtn" style="margin-top:10px">Share code</button>
     </div>
     <div id="pFilesBox" class="hidden">
@@ -152,7 +171,7 @@ dialog::backdrop{background:rgba(8,6,20,.65);backdrop-filter:blur(3px)}
   <section>
     <div class="tools">
       <div class="srch"><svg class="i"><use href="#i-search"/></svg><input id="q" type="search" placeholder="Search names, people and code"></div>
-      <button class="chip on" data-f="all">All</button><button class="chip" data-f="code">Code</button><button class="chip" data-f="file">Files</button><button class="chip" data-f="folder">Folders</button><button class="chip" data-f="image">Images</button>
+      <button class="chip on" data-f="all" data-l="All">All</button><button class="chip" data-f="code" data-l="Code">Code</button><button class="chip" data-f="file" data-l="Files">Files</button><button class="chip" data-f="folder" data-l="Folders">Folders</button><button class="chip" data-f="image" data-l="Images">Images</button>
     </div>
     <div id="list"></div>
   </section>
@@ -176,11 +195,11 @@ import { getDatabase, ref, set, push, get, remove, query, orderByChild, limitToL
 
 // ====== PASTE YOUR FIREBASE CONFIG HERE ======
 const firebaseConfig = {
-  apiKey: "AIzaSyA4Hxj1BVv1bScRyUa-Vs9Wuv4N8b5RmpE",
+  apiKey: "YOUR_API_KEY",
   authDomain: "devvault-114f3.firebaseapp.com",
   databaseURL: "https://devvault-114f3-default-rtdb.firebaseio.com",
   projectId: "devvault-114f3",
-  appId: "1:250493999462:web:54ae3e3bf343e1bdb890a7"
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getDatabase(app);
@@ -201,6 +220,8 @@ const toast = (m, err) => { const t = h("div", "toast" + (err ? " err" : ""), m)
 const fail = e => toast(ERR[e.code] || ERR[(e.message || "").match(/PERMISSION_DENIED/)?.[0]] || e.message || String(e), 1);
 const tray = label => { const r = h("div", "up", label), w = h("div", "pb"), b = h("i"); w.append(b); r.append(w); $("tray").append(r); return { set: p => b.style.width = p + "%", end: () => setTimeout(() => r.remove(), 700) } };
 
+const VAULT = '<svg viewBox="0 0 120 120" aria-hidden="true"><circle class="v-door" cx="60" cy="60" r="54"/><circle class="v-ring" cx="60" cy="60" r="44"/><g class="v-bolt"><circle cx="60" cy="12" r="3.5"/><circle cx="108" cy="60" r="3.5"/><circle cx="60" cy="108" r="3.5"/><circle cx="12" cy="60" r="3.5"/></g><g class="dial"><circle class="v-dial" cx="60" cy="60" r="27"/><path class="v-spoke" d="M60 38v12M60 70v12M38 60h12M70 60h12"/><circle class="v-hub" cx="60" cy="60" r="7"/></g></svg>';
+$("vaultArt").innerHTML = VAULT;
 // theme
 const setTheme = t => { document.documentElement.dataset.theme = t; try { localStorage.theme = t } catch {} };
 setTheme((() => { try { return localStorage.theme } catch {} })() || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"));
@@ -233,7 +254,7 @@ onAuthStateChanged(auth, u => {
   if (unsub) { unsub(); unsub = null }
   $("me").classList.toggle("hidden", !u);
   if (!u) return show("auth");
-  $("av").textContent = u.email[0].toUpperCase(); $("av").style.background = hue(u.email); $("me").title = u.email;
+  $("av").textContent = u.email[0].toUpperCase(); $("av").style.background = hue(u.email); $("me").title = u.email; $("un").textContent = u.email.split("@")[0]; $("hello").textContent = "Hey, " + u.email.split("@")[0];
   $("myId").value = u.uid; show("");
   unsub = onValue(query(ref(db, "items"), orderByChild("created"), limitToLast(200)), s => {
     const a = []; s.forEach(c => { a.push({ id: c.key, ...c.val() }) }); ITEMS = a.reverse(); show("app"); render();
@@ -245,8 +266,11 @@ const kindOf = i => i.kind === "paste" ? "code" : i.kind === "folder" ? "folder"
 const act = (ic, label, fn, cls) => { const b = h("button", "ib " + (cls || "")); b.append(ICON(ic)); b.title = label; b.setAttribute("aria-label", label); b.onclick = e => { e.stopPropagation(); fn() }; return b };
 function render() {
   const L = $("list"); L.replaceChildren();
+  const n = ITEMS.length, p = new Set(ITEMS.map(i => i.uid)).size;
+  $("hstat").textContent = n ? `${n} item${n > 1 ? "s" : ""} from ${p} ${p > 1 ? "people" : "person"} in the vault. Drop anything onto this page to add more.` : "The vault is empty. Drop a file or folder anywhere, or press Ctrl+V to paste code.";
+  document.querySelectorAll(".chip").forEach(b => { const c = b.dataset.f === "all" ? n : ITEMS.filter(i => kindOf(i) === b.dataset.f).length; b.textContent = b.dataset.l + (c ? " " + c : "") });
   const rows = ITEMS.filter(i => (flt === "all" || kindOf(i) === flt) && (!qry || (i.name + " " + i.user + " " + (i.content || "")).toLowerCase().includes(qry)));
-  if (!rows.length) { const e = h("div", "empty"); e.append(h("strong", "", ITEMS.length ? "No matches" : "Nothing shared yet"), document.createTextNode(ITEMS.length ? "Try a different search or filter." : "Drop a file or folder, or press Ctrl+V to paste code.")); L.append(e); return }
+  if (!rows.length) { const e = h("div", "empty"); e.append(h("strong", "", ITEMS.length ? "No matches" : "Nothing shared yet"), document.createTextNode(ITEMS.length ? "Try a different search or filter." : "Drop a file or folder, or press Ctrl+V to paste code.")); if (!ITEMS.length) e.insertAdjacentHTML("afterbegin", '<div class="vault">' + VAULT + '</div>'); L.append(e); return }
   for (const it of rows) {
     const k = kindOf(it), c = h("article", "card k-" + k), t = h("div", "tile"), b = h("div"), m = h("div", "meta"), who = h("span", "who"), av = h("span", "av", it.user[0].toUpperCase());
     t.append(ICON(k)); av.style.background = hue(it.user); who.append(av, it.user);
