@@ -369,12 +369,11 @@
         </div>
       </div>
 
-      <div class="hidden md:flex items-center gap-3 bg-[var(--surface)] border-2 border-[var(--border-dark)] px-4 py-2 shadow-[2px_2px_0px_0px_var(--border-dark)] text-sm">
+      <div class="hidden md:flex items-center gap-3 bg-[var(--surface)] border-2 border-[var(--border-dark)] px-3 py-1 shadow-[2px_2px_0px_0px_var(--border-dark)] text-sm">
         <span id="timerStatusDot" class="w-3 h-3 bg-editorial-300 border border-[var(--border-dark)]"></span>
-        <span class="font-display font-bold text-[var(--text)] uppercase tracking-widest">SPRINT:</span>
-        <span id="hackCountdown" class="font-mono font-bold text-[var(--text)] text-lg">00h 00m 00s</span>
+        <span id="hackCountdown" class="font-mono font-bold text-[var(--text)] text-base tracking-widest">00:00:00</span>
         <button id="btnOpenTimerSettings" title="Configure Sprint Timer" disabled
-          class="ml-2 p-1 text-[var(--text-muted)] hover:text-[var(--text)] transition flex items-center justify-center disabled:opacity-40">
+          class="p-1 text-[var(--text-muted)] hover:text-[var(--text)] transition flex items-center justify-center disabled:opacity-40">
           <i class="fa-solid fa-gear"></i>
         </button>
       </div>
@@ -901,7 +900,7 @@
         <div class="editorial-card flex items-center justify-between">
           <div>
             <div class="text-[10px] uppercase font-mono tracking-widest text-[var(--text-muted)]">Remaining Time</div>
-            <div id="modalTimerDisplay" class="text-2xl font-bold font-mono text-[var(--text)] mt-1">00h 00m 00s</div>
+            <div id="modalTimerDisplay" class="text-2xl font-bold font-mono text-[var(--text)] mt-1 tracking-widest">00:00:00</div>
             <div id="modalTimerStateText" class="text-[10px] font-bold font-mono uppercase tracking-widest mt-1 text-[var(--text-muted)]">Not configured</div>
           </div>
           <button id="toggleTimerPauseBtn" disabled class="editorial-btn px-4 py-2 text-xs flex items-center gap-2 disabled:opacity-40"><i id="pausePlayIcon" class="fa-solid fa-pause"></i><span id="pausePlayText">Pause</span></button>
@@ -2328,12 +2327,12 @@
     }
 
     function formatDuration(ms) {
-      if (!ms || ms <= 0) return '00h 00m 00s';
+      if (!ms || ms <= 0) return '00:00:00';
       const totalSeconds = Math.floor(ms / 1000);
       const hours = Math.floor(totalSeconds / 3600);
       const minutes = Math.floor((totalSeconds % 3600) / 60);
       const seconds = totalSeconds % 60;
-      return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
     function updateTimerControls() {
