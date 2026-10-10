@@ -8,27 +8,37 @@
   <title>DevVault // Hackathon Team Code Hub</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+      <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
             editorial: {
-              50: '#f9fafb',
-              100: '#f3f4f6',
-              200: '#e5e7eb',
-              300: '#d1d5db',
-              400: '#9ca3af',
-              500: '#6b7280',
-              600: '#4b5563',
-              700: '#374151',
-              800: '#1f2937',
-              900: '#111827',
-              950: '#030712',
+              50: '#FDFBF7',  /* Warm cream */
+              100: '#F4F1E1', /* Light khaki */
+              200: '#E8E1C5',
+              300: '#D5C99E',
+              400: '#A39161',
+              500: '#7A6B44',
+              600: '#524729',
+              700: '#3D341D',
+              800: '#282212',
+              900: '#15130A', /* Almost black/dark brown */
+              950: '#0A0905',
             },
             accent: {
-              DEFAULT: '#2563EB',
-              hover: '#1D4ED8',
+              DEFAULT: '#FF4D00', /* Vibrant vermillion orange */
+              hover: '#CC3D00',
+              light: '#FFEDDF',
+            },
+            secondary: {
+              DEFAULT: '#0055FF', /* Electric blue */
+              light: '#E5F0FF',
+            },
+            tertiary: {
+              DEFAULT: '#00A859', /* Kelly green */
+              light: '#E0F5E9',
             }
           },
           fontFamily: {
@@ -37,9 +47,9 @@
             display: ['"Space Grotesk"', 'sans-serif'],
           },
           boxShadow: {
-            'editorial': '4px 4px 0px 0px rgba(17, 24, 39, 1)',
-            'editorial-sm': '2px 2px 0px 0px rgba(17, 24, 39, 1)',
-            'editorial-hover': '2px 2px 0px 0px rgba(17, 24, 39, 1)',
+            'editorial': '4px 4px 0px 0px rgba(21, 19, 10, 1)',
+            'editorial-sm': '2px 2px 0px 0px rgba(21, 19, 10, 1)',
+            'editorial-hover': '2px 2px 0px 0px rgba(21, 19, 10, 1)',
           }
         }
       }
@@ -60,27 +70,50 @@
     /* =============================
        DevVault — Editorial UI Redesign
        ============================= */
-    :root {
-      --bg: #FAFAFA;
+            :root {
+      --bg: #FDFBF7;
       --surface: #FFFFFF;
-      --surface-hover: #F3F4F6;
-      --border: #E5E7EB;
-      --border-dark: #111827;
-      --text: #111827;
-      --text-muted: #6B7280;
-      --accent: #2563EB;
-      --accent-hover: #1D4ED8;
-      --danger: #EF4444;
+      --surface-hover: #FFEDDF;
+      --border: #E8E1C5;
+      --border-dark: #15130A;
+      --text: #15130A;
+      --text-muted: #524729;
+      --accent: #FF4D00;
+      --accent-hover: #CC3D00;
+      --danger: #E53E3E;
+      --grid-dot: #E8E1C5;
+
+      --card-bg-1: #FFFFFF;
+      --card-bg-2: #F4F1E1;
+      --card-bg-3: #E5F0FF;
+    }
+
+    html.dark {
+      --bg: #0C1115;
+      --surface: #17212B;
+      --surface-hover: #21303E;
+      --border: #2C3E50;
+      --border-dark: #8BA1B7;
+      --text: #FDFBF7;
+      --text-muted: #A0B2C4;
+      --accent: #FF6B2B;
+      --accent-hover: #FF8F5E;
+      --grid-dot: #1A2632;
+
+      --card-bg-1: #17212B;
+      --card-bg-2: #1A2A38;
+      --card-bg-3: #213247;
     }
 
     html, body {
       background: var(--bg) !important;
       color: var(--text) !important;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     body {
-      background-image: radial-gradient(#E5E7EB 1px, transparent 1px);
-      background-size: 24px 24px;
+      background-image: radial-gradient(var(--grid-dot) 1.5px, transparent 1.5px);
+      background-size: 28px 28px;
     }
 
     ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -160,13 +193,13 @@
     }
 
     /* ---------- UI Elements ---------- */
-    .editorial-card {
+        .editorial-card {
       background: var(--surface) !important;
       border: 2px solid var(--border-dark) !important;
       border-radius: 0 !important;
       box-shadow: 4px 4px 0px 0px var(--border-dark) !important;
       padding: 1.25rem !important;
-      transition: transform 0.1s, box-shadow 0.1s;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     
     .editorial-input {
@@ -176,11 +209,13 @@
       border-radius: 0 !important;
       padding: 0.5rem 0.75rem !important;
       font-family: 'Inter', sans-serif !important;
+      transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
     }
     
     .editorial-input:focus {
       outline: none !important;
-      box-shadow: 2px 2px 0px 0px var(--border-dark) !important;
+      border-color: var(--accent) !important;
+      box-shadow: 2px 2px 0px 0px var(--accent) !important;
       transform: translate(-1px, -1px);
     }
     
@@ -194,7 +229,7 @@
       letter-spacing: 0.05em !important;
       border-radius: 0 !important;
       box-shadow: 4px 4px 0px 0px var(--border-dark) !important;
-      transition: all 0.15s ease !important;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     
     .editorial-btn:hover {
@@ -208,13 +243,18 @@
       box-shadow: 2px 2px 0px 0px var(--border-dark) !important;
     }
     
+    .editorial-btn:focus-visible {
+      outline: 2px solid var(--accent) !important;
+      outline-offset: 2px;
+    }
+
     .editorial-btn-primary {
       background: var(--text) !important;
       color: var(--surface) !important;
     }
     
     .editorial-btn-primary:hover {
-      background: #374151 !important;
+      background: var(--border-dark) !important;
     }
 
     /* ---------- Modals ---------- */
@@ -245,30 +285,30 @@
   </style>
 </head>
 
-<body class="bg-editorial-50 text-editorial-900 font-sans min-h-screen flex flex-col selection:bg-accent selection:text-white antialiased overflow-x-hidden">
+<body class="bg-[var(--bg)] text-[var(--text)] font-sans min-h-screen flex flex-col selection:bg-accent selection:text-[var(--bg)] antialiased overflow-x-hidden">
 
   <!-- Login -->
-  <div id="loginPortal" class="fixed inset-0 z-[100] bg-editorial-50 flex flex-col items-center justify-center p-4">
+  <div id="loginPortal" class="fixed inset-0 z-[100] bg-[var(--bg)] flex flex-col items-center justify-center p-4">
     <div class="relative w-full max-w-md editorial-card p-8">
-      <div class="flex items-center justify-between pb-4 mb-6 border-b-2 border-editorial-900 text-xs font-mono text-editorial-500 uppercase tracking-widest">
+      <div class="flex items-center justify-between pb-4 mb-6 border-b-4 border-[var(--border-dark)] text-xs font-mono text-[var(--text-muted)] uppercase tracking-widest">
         <div class="flex items-center gap-2">
-          <span class="w-3 h-3 border border-editorial-900 bg-white"></span>
-          <span class="w-3 h-3 border border-editorial-900 bg-editorial-300"></span>
-          <span class="w-3 h-3 border border-editorial-900 bg-editorial-900"></span>
-          <span class="ml-2 font-bold text-editorial-900">DEVVAULT :: AUTH</span>
+          <span class="w-3 h-3 border border-[var(--border-dark)] bg-[var(--surface)]"></span>
+          <span class="w-3 h-3 border border-[var(--border-dark)] bg-editorial-300"></span>
+          <span class="w-3 h-3 border border-[var(--border-dark)] bg-[var(--text)]"></span>
+          <span class="ml-2 font-bold text-[var(--text)]">DEVVAULT :: AUTH</span>
         </div>
-        <div id="authConnectionText" class="flex items-center gap-2 text-[10px] text-editorial-600">
+        <div id="authConnectionText" class="flex items-center gap-2 text-[10px] text-[var(--text-muted)]">
           <i class="fa-solid fa-circle-notch fa-spin"></i>
           <span>CONNECTING</span>
         </div>
       </div>
 
       <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 border-2 border-editorial-900 bg-white shadow-editorial mb-4 text-editorial-900 text-2xl">
+        <div class="inline-flex items-center justify-center w-16 h-16 border-2 border-[var(--border-dark)] bg-[var(--surface)] shadow-[4px_4px_0px_0px_var(--border-dark)] mb-4 text-[var(--text)] text-2xl">
           <i class="fa-solid fa-code-commit"></i>
         </div>
-        <h1 class="text-3xl font-display font-bold tracking-tight text-editorial-900 uppercase">Team Code Vault</h1>
-        <p class="text-sm text-editorial-500 mt-2 font-mono">Sign in to access workspace</p>
+        <h1 class="text-3xl font-display font-bold tracking-tight text-[var(--text)] uppercase">Team Code Vault</h1>
+        <p class="text-sm text-[var(--text-muted)] mt-2 font-mono">Sign in to access workspace</p>
       </div>
 
       <form id="authPortalForm" class="space-y-5">
@@ -290,7 +330,7 @@
               placeholder="Enter password"
               class="w-full editorial-input text-sm pr-10">
             <button type="button" id="btnTogglePw" aria-label="Show or hide password"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-editorial-400 hover:text-editorial-900 focus:outline-none">
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text)] focus:outline-none">
               <i id="pwEyeIcon" class="fa-solid fa-eye"></i>
             </button>
           </div>
@@ -305,42 +345,46 @@
         </button>
       </form>
 
-      <div class="mt-8 pt-6 border-t-2 border-editorial-900 text-[10px] text-editorial-500 font-mono leading-relaxed text-center uppercase tracking-wider">
+      <div class="mt-8 pt-6 border-t-2 border-[var(--border-dark)] text-[10px] text-[var(--text-muted)] font-mono leading-relaxed text-center uppercase tracking-wider">
         Accounts managed by Super Admin.
       </div>
     </div>
   </div>
 
   <!-- Header -->
-  <header class="sticky top-0 z-40 bg-white border-b-2 border-editorial-900 shadow-sm">
+  <header class="sticky top-0 z-40 bg-[var(--surface)] border-b-4 border-[var(--border-dark)] shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
       <div class="flex items-center gap-4 min-w-0">
-        <div class="w-12 h-12 border-2 border-editorial-900 flex items-center justify-center shadow-editorial-sm flex-shrink-0 bg-white">
-          <i class="fa-solid fa-laptop-code text-2xl text-editorial-900"></i>
+        <div class="w-12 h-12 border-2 border-[var(--border-dark)] flex items-center justify-center shadow-[2px_2px_0px_0px_var(--border-dark)] flex-shrink-0 bg-accent text-[var(--bg)]">
+          <i class="fa-solid fa-laptop-code text-2xl text-[var(--bg)]"></i>
         </div>
         <div class="min-w-0">
           <div class="flex items-baseline gap-3 flex-wrap">
-            <span class="font-display font-bold text-2xl tracking-tight text-editorial-900 uppercase">DEVVAULT</span>
-            <span id="firebaseStatusBadge" class="text-[10px] font-mono uppercase bg-white text-editorial-900 px-2 py-0.5 border-2 border-editorial-900 font-bold flex items-center gap-1 shadow-editorial-sm">
-              <span class="w-2 h-2 bg-editorial-900"></span> OFFLINE
+            <span class="font-display font-bold text-2xl tracking-tight text-[var(--text)] uppercase">DEVVAULT</span>
+            <span id="firebaseStatusBadge" class="text-[10px] font-mono uppercase bg-[var(--surface)] text-[var(--text)] px-2 py-0.5 border-2 border-[var(--border-dark)] font-bold flex items-center gap-1 shadow-[2px_2px_0px_0px_var(--border-dark)]">
+              <span class="w-2 h-2 bg-[var(--text)]"></span> OFFLINE
             </span>
           </div>
-          <div class="text-xs text-editorial-500 font-mono tracking-wide uppercase mt-0.5">Team Code Hub & Sync</div>
+          <div class="text-xs text-[var(--text-muted)] font-mono tracking-wide uppercase mt-0.5">Team Code Hub & Sync</div>
         </div>
       </div>
 
-      <div class="hidden md:flex items-center gap-3 bg-white border-2 border-editorial-900 px-4 py-2 shadow-editorial-sm text-sm">
-        <span id="timerStatusDot" class="w-3 h-3 bg-editorial-300 border border-editorial-900"></span>
-        <span class="font-display font-bold text-editorial-900 uppercase tracking-widest">SPRINT:</span>
-        <span id="hackCountdown" class="font-mono font-bold text-editorial-900 text-lg">00h 00m 00s</span>
+      <div class="hidden md:flex items-center gap-3 bg-[var(--surface)] border-2 border-[var(--border-dark)] px-3 py-1 shadow-[2px_2px_0px_0px_var(--border-dark)] text-sm">
+        <span id="timerStatusDot" class="w-3 h-3 bg-editorial-300 border border-[var(--border-dark)]"></span>
+        <span id="hackCountdown" class="font-mono font-bold text-[var(--text)] text-base tracking-widest">00:00:00</span>
         <button id="btnOpenTimerSettings" title="Configure Sprint Timer" disabled
-          class="ml-2 p-1 text-editorial-500 hover:text-editorial-900 transition flex items-center justify-center disabled:opacity-40">
+          class="p-1 text-[var(--text-muted)] hover:text-[var(--text)] transition flex items-center justify-center disabled:opacity-40">
           <i class="fa-solid fa-gear"></i>
         </button>
       </div>
 
       <div class="flex items-center gap-3 sm:gap-4">
-        <button id="btnChangePassword" title="Change Password"
+                <button id="btnToggleTheme" title="Toggle Theme"
+          class="editorial-btn px-3 py-1.5 text-xs flex items-center justify-center">
+          <i id="themeIcon" class="fa-solid fa-moon"></i>
+        </button>
+
+        <button id="btnChangePassword"  title="Change Password"
           class="editorial-btn px-3 py-1.5 text-xs flex items-center gap-2">
           <i class="fa-solid fa-key"></i>
           <span class="hidden lg:inline">Password</span>
@@ -370,13 +414,13 @@
           <span>Post</span>
         </button>
 
-        <div class="flex items-center gap-3 pl-4 border-l-2 border-editorial-900">
+        <div class="flex items-center gap-3 pl-4 border-l-2 border-[var(--border-dark)]">
           <div class="text-right hidden sm:block">
-            <div id="headerUserName" class="text-sm font-bold text-editorial-900 font-display">—</div>
-            <div id="headerUserRole" class="text-[10px] text-editorial-500 font-mono uppercase tracking-wider">—</div>
+            <div id="headerUserName" class="text-sm font-bold text-[var(--text)] font-display">—</div>
+            <div id="headerUserRole" class="text-[10px] text-[var(--text-muted)] font-mono uppercase tracking-wider">—</div>
           </div>
-          <div id="headerUserAvatar" class="w-10 h-10 border-2 border-editorial-900 bg-white flex items-center justify-center font-bold text-editorial-900 font-display text-sm shadow-editorial-sm">--</div>
-          <button id="btnLogout" title="Sign Out" class="p-2 text-editorial-500 hover:text-red-600 transition">
+          <div id="headerUserAvatar" class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--surface)] flex items-center justify-center font-bold text-[var(--text)] font-display text-sm shadow-[2px_2px_0px_0px_var(--border-dark)]">--</div>
+          <button id="btnLogout" title="Sign Out" class="p-2 text-[var(--text-muted)] hover:text-red-600 transition">
             <i class="fa-solid fa-arrow-right-from-bracket text-lg"></i>
           </button>
         </div>
@@ -388,12 +432,12 @@
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6">
     <aside id="mainSidebar" class="w-full lg:w-[300px] flex-shrink-0 space-y-6">
       <!-- Deliverables -->
-      <div class="editorial-card space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b-2 border-editorial-900">
-          <h2 class="text-xs font-bold font-mono uppercase tracking-widest text-editorial-900 flex items-center gap-2">
+      <div class="editorial-card space-y-4 bg-[var(--card-bg-2)]">
+        <div class="flex items-center justify-between pb-3 border-b-4 border-[var(--border-dark)]">
+          <h2 class="text-xs font-bold font-mono uppercase tracking-widest text-[var(--text)] flex items-center gap-2">
             <i class="fa-solid fa-flag-checkered"></i> Deliverables
           </h2>
-          <span class="text-[10px] text-editorial-500 font-mono font-bold uppercase tracking-wider">LINKS</span>
+          <span class="text-[10px] text-[var(--text-muted)] font-mono font-bold uppercase tracking-wider">LINKS</span>
         </div>
         <div class="grid grid-cols-1 gap-3">
           <input type="url" id="repoUrlInput" placeholder="Repository URL" class="editorial-input text-xs">
@@ -404,71 +448,71 @@
             <i class="fa-solid fa-cloud-arrow-up"></i> Sync
           </button>
           <div class="flex gap-3">
-            <a id="btnOpenRepo" href="#" target="_blank" rel="noopener noreferrer" class="text-editorial-400 hover:text-editorial-900"><i class="fa-brands fa-github text-lg"></i></a>
-            <a id="btnOpenLiveDemo" href="#" target="_blank" rel="noopener noreferrer" class="text-editorial-400 hover:text-editorial-900"><i class="fa-solid fa-rocket text-lg"></i></a>
+            <a id="btnOpenRepo" href="#" target="_blank" rel="noopener noreferrer" class="text-[var(--text-muted)] hover:text-[var(--text)]"><i class="fa-brands fa-github text-lg"></i></a>
+            <a id="btnOpenLiveDemo" href="#" target="_blank" rel="noopener noreferrer" class="text-[var(--text-muted)] hover:text-[var(--text)]"><i class="fa-solid fa-rocket text-lg"></i></a>
           </div>
         </div>
       </div>
 
       <!-- Stats -->
       <div class="editorial-card">
-        <div class="flex items-center justify-between pb-4 border-b-2 border-editorial-900 mb-4">
+        <div class="flex items-center justify-between pb-4 border-b-4 border-[var(--border-dark)] mb-4">
           <div>
-            <h2 class="text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-500">Realtime Vault</h2>
-            <div class="text-sm font-bold text-editorial-900 font-display uppercase tracking-wide mt-1">Firebase Synced</div>
+            <h2 class="text-[10px] font-bold font-mono uppercase tracking-widest text-[var(--text-muted)]">Realtime Vault</h2>
+            <div class="text-sm font-bold text-[var(--text)] font-display uppercase tracking-wide mt-1">Firebase Synced</div>
           </div>
-          <span id="onlineStateLabel" class="px-2 py-1 bg-white border-2 border-editorial-900 text-[10px] font-mono font-bold text-editorial-900 shadow-editorial-sm">CONNECTING</span>
+          <span id="onlineStateLabel" class="px-2 py-1 bg-[var(--surface)] border-2 border-[var(--border-dark)] text-[10px] font-mono font-bold text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]">CONNECTING</span>
         </div>
         <div class="grid grid-cols-2 gap-3 text-center">
-          <div class="bg-editorial-50 border-2 border-editorial-900 p-3 shadow-editorial-sm">
-            <div id="statSnippetCount" class="text-2xl font-bold font-mono text-editorial-900">0</div>
-            <div class="text-[10px] font-mono text-editorial-600 uppercase tracking-widest mt-1">Snippets</div>
+          <div class="bg-[var(--bg)] border-2 border-[var(--border-dark)] p-3 shadow-[2px_2px_0px_0px_var(--border-dark)]">
+            <div id="statSnippetCount" class="text-2xl font-bold font-mono text-[var(--text)]">0</div>
+            <div class="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest mt-1">Snippets</div>
           </div>
-          <div class="bg-editorial-50 border-2 border-editorial-900 p-3 shadow-editorial-sm">
-            <div id="statUserCount" class="text-2xl font-bold font-mono text-editorial-900">0</div>
-            <div class="text-[10px] font-mono text-editorial-600 uppercase tracking-widest mt-1">Members</div>
+          <div class="bg-[var(--bg)] border-2 border-[var(--border-dark)] p-3 shadow-[2px_2px_0px_0px_var(--border-dark)]">
+            <div id="statUserCount" class="text-2xl font-bold font-mono text-[var(--text)]">0</div>
+            <div class="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest mt-1">Members</div>
           </div>
         </div>
       </div>
 
       <!-- Scope -->
       <div class="editorial-card space-y-2">
-        <h3 class="text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-500 mb-3">View Scope</h3>
-        <button id="scopeBtn-all" class="scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-editorial-900 text-white border-2 border-editorial-900 shadow-editorial-sm transition">
+        <h3 class="text-[10px] font-bold font-mono uppercase tracking-widest text-[var(--text-muted)] mb-3">View Scope</h3>
+        <button id="scopeBtn-all" class="scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-[var(--text)] text-[var(--bg)] border-2 border-[var(--border-dark)] shadow-[2px_2px_0px_0px_var(--border-dark)] transition">
           <span class="flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> All Snippets</span>
-          <span id="badgeCountAll" class="text-[10px] bg-white text-editorial-900 px-2 py-0.5 border border-editorial-900">0</span>
+          <span id="badgeCountAll" class="text-[10px] bg-[var(--surface)] text-[var(--text)] px-2 py-0.5 border border-[var(--border-dark)]">0</span>
         </button>
-        <button id="scopeBtn-mine" class="scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-white text-editorial-600 border-2 border-transparent hover:border-editorial-900 hover:text-editorial-900 transition">
+        <button id="scopeBtn-mine" class="scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-[var(--surface)] text-[var(--text-muted)] border-2 border-transparent hover:border-[var(--border-dark)] hover:text-[var(--text)] transition">
           <span class="flex items-center gap-2"><i class="fa-solid fa-code"></i> My Snippets</span>
-          <span id="badgeCountMine" class="text-[10px] bg-editorial-100 text-editorial-600 px-2 py-0.5 border border-editorial-300">0</span>
+          <span id="badgeCountMine" class="text-[10px] bg-[var(--surface-hover)] text-[var(--text-muted)] px-2 py-0.5 border border-[var(--border)]">0</span>
         </button>
-        <button id="scopeBtn-starred" class="scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-white text-editorial-600 border-2 border-transparent hover:border-editorial-900 hover:text-editorial-900 transition">
+        <button id="scopeBtn-starred" class="scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-[var(--surface)] text-[var(--text-muted)] border-2 border-transparent hover:border-[var(--border-dark)] hover:text-[var(--text)] transition">
           <span class="flex items-center gap-2"><i class="fa-solid fa-star"></i> Starred / Critical</span>
-          <span id="badgeCountStarred" class="text-[10px] bg-editorial-100 text-editorial-600 px-2 py-0.5 border border-editorial-300">0</span>
+          <span id="badgeCountStarred" class="text-[10px] bg-[var(--surface-hover)] text-[var(--text-muted)] px-2 py-0.5 border border-[var(--border)]">0</span>
         </button>
       </div>
 
       <!-- Languages -->
       <div class="editorial-card">
-        <div class="flex items-center justify-between pb-3 border-b-2 border-editorial-900 mb-3">
-          <h3 class="text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-500">Languages</h3>
-          <button id="btnClearLanguageFilter" class="text-[10px] font-bold font-mono text-editorial-900 uppercase hover:underline">Clear</button>
+        <div class="flex items-center justify-between pb-3 border-b-4 border-[var(--border-dark)] mb-3">
+          <h3 class="text-[10px] font-bold font-mono uppercase tracking-widest text-[var(--text-muted)]">Languages</h3>
+          <button id="btnClearLanguageFilter" class="text-[10px] font-bold font-mono text-[var(--text)] uppercase hover:underline">Clear</button>
         </div>
         <div id="languageFilterList" class="space-y-1 max-h-48 overflow-y-auto pr-2"></div>
       </div>
 
       <!-- Scratchpad -->
-      <div class="editorial-card flex flex-col">
-        <div class="flex items-center justify-between pb-3 border-b-2 border-editorial-900 mb-3">
-          <h3 class="text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-900 flex items-center gap-2">
+      <div class="editorial-card flex flex-col bg-[var(--card-bg-3)]">
+        <div class="flex items-center justify-between pb-3 border-b-4 border-[var(--border-dark)] mb-3">
+          <h3 class="text-[10px] font-bold font-mono uppercase tracking-widest text-[var(--text)] flex items-center gap-2">
             <i class="fa-solid fa-clipboard-check"></i> Shared Notes
           </h3>
-          <span id="scratchpadSyncState" class="text-[10px] text-editorial-500 font-mono tracking-wider uppercase">Synced</span>
+          <span id="scratchpadSyncState" class="text-[10px] text-[var(--text-muted)] font-mono tracking-wider uppercase">Synced</span>
         </div>
-        <p class="text-[10px] text-editorial-500 mb-3 font-mono leading-relaxed">Temporary TODOs & coordination. No secrets.</p>
+        <p class="text-[10px] text-[var(--text-muted)] mb-3 font-mono leading-relaxed">Temporary TODOs & coordination. No secrets.</p>
         <textarea id="teamScratchpad" rows="6" placeholder="Notes..."
-          class="w-full editorial-input font-mono text-xs resize-y shadow-editorial-sm"></textarea>
-        <div class="mt-3 pt-3 border-t-2 border-editorial-900 flex justify-between items-center">
+          class="w-full editorial-input font-mono text-xs resize-y shadow-[2px_2px_0px_0px_var(--border-dark)]"></textarea>
+        <div class="mt-3 pt-3 border-t-2 border-[var(--border-dark)] flex justify-between items-center">
           <button id="btnCopyScratchpad" class="editorial-btn px-2 py-1 text-[10px] flex items-center gap-1"><i class="fa-solid fa-copy"></i> Copy</button>
           <button id="btnClearScratchpad" class="text-[10px] font-bold font-mono text-red-600 uppercase hover:underline">Clear</button>
         </div>
@@ -478,7 +522,7 @@
     <section class="flex-1 flex flex-col space-y-6 min-w-0">
       <div class="editorial-card p-3 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="relative w-full sm:flex-1">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-editorial-400"></i>
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"></i>
           <input type="search" id="searchInput" placeholder="Search by title, extension, tags, author..."
             class="w-full editorial-input pl-10 py-2 text-sm">
         </div>
@@ -505,12 +549,12 @@
 
       <div id="snippetsContainer" class="space-y-4"></div>
 
-      <div id="emptyVaultState" class="hidden flex-col items-center justify-center p-16 text-center border-2 border-dashed border-editorial-300 bg-white shadow-editorial-sm">
-        <div class="w-16 h-16 border-2 border-editorial-900 flex items-center justify-center text-editorial-900 mb-4 bg-editorial-50 shadow-editorial-sm">
+      <div id="emptyVaultState" class="hidden flex-col items-center justify-center p-16 text-center border-2 border-dashed border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0px_0px_var(--border-dark)]">
+        <div class="w-16 h-16 border-2 border-[var(--border-dark)] flex items-center justify-center text-[var(--bg)] mb-4 bg-accent shadow-[2px_2px_0px_0px_var(--border-dark)]">
           <i class="fa-solid fa-code text-2xl"></i>
         </div>
-        <h4 class="text-xl font-display font-bold text-editorial-900 uppercase tracking-tight">No snippets found</h4>
-        <p id="emptyStateText" class="text-sm text-editorial-600 max-w-sm mt-2 mb-6 font-mono leading-relaxed">Share your first function, hook, or configuration.</p>
+        <h4 class="text-xl font-display font-bold text-[var(--text)] uppercase tracking-tight">No snippets found</h4>
+        <p id="emptyStateText" class="text-sm text-[var(--text-muted)] max-w-sm mt-2 mb-6 font-mono leading-relaxed">Share your first function, hook, or configuration.</p>
         <button id="btnEmptyPostSnippet" class="editorial-btn editorial-btn-primary px-6 py-3 text-sm">
           <i class="fa-solid fa-plus mr-2"></i> Post New Snippet
         </button>
@@ -520,27 +564,27 @@
 
   <!-- Snippet Modal -->
   <div id="snippetModal" role="dialog" aria-modal="true" aria-labelledby="modalHeaderTitle" class="fixed inset-0 z-50 bg-editorial-950/20 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white border-2 border-editorial-900 w-full max-w-3xl shadow-editorial flex flex-col max-h-[90vh] overflow-hidden">
-      <div class="px-6 py-4 border-b-2 border-editorial-900 flex items-center justify-between bg-white">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-3xl shadow-[4px_4px_0px_0px_var(--border-dark)] flex flex-col max-h-[90vh] overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)]">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 border-2 border-editorial-900 bg-editorial-50 flex items-center justify-center text-editorial-900 shadow-editorial-sm"><i class="fa-solid fa-code"></i></div>
+          <div class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--bg)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]"><i class="fa-solid fa-code"></i></div>
           <div>
-            <h2 id="modalHeaderTitle" class="text-xl font-bold font-display uppercase tracking-tight text-editorial-900">Save Snippet</h2>
-            <p id="modalHeaderSubtitle" class="text-[10px] text-editorial-500 font-mono tracking-widest uppercase">Retain exact extensions</p>
+            <h2 id="modalHeaderTitle" class="text-xl font-bold font-display uppercase tracking-tight text-[var(--text)]">Save Snippet</h2>
+            <p id="modalHeaderSubtitle" class="text-[10px] text-[var(--text-muted)] font-mono tracking-widest uppercase">Retain exact extensions</p>
           </div>
         </div>
         <button id="btnCloseSnippetModal" aria-label="Close" class="editorial-btn px-2 py-1.5"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <form id="snippetForm" class="flex-1 overflow-y-auto p-6 space-y-6 bg-editorial-50">
+      <form id="snippetForm" class="flex-1 overflow-y-auto p-6 space-y-6 bg-[var(--bg)]">
         <input type="hidden" id="editSnippetId" value="">
         <input type="hidden" id="snippetOriginalFileName" value="">
 
         <div class="editorial-card">
-          <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-900 mb-2 flex items-center gap-2"><i class="fa-solid fa-file-arrow-up"></i> Upload File</label>
+          <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-[var(--text)] mb-2 flex items-center gap-2"><i class="fa-solid fa-file-arrow-up"></i> Upload File</label>
           <input type="file" id="snippetFileInput"
-            class="w-full text-xs text-editorial-600 file:mr-4 file:py-2 file:px-4 file:border-2 file:border-editorial-900 file:text-[10px] file:font-bold file:font-mono file:uppercase file:bg-white file:text-editorial-900 hover:file:bg-editorial-100 bg-white border-2 border-editorial-900 p-1 cursor-pointer shadow-editorial-sm">
-          <p id="uploadedFileLabel" class="mt-2 text-[10px] text-editorial-500 font-mono tracking-wider">No file selected</p>
+            class="w-full text-xs text-[var(--text-muted)] file:mr-4 file:py-2 file:px-4 file:border-2 file:border-[var(--border-dark)] file:text-[10px] file:font-bold file:font-mono file:uppercase file:bg-[var(--surface)] file:text-[var(--text)] hover:file:bg-[var(--surface-hover)] bg-[var(--surface)] border-2 border-[var(--border-dark)] p-1 cursor-pointer shadow-[2px_2px_0px_0px_var(--border-dark)]">
+          <p id="uploadedFileLabel" class="mt-2 text-[10px] text-[var(--text-muted)] font-mono tracking-wider">No file selected</p>
         </div>
 
         <input id="folderUploadInput" type="file" webkitdirectory directory multiple class="hidden"
@@ -628,15 +672,15 @@
         <div>
           <div class="flex items-center justify-between mb-2">
             <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700">Code *</label>
-            <span class="text-[10px] text-editorial-500 font-mono">[Tab] inserts 2 spaces</span>
+            <span class="text-[10px] text-[var(--text-muted)] font-mono">[Tab] inserts 2 spaces</span>
           </div>
           <textarea id="snippetCodeInput" required rows="10" maxlength="100000" placeholder="Paste your code..."
             class="w-full editorial-input editor-textarea" spellcheck="false"></textarea>
         </div>
 
-        <div class="flex items-center justify-between pt-6 border-t-2 border-editorial-900 mt-6">
-          <label class="flex items-center gap-3 text-xs font-bold font-mono uppercase tracking-widest text-editorial-900 cursor-pointer">
-            <input type="checkbox" id="snippetStarredCheck" class="w-4 h-4 border-2 border-editorial-900 text-editorial-900 focus:ring-0 rounded-none bg-white checked:bg-editorial-900">
+        <div class="flex items-center justify-between pt-6 border-t-2 border-[var(--border-dark)] mt-6">
+          <label class="flex items-center gap-3 text-xs font-bold font-mono uppercase tracking-widest text-[var(--text)] cursor-pointer">
+            <input type="checkbox" id="snippetStarredCheck" class="w-4 h-4 border-2 border-[var(--border-dark)] text-[var(--text)] focus:ring-0 rounded-none bg-[var(--surface)] checked:bg-[var(--text)]">
             <span>Mark as Critical</span>
           </label>
           <div class="flex items-center gap-3">
@@ -650,14 +694,14 @@
 
   <!-- Inspect Modal -->
   <div id="inspectModal" role="dialog" aria-modal="true" aria-labelledby="inspectTitle" class="fixed inset-0 z-50 bg-editorial-950/20 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="bg-white border-2 border-editorial-900 w-full max-w-4xl shadow-editorial flex flex-col max-h-[90vh] overflow-hidden">
-      <div class="px-6 py-4 border-b-2 border-editorial-900 flex items-center justify-between bg-white gap-4">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-4xl shadow-[4px_4px_0px_0px_var(--border-dark)] flex flex-col max-h-[90vh] overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)] gap-4">
         <div class="flex items-center gap-4 min-w-0">
-          <span id="inspectLangBadge" class="px-2 py-0.5 border-2 border-editorial-900 text-xs font-mono font-bold uppercase bg-editorial-50 text-editorial-900 shadow-editorial-sm">PY</span>
-          <span id="inspectStatusBadge" class="px-2 py-0.5 border-2 border-editorial-900 text-xs font-mono font-bold uppercase bg-white text-editorial-900 shadow-editorial-sm">READY</span>
+          <span id="inspectLangBadge" class="px-2 py-0.5 border-2 border-[var(--border-dark)] text-xs font-mono font-bold uppercase bg-[var(--bg)] text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]">PY</span>
+          <span id="inspectStatusBadge" class="px-2 py-0.5 border-2 border-[var(--border-dark)] text-xs font-mono font-bold uppercase bg-[var(--surface)] text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]">READY</span>
           <div class="min-w-0">
-            <h3 id="inspectTitle" class="text-xl font-bold font-display text-editorial-900 tracking-tight truncate uppercase">Snippet Title</h3>
-            <p id="inspectMeta" class="text-xs text-editorial-500 font-mono tracking-wider mt-1 truncate">By user • Role • Just now</p>
+            <h3 id="inspectTitle" class="text-xl font-bold font-display text-[var(--text)] tracking-tight truncate uppercase">Snippet Title</h3>
+            <p id="inspectMeta" class="text-xs text-[var(--text-muted)] font-mono tracking-wider mt-1 truncate">By user • Role • Just now</p>
           </div>
         </div>
         <div class="flex items-center gap-3 flex-shrink-0">
@@ -668,24 +712,24 @@
         </div>
       </div>
 
-      <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-editorial-50">
+      <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-[var(--bg)]">
         <div class="editorial-card">
           <p id="inspectDesc" class="text-sm text-editorial-700 leading-relaxed font-mono">Instructions...</p>
           <div id="inspectTags" class="flex flex-wrap gap-2 mt-4"></div>
         </div>
 
-        <div class="border-2 border-editorial-900 bg-white shadow-editorial">
-          <div class="bg-editorial-100 px-4 py-2 border-b-2 border-editorial-900 flex items-center justify-between text-xs font-mono">
-            <span id="inspectFilename" class="font-bold text-editorial-900">snippet.py</span>
-            <span id="inspectLineCount" class="text-editorial-600 font-bold">0 lines</span>
+        <div class="border-2 border-[var(--border-dark)] bg-[var(--surface)] shadow-[4px_4px_0px_0px_var(--border-dark)]">
+          <div class="bg-[var(--surface-hover)] px-4 py-2 border-b-4 border-[var(--border-dark)] flex items-center justify-between text-xs font-mono">
+            <span id="inspectFilename" class="font-bold text-[var(--text)]">snippet.py</span>
+            <span id="inspectLineCount" class="text-[var(--text-muted)] font-bold">0 lines</span>
           </div>
           <pre class="overflow-x-auto"><code id="inspectCodeBlock" class="language-python"></code></pre>
         </div>
 
         <div class="editorial-card mt-6">
-          <h4 class="text-sm font-bold font-display uppercase tracking-widest text-editorial-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Notes (<span id="inspectCommentCount">0</span>)</h4>
+          <h4 class="text-sm font-bold font-display uppercase tracking-widest text-[var(--text)] mb-4 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Notes (<span id="inspectCommentCount">0</span>)</h4>
           <div id="inspectCommentsList" class="space-y-4 mb-4"></div>
-          <form id="inspectCommentForm" class="flex gap-3 border-t-2 border-editorial-900 pt-4">
+          <form id="inspectCommentForm" class="flex gap-3 border-t-2 border-[var(--border-dark)] pt-4">
             <input type="text" id="inspectCommentInput" maxlength="500" required placeholder="Add a note..."
               class="flex-1 editorial-input text-sm">
             <button type="submit" class="editorial-btn editorial-btn-primary px-4 py-2 text-sm">Post</button>
@@ -697,21 +741,21 @@
 
   <!-- Admin Modal -->
   <div id="adminUserModal" role="dialog" aria-modal="true" aria-labelledby="adminModalTitle" class="fixed inset-0 z-50 bg-editorial-950/20 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white border-2 border-editorial-900 w-full max-w-2xl shadow-editorial flex flex-col max-h-[90vh] overflow-hidden">
-      <div class="px-6 py-4 border-b-2 border-editorial-900 flex items-center justify-between bg-white">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-2xl shadow-[4px_4px_0px_0px_var(--border-dark)] flex flex-col max-h-[90vh] overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)]">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 border-2 border-editorial-900 bg-editorial-50 flex items-center justify-center text-editorial-900 shadow-editorial-sm"><i class="fa-solid fa-users-gear"></i></div>
+          <div class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--bg)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]"><i class="fa-solid fa-users-gear"></i></div>
           <div>
-            <h2 id="adminModalTitle" class="text-xl font-bold font-display uppercase tracking-tight text-editorial-900">Member Management</h2>
-            <p class="text-[10px] text-editorial-500 font-mono tracking-widest uppercase">Admin privilege</p>
+            <h2 id="adminModalTitle" class="text-xl font-bold font-display uppercase tracking-tight text-[var(--text)]">Member Management</h2>
+            <p class="text-[10px] text-[var(--text-muted)] font-mono tracking-widest uppercase">Admin privilege</p>
           </div>
         </div>
         <button id="btnCloseAdminModal" aria-label="Close" class="editorial-btn px-2 py-1.5"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <div class="p-6 overflow-y-auto space-y-8 bg-editorial-50">
+      <div class="p-6 overflow-y-auto space-y-8 bg-[var(--bg)]">
         <div class="editorial-card">
-          <h3 class="text-sm font-bold font-display uppercase tracking-widest text-editorial-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Provision Team Account</h3>
+          <h3 class="text-sm font-bold font-display uppercase tracking-widest text-[var(--text)] mb-4 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Provision Team Account</h3>
           <form id="createUserForm" class="space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -748,13 +792,13 @@
 
         <div>
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-bold font-display uppercase tracking-widest text-editorial-900">Team Members (<span id="adminUserCountLabel">0</span>)</h3>
+            <h3 class="text-sm font-bold font-display uppercase tracking-widest text-[var(--text)]">Team Members (<span id="adminUserCountLabel">0</span>)</h3>
           </div>
-          <div class="border-2 border-editorial-900 overflow-hidden bg-white shadow-editorial">
+          <div class="border-2 border-[var(--border-dark)] overflow-hidden bg-[var(--surface)] shadow-[4px_4px_0px_0px_var(--border-dark)]">
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs min-w-[520px]">
-                <thead class="bg-editorial-100 text-editorial-900 font-mono text-[10px] uppercase tracking-widest border-b-2 border-editorial-900">
-                  <tr><th class="p-3 border-r-2 border-editorial-900">User</th><th class="p-3 border-r-2 border-editorial-900">Role</th><th class="p-3 border-r-2 border-editorial-900">Status</th><th class="p-3 text-right">Action</th></tr>
+                <thead class="bg-[var(--surface-hover)] text-[var(--text)] font-mono text-[10px] uppercase tracking-widest border-b-4 border-[var(--border-dark)]">
+                  <tr><th class="p-3 border-r-2 border-[var(--border-dark)]">User</th><th class="p-3 border-r-2 border-[var(--border-dark)]">Role</th><th class="p-3 border-r-2 border-[var(--border-dark)]">Status</th><th class="p-3 text-right">Action</th></tr>
                 </thead>
                 <tbody id="adminUserTableBody" class="divide-y-2 divide-editorial-900"></tbody>
               </table>
@@ -767,15 +811,15 @@
 
   <!-- Post Choice Modal -->
   <div id="uploadChoiceModal" role="dialog" aria-modal="true" aria-labelledby="uploadChoiceTitle" class="fixed inset-0 z-[60] bg-editorial-950/20 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white border-2 border-editorial-900 w-full max-w-md shadow-editorial overflow-hidden">
-      <div class="px-6 py-4 border-b-2 border-editorial-900 flex items-center justify-between bg-white">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-md shadow-[4px_4px_0px_0px_var(--border-dark)] overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)]">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 border-2 border-editorial-900 bg-editorial-50 flex items-center justify-center text-editorial-900 shadow-editorial-sm">
+          <div class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--bg)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]">
             <i class="fa-solid fa-cloud-arrow-up"></i>
           </div>
           <div>
-            <h2 id="uploadChoiceTitle" class="text-xl font-bold font-display uppercase tracking-tight text-editorial-900">Post to Vault</h2>
-            <p class="text-[10px] text-editorial-500 font-mono uppercase tracking-widest">Select upload type</p>
+            <h2 id="uploadChoiceTitle" class="text-xl font-bold font-display uppercase tracking-tight text-[var(--text)]">Post to Vault</h2>
+            <p class="text-[10px] text-[var(--text-muted)] font-mono uppercase tracking-widest">Select upload type</p>
           </div>
         </div>
         <button id="btnCloseUploadChoice" aria-label="Close" class="editorial-btn px-2 py-1.5">
@@ -783,31 +827,31 @@
         </button>
       </div>
 
-      <div class="p-6 bg-editorial-50 space-y-4">
+      <div class="p-6 bg-[var(--bg)] space-y-4">
         <button id="btnChooseFileUpload" type="button"
-          class="w-full text-left editorial-card p-4 hover:bg-white flex items-center gap-4">
-          <div class="w-12 h-12 border-2 border-editorial-900 bg-editorial-100 flex items-center justify-center text-editorial-900 shadow-editorial-sm flex-shrink-0">
+          class="w-full text-left editorial-card p-4 hover:bg-[var(--surface)] flex items-center gap-4">
+          <div class="w-12 h-12 border-2 border-[var(--border-dark)] bg-[var(--surface-hover)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)] flex-shrink-0">
             <i class="fa-solid fa-file-arrow-up text-xl"></i>
           </div>
           <div>
-            <div class="text-sm font-bold font-display uppercase tracking-tight text-editorial-900">Upload File</div>
-            <div class="text-[10px] text-editorial-600 font-mono mt-1">Post one source file as a snippet.</div>
+            <div class="text-sm font-bold font-display uppercase tracking-tight text-[var(--text)]">Upload File</div>
+            <div class="text-[10px] text-[var(--text-muted)] font-mono mt-1">Post one source file as a snippet.</div>
           </div>
         </button>
 
         <button id="btnChooseFolderUpload" type="button"
-          class="w-full text-left editorial-card p-4 hover:bg-white flex items-center gap-4">
-          <div class="w-12 h-12 border-2 border-editorial-900 bg-editorial-100 flex items-center justify-center text-editorial-900 shadow-editorial-sm flex-shrink-0">
+          class="w-full text-left editorial-card p-4 hover:bg-[var(--surface)] flex items-center gap-4">
+          <div class="w-12 h-12 border-2 border-[var(--border-dark)] bg-[var(--surface-hover)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)] flex-shrink-0">
             <i class="fa-solid fa-folder-open text-xl"></i>
           </div>
           <div>
-            <div class="text-sm font-bold font-display uppercase tracking-tight text-editorial-900">Upload Folder</div>
-            <div class="text-[10px] text-editorial-600 font-mono mt-1">Import a project folder and its paths.</div>
+            <div class="text-sm font-bold font-display uppercase tracking-tight text-[var(--text)]">Upload Folder</div>
+            <div class="text-[10px] text-[var(--text-muted)] font-mono mt-1">Import a project folder and its paths.</div>
           </div>
         </button>
       </div>
 
-      <div class="px-6 py-4 border-t-2 border-editorial-900 bg-white flex justify-end">
+      <div class="px-6 py-4 border-t-2 border-[var(--border-dark)] bg-[var(--surface)] flex justify-end">
         <button id="btnCancelUploadChoice" type="button" class="editorial-btn px-4 py-2 text-xs">
           Cancel
         </button>
@@ -817,24 +861,24 @@
 
   <!-- Create Folder Modal -->
   <div id="folderModal" role="dialog" aria-modal="true" aria-labelledby="folderModalTitle" class="fixed inset-0 z-50 bg-editorial-950/20 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white border-2 border-editorial-900 w-full max-w-md shadow-editorial overflow-hidden">
-      <div class="px-6 py-4 border-b-2 border-editorial-900 flex items-center justify-between bg-white">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-md shadow-[4px_4px_0px_0px_var(--border-dark)] overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)]">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 border-2 border-editorial-900 bg-editorial-50 flex items-center justify-center text-editorial-900 shadow-editorial-sm"><i class="fa-solid fa-folder-plus"></i></div>
+          <div class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--bg)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]"><i class="fa-solid fa-folder-plus"></i></div>
           <div>
-            <h2 id="folderModalTitle" class="text-xl font-bold font-display uppercase tracking-tight text-editorial-900">Create Folder</h2>
-            <p class="text-[10px] text-editorial-500 font-mono tracking-widest uppercase">Group related files</p>
+            <h2 id="folderModalTitle" class="text-xl font-bold font-display uppercase tracking-tight text-[var(--text)]">Create Folder</h2>
+            <p class="text-[10px] text-[var(--text-muted)] font-mono tracking-widest uppercase">Group related files</p>
           </div>
         </div>
         <button id="btnCloseFolderModal" aria-label="Close" class="editorial-btn px-2 py-1.5"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <form id="folderForm" class="p-6 space-y-6 bg-editorial-50">
+      <form id="folderForm" class="p-6 space-y-6 bg-[var(--bg)]">
         <div>
           <label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-2">Folder Name</label>
           <input id="folderNameInput" type="text" required maxlength="80" placeholder="e.g. Backend API"
             class="w-full editorial-input text-sm">
         </div>
-        <div class="flex justify-end gap-3 pt-4 border-t-2 border-editorial-900">
+        <div class="flex justify-end gap-3 pt-4 border-t-2 border-[var(--border-dark)]">
           <button type="button" id="btnCancelFolder" class="editorial-btn px-4 py-2 text-xs">Cancel</button>
           <button type="submit" class="editorial-btn editorial-btn-primary px-6 py-2 text-xs"><i class="fa-solid fa-folder-plus mr-2"></i>Create</button>
         </div>
@@ -844,20 +888,20 @@
 
   <!-- Timer Modal -->
   <div id="timerSettingsModal" role="dialog" aria-modal="true" aria-labelledby="timerModalTitle" class="fixed inset-0 z-50 bg-editorial-950/20 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white border-2 border-editorial-900 w-full max-w-md shadow-editorial flex flex-col overflow-hidden">
-      <div class="px-6 py-4 border-b-2 border-editorial-900 flex items-center justify-between bg-white">
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-md shadow-[4px_4px_0px_0px_var(--border-dark)] flex flex-col overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)]">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 border-2 border-editorial-900 bg-editorial-50 flex items-center justify-center text-editorial-900 font-bold shadow-editorial-sm"><i class="fa-solid fa-stopwatch"></i></div>
-          <div><h2 id="timerModalTitle" class="text-xl font-bold font-display uppercase tracking-tight text-editorial-900">Timer Controls</h2><p class="text-[10px] text-editorial-500 font-mono tracking-widest uppercase">Admin-only</p></div>
+          <div class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--bg)] flex items-center justify-center text-[var(--text)] font-bold shadow-[2px_2px_0px_0px_var(--border-dark)]"><i class="fa-solid fa-stopwatch"></i></div>
+          <div><h2 id="timerModalTitle" class="text-xl font-bold font-display uppercase tracking-tight text-[var(--text)]">Timer Controls</h2><p class="text-[10px] text-[var(--text-muted)] font-mono tracking-widest uppercase">Admin-only</p></div>
         </div>
         <button id="btnCloseTimerSettings" aria-label="Close" class="editorial-btn px-2 py-1.5"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <div class="p-6 space-y-6 bg-editorial-50">
+      <div class="p-6 space-y-6 bg-[var(--bg)]">
         <div class="editorial-card flex items-center justify-between">
           <div>
-            <div class="text-[10px] uppercase font-mono tracking-widest text-editorial-600">Remaining Time</div>
-            <div id="modalTimerDisplay" class="text-2xl font-bold font-mono text-editorial-900 mt-1">00h 00m 00s</div>
-            <div id="modalTimerStateText" class="text-[10px] font-bold font-mono uppercase tracking-widest mt-1 text-editorial-500">Not configured</div>
+            <div class="text-[10px] uppercase font-mono tracking-widest text-[var(--text-muted)]">Remaining Time</div>
+            <div id="modalTimerDisplay" class="text-2xl font-bold font-mono text-[var(--text)] mt-1 tracking-widest">00:00:00</div>
+            <div id="modalTimerStateText" class="text-[10px] font-bold font-mono uppercase tracking-widest mt-1 text-[var(--text-muted)]">Not configured</div>
           </div>
           <button id="toggleTimerPauseBtn" disabled class="editorial-btn px-4 py-2 text-xs flex items-center gap-2 disabled:opacity-40"><i id="pausePlayIcon" class="fa-solid fa-pause"></i><span id="pausePlayText">Pause</span></button>
         </div>
@@ -878,17 +922,17 @@
 
   <!-- Change Password Modal -->
   <div id="passwordModal" role="dialog" aria-modal="true" aria-labelledby="passwordModalTitle" class="fixed inset-0 z-50 bg-editorial-950/20 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white border-2 border-editorial-900 w-full max-w-md shadow-editorial overflow-hidden">
-      <div class="px-6 py-4 border-b-2 border-editorial-900 flex items-center justify-between bg-white">
-        <div class="flex items-center gap-3"><div class="w-10 h-10 border-2 border-editorial-900 bg-editorial-50 flex items-center justify-center text-editorial-900 shadow-editorial-sm"><i class="fa-solid fa-key"></i></div><div><h2 id="passwordModalTitle" class="text-xl font-bold font-display uppercase tracking-tight text-editorial-900">Change Password</h2><p class="text-[10px] text-editorial-500 font-mono tracking-widest uppercase">Update account security</p></div></div>
+    <div class="bg-[var(--surface)] border-2 border-[var(--border-dark)] w-full max-w-md shadow-[4px_4px_0px_0px_var(--border-dark)] overflow-hidden">
+      <div class="px-6 py-4 border-b-4 border-[var(--border-dark)] flex items-center justify-between bg-[var(--surface)]">
+        <div class="flex items-center gap-3"><div class="w-10 h-10 border-2 border-[var(--border-dark)] bg-[var(--bg)] flex items-center justify-center text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]"><i class="fa-solid fa-key"></i></div><div><h2 id="passwordModalTitle" class="text-xl font-bold font-display uppercase tracking-tight text-[var(--text)]">Change Password</h2><p class="text-[10px] text-[var(--text-muted)] font-mono tracking-widest uppercase">Update account security</p></div></div>
         <button id="btnClosePasswordModal" aria-label="Close" class="editorial-btn px-2 py-1.5"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <form id="changePasswordForm" class="p-6 space-y-5 bg-editorial-50">
+      <form id="changePasswordForm" class="p-6 space-y-5 bg-[var(--bg)]">
         <div><label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-2">Current Password</label><input type="password" id="currentPasswordInput" required autocomplete="current-password" class="w-full editorial-input text-sm"></div>
         <div><label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-2">New Password</label><input type="password" id="newPasswordInput" required minlength="8" maxlength="128" autocomplete="new-password" class="w-full editorial-input text-sm"></div>
         <div><label class="block text-[10px] font-bold font-mono uppercase tracking-widest text-editorial-700 mb-2">Confirm Password</label><input type="password" id="confirmPasswordInput" required minlength="8" maxlength="128" autocomplete="new-password" class="w-full editorial-input text-sm"></div>
         <div id="passwordError" class="hidden text-xs p-3 border-2 border-red-600 bg-red-50 text-red-700 font-mono"></div>
-        <div class="flex justify-end gap-3 pt-4 border-t-2 border-editorial-900"><button type="button" id="btnCancelPassword" class="editorial-btn px-4 py-2 text-xs">Cancel</button><button type="submit" id="changePasswordBtn" class="editorial-btn editorial-btn-primary px-6 py-2 text-xs">Update</button></div>
+        <div class="flex justify-end gap-3 pt-4 border-t-2 border-[var(--border-dark)]"><button type="button" id="btnCancelPassword" class="editorial-btn px-4 py-2 text-xs">Cancel</button><button type="submit" id="changePasswordBtn" class="editorial-btn editorial-btn-primary px-6 py-2 text-xs">Update</button></div>
       </form>
     </div>
   </div>
@@ -1036,6 +1080,9 @@
     const btnCloseTimerSettings = $('btnCloseTimerSettings');
     const toggleTimerPauseBtn = $('toggleTimerPauseBtn');
 
+    const btnToggleTheme = $('btnToggleTheme');
+    const themeIcon = $('themeIcon');
+
     const inspectModal = $('inspectModal');
     const btnCloseInspectModal = $('btnCloseInspectModal');
     const inspectCopyBtn = $('inspectCopyBtn');
@@ -1080,28 +1127,28 @@
 
     function setFirebaseStatus(state, detail = '') {
       const states = {
-        live: { text: 'LIVE SYNC', cls: 'bg-editorial-50 text-editorial-900 border-editorial-900', dot: 'bg-accent' },
-        offline: { text: 'OFFLINE', cls: 'bg-white text-editorial-500 border-editorial-300', dot: 'bg-editorial-300' },
+        live: { text: 'LIVE SYNC', cls: 'bg-[var(--bg)] text-[var(--text)] border-[var(--border-dark)]', dot: 'bg-accent' },
+        offline: { text: 'OFFLINE', cls: 'bg-[var(--surface)] text-[var(--text-muted)] border-[var(--border)]', dot: 'bg-editorial-300' },
         error: { text: 'ERROR', cls: 'bg-red-50 text-red-600 border-red-600', dot: 'bg-red-600' }
       };
       const s = states[state] || states.offline;
-      firebaseStatusBadge.className = `text-[10px] font-mono uppercase px-2 py-0.5 border-2 font-bold flex items-center gap-1 shadow-editorial-sm ${s.cls}`;
-      firebaseStatusBadge.innerHTML = `<span class="w-2 h-2 ${s.dot} border border-editorial-900"></span> ${s.text}`;
+      firebaseStatusBadge.className = `text-[10px] font-mono uppercase px-2 py-0.5 border-2 font-bold flex items-center gap-1 shadow-[2px_2px_0px_0px_var(--border-dark)] ${s.cls}`;
+      firebaseStatusBadge.innerHTML = `<span class="w-2 h-2 ${s.dot} border border-[var(--border-dark)]"></span> ${s.text}`;
       if (state === 'live') {
         onlineStateLabel.textContent = 'LIVE ONLINE';
-        onlineStateLabel.className = 'px-2 py-1 bg-white text-editorial-900 border-2 border-editorial-900 text-[10px] font-mono font-bold shadow-editorial-sm';
+        onlineStateLabel.className = 'px-2 py-1 bg-[var(--surface)] text-[var(--text)] border-2 border-[var(--border-dark)] text-[10px] font-mono font-bold shadow-[2px_2px_0px_0px_var(--border-dark)]';
         authConnectionText.innerHTML = '<i class="fa-solid fa-lock text-xs"></i><span>AUTH READY</span>';
-        authConnectionText.className = 'flex items-center gap-2 text-[10px] font-bold font-mono text-editorial-900';
+        authConnectionText.className = 'flex items-center gap-2 text-[10px] font-bold font-mono text-[var(--text)]';
       } else if (state === 'error') {
         onlineStateLabel.textContent = detail || 'ERROR';
-        onlineStateLabel.className = 'px-2 py-1 bg-red-50 text-red-600 border-2 border-red-600 text-[10px] font-mono font-bold shadow-editorial-sm';
+        onlineStateLabel.className = 'px-2 py-1 bg-red-50 text-red-600 border-2 border-red-600 text-[10px] font-mono font-bold shadow-[2px_2px_0px_0px_var(--border-dark)]';
         authConnectionText.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-xs"></i><span>CHECK SETUP</span>';
         authConnectionText.className = 'flex items-center gap-2 text-[10px] font-bold font-mono text-red-600';
       } else {
         onlineStateLabel.textContent = 'OFFLINE';
-        onlineStateLabel.className = 'px-2 py-1 bg-white text-editorial-500 border-2 border-editorial-300 text-[10px] font-mono font-bold shadow-editorial-sm';
+        onlineStateLabel.className = 'px-2 py-1 bg-[var(--surface)] text-[var(--text-muted)] border-2 border-[var(--border)] text-[10px] font-mono font-bold shadow-[2px_2px_0px_0px_var(--border-dark)]';
         authConnectionText.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i><span>CONNECTING</span>';
-        authConnectionText.className = 'flex items-center gap-2 text-[10px] font-bold font-mono text-editorial-500';
+        authConnectionText.className = 'flex items-center gap-2 text-[10px] font-bold font-mono text-[var(--text-muted)]';
       }
     }
 
@@ -1607,7 +1654,7 @@
       $('inspectFilename').textContent = getSnippetDisplayPath(snip);
       const lines = String(snip.code || '').split('\n').length;
       $('inspectLineCount').textContent = `${lines} ${lines === 1 ? 'line' : 'lines'}`;
-      $('inspectTags').innerHTML = (snip.tags || []).map((t) => `<span class="text-xs border-2 border-editorial-900 bg-white text-editorial-900 px-2 py-0.5 font-mono shadow-editorial-sm uppercase">#${escapeHtml(t)}</span>`).join('');
+      $('inspectTags').innerHTML = (snip.tags || []).map((t) => `<span class="text-xs border-2 border-[var(--border-dark)] bg-[var(--surface)] text-[var(--text)] px-2 py-0.5 font-mono shadow-[2px_2px_0px_0px_var(--border-dark)] uppercase">#${escapeHtml(t)}</span>`).join('');
 
       const codeBlock = $('inspectCodeBlock');
       const prismLang = languageForPrism(snip.language);
@@ -1633,7 +1680,7 @@
       const comments = getCommentsForSnippet(snip);
       $('inspectCommentCount').textContent = comments.length;
       if (!comments.length) {
-        list.innerHTML = '<p class="text-xs text-editorial-500 font-mono italic">No notes posted yet.</p>';
+        list.innerHTML = '<p class="text-xs text-[var(--text-muted)] font-mono italic">No notes posted yet.</p>';
         return;
       }
 
@@ -1643,12 +1690,12 @@
         const initials = rawUsername.substring(0, 2).toUpperCase();
         const role = c.role || 'Team Member';
         const canDelete = !c.legacy && (isAdmin() || c.uid === currentUser?.uid || c.username?.toLowerCase() === getProfileForCurrentUser().username.toLowerCase());
-        return `<div class="border-2 border-editorial-900 p-3 bg-white shadow-editorial-sm flex items-start gap-3">
-          <div class="w-8 h-8 border-2 border-editorial-900 bg-editorial-50 text-editorial-900 font-display flex items-center justify-center font-bold flex-shrink-0">${escapeHtml(initials)}</div>
+        return `<div class="border-2 border-[var(--border-dark)] p-3 bg-[var(--surface)] shadow-[2px_2px_0px_0px_var(--border-dark)] flex items-start gap-3">
+          <div class="w-8 h-8 border-2 border-[var(--border-dark)] bg-[var(--bg)] text-[var(--text)] font-display flex items-center justify-center font-bold flex-shrink-0">${escapeHtml(initials)}</div>
           <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between gap-2 border-b-2 border-editorial-900 pb-2 mb-2">
-              <span class="text-xs font-bold font-display uppercase tracking-wider text-editorial-900 truncate">${escapeHtml(authorName)} <span class="text-[10px] text-editorial-500 font-mono font-normal">(@${escapeHtml(rawUsername)})</span></span>
-              <div class="flex items-center gap-3 flex-shrink-0"><span class="text-[10px] font-mono font-bold uppercase text-editorial-500">${formatTimeAgo(c.time || Date.now())}</span>${canDelete ? `<button title="Delete note" onclick="window._deleteComment('${escapeHtml(snip.id)}','${escapeHtml(c.id)}',event)" class="text-editorial-500 hover:text-red-600"><i class="fa-solid fa-trash"></i></button>` : ''}</div>
+            <div class="flex items-center justify-between gap-2 border-b-2 border-[var(--border-dark)] pb-2 mb-2">
+              <span class="text-xs font-bold font-display uppercase tracking-wider text-[var(--text)] truncate">${escapeHtml(authorName)} <span class="text-[10px] text-[var(--text-muted)] font-mono font-normal">(@${escapeHtml(rawUsername)})</span></span>
+              <div class="flex items-center gap-3 flex-shrink-0"><span class="text-[10px] font-mono font-bold uppercase text-[var(--text-muted)]">${formatTimeAgo(c.time || Date.now())}</span>${canDelete ? `<button title="Delete note" onclick="window._deleteComment('${escapeHtml(snip.id)}','${escapeHtml(c.id)}',event)" class="text-[var(--text-muted)] hover:text-red-600"><i class="fa-solid fa-trash"></i></button>` : ''}</div>
             </div>
             <p class="text-xs font-mono text-editorial-700 leading-relaxed break-words">${escapeHtml(c.text)}</p>
           </div>
@@ -1715,17 +1762,17 @@
       $('adminUserCountLabel').textContent = activeUsers.length;
       $('statUserCount').textContent = activeUsers.length;
       if (!users.length) {
-        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-editorial-500">No team profiles found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-[var(--text-muted)]">No team profiles found.</td></tr>';
         return;
       }
       tbody.innerHTML = users.map((u) => {
         const superAdmin = u.uid === currentUser?.uid && isAdmin();
         const active = u.active !== false;
-        return `<tr class="hover:bg-editorial-50 transition border-b-2 border-editorial-900">
-          <td class="p-3 border-r-2 border-editorial-900"><div class="font-bold font-display uppercase tracking-tight text-editorial-900">${escapeHtml(u.username || '—')}</div><div class="text-[10px] text-editorial-600 font-mono mt-0.5">${escapeHtml(u.fullName || '-')}</div></td>
-          <td class="p-3 border-r-2 border-editorial-900"><span class="px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase border-2 ${superAdmin ? 'bg-editorial-900 text-white border-editorial-900' : 'bg-white text-editorial-900 border-editorial-900 shadow-editorial-sm'}">${escapeHtml(u.role || 'Team Member')}</span></td>
-          <td class="p-3 border-r-2 border-editorial-900"><span class="px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase border-2 ${active ? 'bg-white text-editorial-900 border-editorial-900 shadow-editorial-sm' : 'bg-red-50 text-red-600 border-red-600 shadow-editorial-sm'}">${active ? 'ACTIVE' : 'REVOKED'}</span></td>
-          <td class="p-3 text-right">${superAdmin ? '<span class="text-[10px] text-editorial-500 font-mono uppercase tracking-widest">Protected</span>' : `<button onclick="window._toggleUserActive('${escapeHtml(u.uid)}',event)" class="editorial-btn px-2 py-1 ${active ? 'hover:text-red-600 hover:border-red-600' : 'hover:text-editorial-900 hover:bg-white'} text-xs" title="${active ? 'Revoke access' : 'Restore access'}"><i class="fa-solid ${active ? 'fa-user-slash' : 'fa-user-check'}"></i></button>`}</td>
+        return `<tr class="hover:bg-[var(--bg)] transition border-b-2 border-[var(--border-dark)]">
+          <td class="p-3 border-r-2 border-[var(--border-dark)]"><div class="font-bold font-display uppercase tracking-tight text-[var(--text)]">${escapeHtml(u.username || '—')}</div><div class="text-[10px] text-[var(--text-muted)] font-mono mt-0.5">${escapeHtml(u.fullName || '-')}</div></td>
+          <td class="p-3 border-r-2 border-[var(--border-dark)]"><span class="px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase border-2 ${superAdmin ? 'bg-[var(--text)] text-[var(--bg)] border-[var(--border-dark)]' : 'bg-[var(--surface)] text-[var(--text)] border-[var(--border-dark)] shadow-[2px_2px_0px_0px_var(--border-dark)]'}">${escapeHtml(u.role || 'Team Member')}</span></td>
+          <td class="p-3 border-r-2 border-[var(--border-dark)]"><span class="px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase border-2 ${active ? 'bg-[var(--surface)] text-[var(--text)] border-[var(--border-dark)] shadow-[2px_2px_0px_0px_var(--border-dark)]' : 'bg-red-50 text-red-600 border-red-600 shadow-[2px_2px_0px_0px_var(--border-dark)]'}">${active ? 'ACTIVE' : 'REVOKED'}</span></td>
+          <td class="p-3 text-right">${superAdmin ? '<span class="text-[10px] text-[var(--text-muted)] font-mono uppercase tracking-widest">Protected</span>' : `<button onclick="window._toggleUserActive('${escapeHtml(u.uid)}',event)" class="editorial-btn px-2 py-1 ${active ? 'hover:text-red-600 hover:border-red-600' : 'hover:text-[var(--text)] hover:bg-[var(--surface)]'} text-xs" title="${active ? 'Revoke access' : 'Restore access'}"><i class="fa-solid ${active ? 'fa-user-slash' : 'fa-user-check'}"></i></button>`}</td>
         </tr>`;
       }).join('');
     }
@@ -1813,7 +1860,7 @@
       const container = $('folderList');
       if (!container) return;
       if (!folders.length) {
-        container.innerHTML = '<div class="text-[10px] text-editorial-500 font-mono tracking-wider px-2 py-2 uppercase">No folders yet. Create one or upload a folder.</div>';
+        container.innerHTML = '<div class="text-[10px] text-[var(--text-muted)] font-mono tracking-wider px-2 py-2 uppercase">No folders yet. Create one or upload a folder.</div>';
         return;
       }
 
@@ -1821,9 +1868,9 @@
         const count = snippets.filter((s) => s.folderId === folder.id).length;
         const active = activeFolderId === folder.id;
         return `<div class="flex items-center gap-2 mb-2">
-          <button onclick="window._selectFolder('${escapeHtml(folder.id)}')" class="flex-1 text-left px-3 py-2 text-xs flex items-center justify-between transition border-2 ${active ? 'bg-editorial-900 text-white border-editorial-900 shadow-editorial-sm' : 'bg-white text-editorial-600 border-transparent hover:border-editorial-900 hover:text-editorial-900 hover:shadow-editorial-sm'}">
-            <span class="flex items-center gap-2 min-w-0 font-bold font-mono uppercase tracking-wider"><i class="fa-solid fa-folder ${active ? 'text-white' : 'text-editorial-900'}"></i><span class="truncate">${escapeHtml(folder.name)}</span></span>
-            <span class="font-mono text-[10px] ${active ? 'text-editorial-300' : 'text-editorial-500'}">${count}</span>
+          <button onclick="window._selectFolder('${escapeHtml(folder.id)}')" class="flex-1 text-left px-3 py-2 text-xs flex items-center justify-between transition border-2 ${active ? 'bg-[var(--text)] text-[var(--bg)] border-[var(--border-dark)] shadow-[2px_2px_0px_0px_var(--border-dark)]' : 'bg-[var(--surface)] text-[var(--text-muted)] border-transparent hover:border-[var(--border-dark)] hover:text-[var(--text)] hover:shadow-[2px_2px_0px_0px_var(--border-dark)]'}">
+            <span class="flex items-center gap-2 min-w-0 font-bold font-mono uppercase tracking-wider"><i class="fa-solid fa-folder ${active ? 'text-[var(--bg)]' : 'text-[var(--text)]'}"></i><span class="truncate">${escapeHtml(folder.name)}</span></span>
+            <span class="font-mono text-[10px] ${active ? 'text-editorial-300' : 'text-[var(--text-muted)]'}">${count}</span>
           </button>
           ${isAdmin() ? `<button onclick="window._deleteFolder('${escapeHtml(folder.id)}',event)" title="Delete folder" class="editorial-btn px-2 py-1.5 hover:text-red-600 hover:border-red-600"><i class="fa-solid fa-trash text-[10px]"></i></button>` : ''}
         </div>`;
@@ -2171,8 +2218,8 @@
       const liveEl = $('btnOpenLiveDemo');
       repoEl.href = repo || '#';
       liveEl.href = live || '#';
-      repoEl.classList.toggle('text-editorial-500', !repo);
-      liveEl.classList.toggle('text-editorial-500', !live);
+      repoEl.classList.toggle('text-[var(--text-muted)]', !repo);
+      liveEl.classList.toggle('text-[var(--text-muted)]', !live);
       repoEl.classList.toggle('pointer-events-none', !repo);
       liveEl.classList.toggle('pointer-events-none', !live);
       repoEl.classList.toggle('opacity-40', !repo);
@@ -2275,17 +2322,17 @@
       modalDisplay.textContent = formatted;
       dot.className = `w-2 h-2 rounded-full status-dot ${isTimerPaused ? 'bg-amber-400' : sprintEndTime ? 'bg-accent animate-pulse' : 'bg-slate-500'}`;
       $('modalTimerStateText').textContent = sprintEndTime ? (isTimerPaused ? 'Paused' : remaining > 0 ? 'Running' : 'Complete') : 'Not configured';
-      $('modalTimerStateText').className = `text-[11px] font-mono mt-0.5 ${isTimerPaused ? 'text-editorial-900' : sprintEndTime && remaining > 0 ? 'text-accent' : 'text-editorial-400'}`;
+      $('modalTimerStateText').className = `text-[11px] font-mono mt-0.5 ${isTimerPaused ? 'text-[var(--text)]' : sprintEndTime && remaining > 0 ? 'text-accent' : 'text-[var(--text-muted)]'}`;
       updateTimerControls();
     }
 
     function formatDuration(ms) {
-      if (!ms || ms <= 0) return '00h 00m 00s';
+      if (!ms || ms <= 0) return '00:00:00';
       const totalSeconds = Math.floor(ms / 1000);
       const hours = Math.floor(totalSeconds / 3600);
       const minutes = Math.floor((totalSeconds % 3600) / 60);
       const seconds = totalSeconds % 60;
-      return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
     function updateTimerControls() {
@@ -2334,9 +2381,9 @@
 
 function setScope(scope) {
       activeScope = scope;
-      document.querySelectorAll('.scope-btn').forEach((button) => button.className = 'scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-white text-editorial-600 border-2 border-transparent hover:border-editorial-900 hover:text-editorial-900 transition');
+      document.querySelectorAll('.scope-btn').forEach((button) => button.className = 'scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-[var(--surface)] text-[var(--text-muted)] border-2 border-transparent hover:border-[var(--border-dark)] hover:text-[var(--text)] transition');
       const active = $(`scopeBtn-${scope}`);
-      active.className = 'scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-editorial-900 text-white border-2 border-editorial-900 shadow-editorial-sm transition';
+      active.className = 'scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-accent text-[var(--bg)] border-2 border-[var(--border-dark)] shadow-[2px_2px_0px_0px_var(--border-dark)] transition';
       renderUI();
     }
 
@@ -2352,7 +2399,7 @@ function setScope(scope) {
       const supported = Object.keys(EXTENSION_MAP).filter((lang) => counts[lang] || ['python', 'javascript', 'typescript', 'java', 'shell'].includes(lang));
       $('languageFilterList').innerHTML = supported.map((lang) => {
         const active = selectedLanguage === lang;
-        return `<button onclick="window._filterLanguage('${escapeHtml(lang)}')" class="w-full text-left px-2 py-1.5 flex items-center justify-between transition border-2 ${active ? 'bg-editorial-900 text-white border-editorial-900' : 'bg-transparent border-transparent text-editorial-600 hover:border-editorial-900 hover:text-editorial-900'}"><span class="capitalize text-xs font-bold font-mono tracking-wider">${escapeHtml(lang)}</span><span class="font-mono text-[10px] ${active ? 'text-editorial-300' : 'text-editorial-500'}">${counts[lang] || 0}</span></button>`;
+        return `<button onclick="window._filterLanguage('${escapeHtml(lang)}')" class="w-full text-left px-2 py-1.5 flex items-center justify-between transition border-2 ${active ? 'bg-[var(--text)] text-[var(--bg)] border-[var(--border-dark)]' : 'bg-transparent border-transparent text-[var(--text-muted)] hover:border-[var(--border-dark)] hover:text-[var(--text)]'}"><span class="capitalize text-xs font-bold font-mono tracking-wider">${escapeHtml(lang)}</span><span class="font-mono text-[10px] ${active ? 'text-editorial-300' : 'text-[var(--text-muted)]'}">${counts[lang] || 0}</span></button>`;
       }).join('');
     }
 
@@ -2452,7 +2499,7 @@ function setScope(scope) {
 
       container.innerHTML = folderHtml + (rootHtml ? `<div class="pt-1">
         <div class="flex items-center gap-2 px-1 mb-2.5">
-          <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-editorial-500">Root Snippets</span>
+          <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">Root Snippets</span>
           <div class="h-px flex-1 bg-editorial-300"></div>
         </div>
         <div class="space-y-2">${rootHtml}</div>
@@ -2490,23 +2537,23 @@ function setScope(scope) {
 
       return `<div class="dv-snippet-row editorial-card hover:-translate-y-1 transition-transform group mb-3">
         <div class="flex items-start sm:items-center gap-4 min-w-0 flex-col sm:flex-row">
-          <button onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" class="dv-snippet-file-icon w-12 h-12 border-2 border-editorial-900 bg-white flex items-center justify-center text-editorial-900 flex-shrink-0 shadow-editorial-sm transition" title="Open ${escapeHtml(path)}">
+          <button onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" class="dv-snippet-file-icon w-12 h-12 border-2 border-[var(--border-dark)] bg-tertiary text-[var(--bg)] flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_var(--border-dark)] transition" title="Open ${escapeHtml(path)}">
             <i class="fa-solid fa-file-code text-lg"></i>
           </button>
 
           <div class="min-w-0 flex-1 w-full sm:w-auto">
             <div class="flex items-center gap-2 min-w-0 mb-1">
-              <button onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" class="truncate text-left text-base font-bold font-display tracking-tight text-editorial-900 hover:text-accent transition">${escapeHtml(path || snippet.title || 'Untitled')}</button>
-              ${snippet.starred ? '<i class="fa-solid fa-star text-editorial-900 text-[10px] flex-shrink-0"></i>' : ''}
+              <button onclick="window._inspectSnippet('${escapeHtml(snippet.id)}')" class="truncate text-left text-base font-bold font-display tracking-tight text-[var(--text)] hover:text-accent transition">${escapeHtml(path || snippet.title || 'Untitled')}</button>
+              ${snippet.starred ? '<i class="fa-solid fa-star text-[var(--text)] text-[10px] flex-shrink-0"></i>' : ''}
             </div>
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-[10px] font-mono font-bold uppercase border-2 border-editorial-900 px-1.5 py-0.5 bg-editorial-50 text-editorial-900 shadow-editorial-sm">.${escapeHtml(ext)}</span>
-              <span class="text-[10px] font-mono font-bold uppercase border-2 border-editorial-900 px-1.5 py-0.5 bg-white text-editorial-900 shadow-editorial-sm">${escapeHtml(status)}</span>
-              <span class="text-[10px] font-mono text-editorial-600 tracking-wide uppercase">${escapeHtml(authorName)} · ${lineCount} ${lineCount === 1 ? 'line' : 'lines'} · ${commentCount} ${commentCount === 1 ? 'note' : 'notes'}</span>
+              <span class="text-[10px] font-mono font-bold uppercase border-2 border-[var(--border-dark)] px-1.5 py-0.5 bg-[var(--bg)] text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]">.${escapeHtml(ext)}</span>
+              <span class="text-[10px] font-mono font-bold uppercase border-2 border-[var(--border-dark)] px-1.5 py-0.5 bg-[var(--surface)] text-[var(--text)] shadow-[2px_2px_0px_0px_var(--border-dark)]">${escapeHtml(status)}</span>
+              <span class="text-[10px] font-mono text-[var(--text-muted)] tracking-wide uppercase">${escapeHtml(authorName)} · ${lineCount} ${lineCount === 1 ? 'line' : 'lines'} · ${commentCount} ${commentCount === 1 ? 'note' : 'notes'}</span>
             </div>
           </div>
 
-          <div class="flex items-center gap-2 sm:self-center self-start border-t-2 sm:border-t-0 border-editorial-900 pt-3 sm:pt-0 w-full sm:w-auto justify-end">
+          <div class="flex items-center gap-2 sm:self-center self-start border-t-2 sm:border-t-0 border-[var(--border-dark)] pt-3 sm:pt-0 w-full sm:w-auto justify-end">
             ${getSnippetActionsHTML(snippet, true)}
           </div>
         </div>
@@ -2534,34 +2581,34 @@ function setScope(scope) {
       return `<section class="dv-folder-group editorial-card p-0 mb-4 overflow-hidden">
         <button
           onclick="window._toggleFolderExpanded('${escapeHtml(folder.id)}',event)"
-          class="dv-folder-header w-full text-left px-4 py-3 bg-white hover:bg-editorial-50 flex items-center justify-between border-b-2 border-transparent transition"
+          class="dv-folder-header w-full text-left px-4 py-3 bg-[var(--surface)] hover:bg-[var(--bg)] flex items-center justify-between border-b-2 border-transparent transition"
           aria-expanded="${isExpanded ? 'true' : 'false'}"
           style="${isExpanded ? 'border-bottom-color: var(--border-dark);' : ''}"
         >
           <div class="flex items-center gap-3 min-w-0">
-            <div class="dv-folder-icon w-10 h-10 border-2 border-editorial-900 bg-white text-editorial-900 flex items-center justify-center flex-shrink-0 shadow-editorial-sm">
+            <div class="dv-folder-icon w-10 h-10 border-2 border-[var(--border-dark)] bg-secondary text-[var(--bg)] flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_var(--border-dark)]">
               <i class="fa-solid ${folderIcon} text-base"></i>
             </div>
             <div class="min-w-0">
               <div class="flex items-center gap-2 min-w-0 mb-0.5">
-                <h3 class="text-base font-bold font-display text-editorial-900 tracking-tight truncate uppercase">${escapeHtml(folder.name || 'Folder')}</h3>
-                <span class="text-[10px] font-mono font-bold border-2 border-editorial-900 px-1.5 py-0.5 bg-editorial-50 shadow-editorial-sm">${items.length} ${items.length === 1 ? 'file' : 'files'}</span>
+                <h3 class="text-base font-bold font-display text-[var(--text)] tracking-tight truncate uppercase">${escapeHtml(folder.name || 'Folder')}</h3>
+                <span class="text-[10px] font-mono font-bold border-2 border-[var(--border-dark)] px-1.5 py-0.5 bg-[var(--bg)] shadow-[2px_2px_0px_0px_var(--border-dark)]">${items.length} ${items.length === 1 ? 'file' : 'files'}</span>
               </div>
               <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[10px] font-mono text-editorial-500 uppercase tracking-widest"><i class="fa-solid fa-clock mr-1"></i>${formatTimeAgo(updated || Date.now())}</span>
-                ${languages.map((lang) => `<span class="text-[9px] font-mono uppercase font-bold text-editorial-900 border border-editorial-900 px-1">${escapeHtml(lang)}</span>`).join('')}
+                <span class="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest"><i class="fa-solid fa-clock mr-1"></i>${formatTimeAgo(updated || Date.now())}</span>
+                ${languages.map((lang) => `<span class="text-[9px] font-mono uppercase font-bold text-[var(--text)] border border-[var(--border-dark)] px-1">${escapeHtml(lang)}</span>`).join('')}
               </div>
             </div>
           </div>
           <div class="flex items-center gap-3 flex-shrink-0 pl-3">
-            ${isActive ? '<span class="hidden sm:inline text-[10px] font-mono font-bold uppercase border-2 border-editorial-900 px-1 bg-white shadow-editorial-sm">FILTERED</span>' : ''}
-            <span class="w-8 h-8 border-2 border-editorial-900 flex items-center justify-center text-editorial-900 bg-white shadow-editorial-sm transition-transform ${isExpanded ? 'rotate-180' : ''}">
+            ${isActive ? '<span class="hidden sm:inline text-[10px] font-mono font-bold uppercase border-2 border-[var(--border-dark)] px-1 bg-[var(--surface)] shadow-[2px_2px_0px_0px_var(--border-dark)]">FILTERED</span>' : ''}
+            <span class="w-8 h-8 border-2 border-[var(--border-dark)] flex items-center justify-center text-[var(--text)] bg-[var(--surface)] shadow-[2px_2px_0px_0px_var(--border-dark)] transition-transform ${isExpanded ? 'rotate-180' : ''}">
               <i class="fa-solid fa-chevron-down text-xs"></i>
             </span>
           </div>
         </button>
 
-        ${isExpanded ? `<div class="dv-folder-items bg-editorial-50 p-4 space-y-3">
+        ${isExpanded ? `<div class="dv-folder-items bg-[var(--bg)] p-4 space-y-3">
           ${items.map((snippet) => generateCompactSnippetHTML(snippet)).join('')}
         </div>` : ''}
       </section>`;
@@ -2569,14 +2616,14 @@ function setScope(scope) {
 
     function getStatusBadgeStyle(status) {
       switch (status) {
-        case 'WIP': return 'border-editorial-900 bg-editorial-100 text-editorial-900 shadow-editorial-sm';
-        case 'DEPRECATED': return 'border-editorial-900 bg-red-100 text-red-700 shadow-editorial-sm';
-        default: return 'border-editorial-900 bg-white text-editorial-900 shadow-editorial-sm';
+        case 'WIP': return 'border-[var(--border-dark)] bg-[#FFD166] text-[#15130A] shadow-editorial-sm';
+        case 'DEPRECATED': return 'border-[var(--border-dark)] bg-[#EF476F] text-white shadow-editorial-sm';
+        default: return 'border-[var(--border-dark)] bg-[#06D6A0] text-[#15130A] shadow-editorial-sm';
       }
     }
 
     function getLangBadgeStyle(lang) {
-      return 'border-editorial-900 bg-white text-editorial-900 shadow-editorial-sm';
+      return 'border-[var(--border-dark)] bg-secondary text-[var(--bg)] shadow-editorial-sm';
     }
 
     function setupTabIndentation() {
@@ -2611,12 +2658,12 @@ function setScope(scope) {
       const container = $('toastContainer');
       const toast = document.createElement('div');
       const styles = {
-        success: { icon: 'fa-circle-check', border: 'border-editorial-900 bg-white text-editorial-900' },
+        success: { icon: 'fa-circle-check', border: 'border-[var(--border-dark)] bg-[var(--surface)] text-[var(--text)]' },
         error: { icon: 'fa-triangle-exclamation', border: 'border-red-600 bg-red-50 text-red-700' },
-        info: { icon: 'fa-circle-info', border: 'border-editorial-900 bg-editorial-50 text-editorial-900' }
+        info: { icon: 'fa-circle-info', border: 'border-[var(--border-dark)] bg-[var(--bg)] text-[var(--text)]' }
       };
       const style = styles[type] || styles.info;
-      toast.className = `border-2 ${style.border} px-4 py-3 shadow-editorial flex items-center gap-3 text-sm font-bold font-display uppercase tracking-wide toast-enter transition-all duration-300`;
+      toast.className = `border-2 ${style.border} px-4 py-3 shadow-[4px_4px_0px_0px_var(--border-dark)] flex items-center gap-3 text-sm font-bold font-display uppercase tracking-wide toast-enter transition-all duration-300`;
       const icon = document.createElement('i');
       icon.className = `fa-solid ${style.icon}`;
       const span = document.createElement('span');
@@ -2696,6 +2743,30 @@ function setScope(scope) {
       $('passwordError').classList.remove('hidden');
     }
 
+    function initTheme() {
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        themeIcon.className = 'fa-solid fa-sun';
+      } else {
+        document.documentElement.classList.remove('dark');
+        themeIcon.className = 'fa-solid fa-moon';
+      }
+    }
+
+    function toggleTheme() {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.theme = 'light';
+        themeIcon.className = 'fa-solid fa-moon';
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.theme = 'dark';
+        themeIcon.className = 'fa-solid fa-sun';
+      }
+    }
+
+    btnToggleTheme?.addEventListener('click', toggleTheme);
+
     // Events
     $('btnTogglePw').addEventListener('click', togglePasswordVisibility);
     authPortalForm.addEventListener('submit', handleLoginSubmit);
@@ -2770,6 +2841,7 @@ function setScope(scope) {
     });
 
     setupTabIndentation();
+    initTheme();
     initSprintTimer();
     relativeTimeInterval = setInterval(() => { if (currentUser) renderUI(); if (inspectingSnippetId) { const s = snippets.find((x) => x.id === inspectingSnippetId); if (s) renderInspectComments(s); } }, 60000);
     initFirebase();
