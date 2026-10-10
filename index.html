@@ -7,6 +7,7 @@
   <meta name="color-scheme" content="dark light">
   <title>DevVault // Hackathon Team Code Hub</title>
 
+  <!-- Tailwind CSS (CDN for development) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -494,7 +495,7 @@
       <!-- Scope Filter -->
       <div class="editorial-card space-y-2">
         <h3 class="text-[10px] font-bold font-mono uppercase tracking-widest text-[var(--text-muted)] mb-3">View Scope</h3>
-        <button id="scopeBtn-all" class="scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-accent text-[var(--bg)] border-2 border-[var(--border-dark)] shadow-[2px_2px_0px_0px_var(--border-dark)] transition">
+        <button id="scopeBtn-all" class="scope-btn w-full text-left px-3 py-2 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-between bg-accent text-[var(--bg)] border-2 border-[var(--border-dark)] shadow-[2px_2px_0px_var(--border-dark)] transition">
           <span class="flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> All Snippets</span>
           <span id="badgeCountAll" class="text-[10px] bg-[var(--surface)] text-[var(--text)] px-2 py-0.5 border border-[var(--border-dark)]">0</span>
         </button>
@@ -2544,7 +2545,7 @@
     }
 
     function setupTabIndentation() {
-      const textarea = $('snippetCodeInput');
+      const textarea = \$('snippetCodeInput');
       textarea.addEventListener('keydown', (event) => {
         // Tab key indentation support
         if (event.key === 'Tab') {
